@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>购买 OfferDesk 报价单赚钱助手</title>
+    <title>OfferDesk 报价单赚钱助手</title>
     <meta
       name="description"
-      content="OfferDesk 帮自由职业者和小团队生成专业报价单，并计算利润率、首付款和折扣。"
+      content="OfferDesk 是给自由职业者和小团队用的报价单工具，能计算成本、利润率、首付款，并生成可发给客户的报价单。"
     />
     <link rel="canonical" href="https://8npyvz5bd8-lang.github.io/offerdesk/sales.html" />
     <meta name="theme-color" content="#0f8a55" />
@@ -21,7 +21,7 @@
       content="https://8npyvz5bd8-lang.github.io/offerdesk/sales.html"
     />
     <meta property="og:site_name" content="OfferDesk" />
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="OfferDesk 报价单赚钱助手" />
     <meta
       name="twitter:description"
@@ -47,58 +47,93 @@
       }
     </script>
     <style>
+      :root {
+        color-scheme: light;
+        --bg: #faf9f3;
+        --paper: #ffffff;
+        --ink: #171a17;
+        --muted: #697168;
+        --line: #d8ded4;
+        --line-strong: #aeb9aa;
+        --green: #0f6f45;
+        --green-dark: #0a4d31;
+        --amber: #b97805;
+        --amber-soft: #fff4d8;
+        --wash: #f0f4ec;
+        --shadow: 0 24px 70px rgba(22, 27, 22, 0.14);
+        --radius: 8px;
+      }
+
       * {
         box-sizing: border-box;
       }
 
+      html {
+        scroll-behavior: smooth;
+      }
+
       body {
         margin: 0;
-        background: #f4f5f2;
-        color: #151916;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, "PingFang SC", sans-serif;
+        background:
+          linear-gradient(90deg, rgba(23, 26, 23, 0.045) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(23, 26, 23, 0.035) 1px, transparent 1px),
+          var(--bg);
+        background-size: 28px 28px;
+        color: var(--ink);
+        font-family:
+          "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", Georgia, serif;
       }
 
       a {
         color: inherit;
       }
 
+      p,
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+      }
+
+      .page {
+        min-height: 100vh;
+      }
+
       .topbar,
+      .hero,
+      .section,
       .footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
         width: min(1180px, calc(100vw - 32px));
         margin: 0 auto;
       }
 
       .topbar {
-        padding: 18px 0;
-      }
-
-      .brand,
-      .nav,
-      .actions,
-      .preview-top,
-      .preview-total,
-      .footer-links {
         display: flex;
         align-items: center;
-        gap: 12px;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 24px 0 18px;
       }
 
       .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
         text-decoration: none;
       }
 
       .mark {
         display: grid;
-        width: 42px;
-        height: 42px;
+        width: 44px;
+        height: 44px;
         place-items: center;
-        border-radius: 50%;
-        background: #151916;
-        color: #ffffff;
+        border: 1px solid var(--ink);
+        border-radius: 8px;
+        background: var(--ink);
+        color: var(--paper);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 13px;
         font-weight: 900;
       }
 
@@ -107,196 +142,411 @@
         display: block;
       }
 
-      .brand small,
-      p,
-      li,
-      .muted {
-        color: #667065;
+      .brand strong {
+        font-size: 30px;
+        line-height: 0.95;
+      }
+
+      .brand small {
+        margin-top: 5px;
+        color: var(--muted);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
       }
 
       .nav,
-      .footer,
-      .eyebrow,
-      .btn,
-      .preview,
-      .card {
-        font-size: 14px;
-      }
-
-      .btn {
-        display: inline-flex;
+      .actions,
+      .proof-line,
+      .price-head,
+      .footer-links {
+        display: flex;
         align-items: center;
-        justify-content: center;
-        min-height: 44px;
-        border: 1px solid #151916;
-        border-radius: 999px;
-        padding: 0 18px;
-        font-weight: 900;
-        text-decoration: none;
+        gap: 12px;
       }
 
-      .primary {
-        border-color: #0f8a55;
-        background: #0f8a55;
-        color: #ffffff;
+      .nav {
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .nav a {
+        text-decoration: none;
       }
 
       .hero {
         display: grid;
-        grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
-        gap: 30px;
+        grid-template-columns: minmax(0, 0.82fr) minmax(440px, 1.18fr);
+        gap: 38px;
         align-items: center;
-        width: min(1180px, calc(100vw - 32px));
-        margin: 0 auto;
-        padding: 42px 0 26px;
+        padding: 42px 0 34px;
       }
 
       h1 {
-        margin: 12px 0 16px;
-        max-width: 680px;
-        font-size: clamp(42px, 6vw, 76px);
-        line-height: 0.98;
-      }
-
-      h2,
-      p {
-        margin: 0;
+        max-width: 720px;
+        font-size: clamp(46px, 6.2vw, 86px);
+        line-height: 0.95;
+        font-weight: 900;
       }
 
       .lead {
-        max-width: 620px;
-        font-size: 18px;
-        line-height: 1.75;
+        max-width: 610px;
+        margin-top: 22px;
+        color: #30362f;
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 19px;
+        font-weight: 650;
+        line-height: 1.85;
       }
 
       .actions {
         flex-wrap: wrap;
-        margin-top: 24px;
+        margin-top: 28px;
       }
 
-      .notice {
-        margin-top: 14px;
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+        border: 1px solid var(--ink);
+        border-radius: 8px;
+        padding: 0 22px;
+        background: var(--paper);
+        color: var(--ink);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 16px;
+        font-weight: 900;
+        text-decoration: none;
+        box-shadow: 4px 4px 0 rgba(23, 26, 23, 0.16);
+        transition:
+          transform 0.16s ease,
+          box-shadow 0.16s ease,
+          background 0.16s ease;
+      }
+
+      .button:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 6px 6px 0 rgba(23, 26, 23, 0.18);
+      }
+
+      .button.primary {
+        border-color: var(--green);
+        background: var(--green);
+        color: var(--paper);
+      }
+
+      .button.amber {
+        border-color: #d28a04;
+        background: linear-gradient(180deg, #d99a18, #b97805);
+        color: #fffdf6;
+      }
+
+      .proof-line {
+        flex-wrap: wrap;
+        margin-top: 22px;
+        color: var(--green-dark);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         font-size: 13px;
+        font-weight: 900;
       }
 
-      .preview {
-        border: 1px solid #bac4b7;
-        border-radius: 10px;
-        background: #ffffff;
-        padding: 34px;
-        box-shadow: 0 24px 60px rgba(24, 31, 25, 0.12);
+      .proof-line span {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
       }
 
-      .preview-top,
-      .preview-total {
+      .proof-line span::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+
+      .product-frame {
+        position: relative;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius);
+        background: #fdfcf7;
+        padding: 12px;
+        box-shadow: var(--shadow);
+      }
+
+      .product-frame::before {
+        position: absolute;
+        top: 24px;
+        right: -14px;
+        width: 90px;
+        height: 90px;
+        border: 1px solid var(--amber);
+        border-radius: 50%;
+        content: "";
+        opacity: 0.36;
+      }
+
+      .product-frame img {
+        display: block;
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--paper);
+      }
+
+      .caption {
+        display: flex;
+        align-items: center;
         justify-content: space-between;
+        gap: 12px;
+        padding: 12px 4px 2px;
+        color: var(--muted);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 13px;
+        font-weight: 800;
       }
 
-      .preview h2 {
-        margin: 22px 0 8px;
-        font-size: 38px;
+      .section {
+        padding: 28px 0;
+      }
+
+      .section-title {
+        max-width: 760px;
+        font-size: clamp(28px, 4vw, 44px);
         line-height: 1.08;
       }
 
-      .quote-table {
+      .section-copy {
+        max-width: 720px;
+        margin-top: 12px;
+        color: var(--muted);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.8;
+      }
+
+      .feature-strip {
         display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 12px;
-        margin: 24px 0;
-        border-top: 1px solid #d9ded7;
-        border-bottom: 1px solid #d9ded7;
-        padding: 18px 0;
-      }
-
-      .quote-table span {
-        color: #667065;
-      }
-
-      .preview-total strong {
-        color: #0f8a55;
-        font-size: 36px;
-      }
-
-      .grid,
-      .steps {
-        width: min(1180px, calc(100vw - 32px));
-        margin: 0 auto;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 14px;
-        padding-top: 8px;
+        margin-top: 20px;
       }
 
-      .card,
-      .steps {
-        border: 1px solid #d9ded7;
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.78);
-        padding: 22px;
+      .feature {
+        min-height: 168px;
+        border-top: 2px solid var(--ink);
+        padding-top: 18px;
       }
 
-      .card h2,
-      .steps h2 {
-        font-size: 22px;
+      .feature svg {
+        width: 34px;
+        height: 34px;
+        color: var(--green);
       }
 
-      .card p,
-      .steps li {
+      .feature h3 {
+        margin-top: 16px;
+        font-size: 21px;
+        line-height: 1.2;
+      }
+
+      .feature p {
         margin-top: 10px;
+        color: var(--muted);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
         line-height: 1.7;
       }
 
-      .steps {
-        margin-top: 14px;
+      .pricing {
+        display: grid;
+        grid-template-columns: 360px minmax(0, 1fr);
+        gap: 28px;
+        align-items: stretch;
       }
 
-      .trust {
+      .price-card,
+      .truth-panel {
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.86);
+        padding: 24px;
+        box-shadow: 12px 14px 0 rgba(23, 26, 23, 0.07);
+      }
+
+      .price-head {
+        justify-content: space-between;
+        gap: 14px;
+      }
+
+      .price-head strong {
+        font-size: 22px;
+      }
+
+      .tag {
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        padding: 5px 9px;
+        color: var(--green-dark);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .price {
+        margin-top: 20px;
+        color: var(--ink);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 78px;
+        font-weight: 1000;
+        line-height: 0.95;
+      }
+
+      .price small {
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      .check-list {
+        display: grid;
+        gap: 11px;
+        margin: 20px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .check-list li {
+        display: grid;
+        grid-template-columns: 18px 1fr;
+        gap: 9px;
+        color: #30362f;
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 15px;
+        font-weight: 750;
+        line-height: 1.55;
+      }
+
+      .check-list li::before {
+        color: var(--green);
+        content: "✓";
+        font-weight: 1000;
+      }
+
+      .price-card .button {
+        width: 100%;
+        margin-top: 22px;
+      }
+
+      .fine-print {
+        margin-top: 12px;
+        color: var(--muted);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.65;
+      }
+
+      .truth-panel {
+        display: grid;
+        align-content: center;
+        background:
+          linear-gradient(135deg, rgba(15, 111, 69, 0.08), transparent 52%),
+          var(--paper);
+      }
+
+      .truth-panel h2 {
+        font-size: 34px;
+        line-height: 1.12;
+      }
+
+      .truth-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
-        width: min(1180px, calc(100vw - 32px));
-        margin: 14px auto 0;
+        gap: 12px;
+        margin-top: 22px;
       }
 
-      .trust-card {
-        border: 1px solid #d9ded7;
-        border-radius: 10px;
-        background: #ffffff;
-        padding: 22px;
+      .truth-item {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(250, 249, 243, 0.78);
+        padding: 16px;
       }
 
-      .trust-card h2 {
-        margin: 0 0 12px;
-        font-size: 22px;
+      .truth-item strong {
+        display: block;
+        font-size: 18px;
       }
 
-      .trust-card ul {
-        margin: 0;
-        padding-left: 20px;
-      }
-
-      .trust-card li {
+      .truth-item p {
         margin-top: 8px;
-        color: #343a35;
-        line-height: 1.7;
+        color: var(--muted);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.65;
+      }
+
+      .final-cta {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 22px;
+        align-items: center;
+        border: 2px solid var(--ink);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.58);
+        padding: 26px;
+      }
+
+      .final-cta h2 {
+        font-size: clamp(28px, 4vw, 46px);
+        line-height: 1.05;
+      }
+
+      .final-cta p {
+        margin-top: 10px;
+        color: var(--muted);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 15px;
+        font-weight: 750;
+        line-height: 1.65;
       }
 
       .footer {
-        padding: 28px 0 36px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 32px 0 40px;
+        color: var(--muted);
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 13px;
+        font-weight: 800;
       }
 
-      @media (max-width: 860px) {
-        .topbar,
-        .footer,
-        .hero,
-        .grid,
-        .trust {
-          width: min(100vw - 28px, 680px);
-        }
+      .footer a {
+        text-decoration: none;
+      }
 
+      @media (max-width: 900px) {
         .topbar,
         .footer {
           align-items: flex-start;
@@ -304,126 +554,241 @@
         }
 
         .hero,
-        .grid,
-        .trust {
+        .pricing,
+        .final-cta {
           grid-template-columns: 1fr;
         }
 
-        .actions .btn {
+        .hero {
+          padding-top: 28px;
+        }
+
+        .feature-strip,
+        .truth-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 620px) {
+        .topbar,
+        .hero,
+        .section,
+        .footer {
+          width: min(100vw - 24px, 560px);
+        }
+
+        .nav,
+        .footer-links {
+          flex-wrap: wrap;
+        }
+
+        .brand strong {
+          font-size: 25px;
+        }
+
+        h1 {
+          font-size: 44px;
+        }
+
+        .lead {
+          font-size: 16px;
+        }
+
+        .actions .button,
+        .final-cta .button {
           width: 100%;
+        }
+
+        .feature-strip,
+        .truth-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .price-card,
+        .truth-panel,
+        .final-cta {
+          padding: 20px;
+        }
+
+        .price {
+          font-size: 66px;
         }
       }
     </style>
   </head>
   <body>
-    <header class="topbar">
-      <a class="brand" href="./index.html" aria-label="OfferDesk 首页">
-        <span class="mark">OD</span>
-        <span>
-          <strong>OfferDesk</strong>
-          <small>报价单赚钱助手</small>
-        </span>
-      </a>
-      <nav class="nav" aria-label="销售页操作">
-        <a href="./index.html">打开工具</a>
-        <a href="./buy.html">购买专业版</a>
-      </nav>
-    </header>
+    <div class="page">
+      <header class="topbar">
+        <a class="brand" href="./index.html" aria-label="OfferDesk 首页">
+          <span class="mark">OD</span>
+          <span>
+            <strong>OfferDesk</strong>
+            <small>报价与利润助手</small>
+          </span>
+        </a>
+        <nav class="nav" aria-label="主要链接">
+          <a href="#features">功能</a>
+          <a href="#pricing">购买</a>
+          <a href="./index.html">打开工具</a>
+        </nav>
+      </header>
 
-    <main>
-      <section class="hero" id="buy">
-        <div>
-          <span class="eyebrow muted">29 元专业版</span>
-          <h1>接单报价前，先知道这单赚不赚钱。</h1>
-          <p class="lead">
-            OfferDesk 帮自由职业者和小团队快速生成客户报价单，同时算清成本、利润率、首付款和折扣。
-            免费版可试用，专业版去掉水印。
+      <main>
+        <section class="hero">
+          <div>
+            <h1>OfferDesk 报价单赚钱助手</h1>
+            <p class="lead">
+              给自由职业者、小团队和接单工作室用。输入项目、单价和内部成本，
+              自动算出利润率、首付款和客户能看的正式报价单。
+            </p>
+            <div class="actions">
+              <a class="button primary" href="./index.html">立即使用</a>
+              <a class="button" href="#pricing">查看购买方式</a>
+            </div>
+            <div class="proof-line" aria-label="产品特点">
+              <span>本地保存数据</span>
+              <span>成本不出现在客户报价单</span>
+              <span>专业版 29 元去水印</span>
+            </div>
+          </div>
+
+          <figure class="product-frame">
+            <img
+              src="./launch/offerdesk-screenshot.jpg"
+              alt="OfferDesk 报价编辑和报价单预览界面"
+            />
+            <figcaption class="caption">
+              <span>左边编辑成本，右边生成报价单</span>
+              <span>可导出 PDF</span>
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="section" id="features">
+          <h2 class="section-title">少一点凭感觉报价，多一点算清楚再开口。</h2>
+          <p class="section-copy">
+            OfferDesk 不做复杂项目管理，只解决接单前最要命的一步：
+            价格、成本、利润、首付款和客户报价单，一次算清楚。
           </p>
-          <div class="actions">
-            <a class="btn primary" href="./buy.html">29 元购买专业版</a>
-            <a class="btn" href="./index.html">先试用免费版</a>
+
+          <div class="feature-strip" aria-label="核心功能">
+            <article class="feature">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M4 6.5h16M4 12h16M4 17.5h10"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width="2"
+                />
+              </svg>
+              <h3>报价项目清楚</h3>
+              <p>服务项、数量、单价、成本分开填，客户看到的是干净报价。</p>
+            </article>
+            <article class="feature">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M5 19V8m7 11V5m7 14v-8"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width="2"
+                />
+              </svg>
+              <h3>利润马上知道</h3>
+              <p>自动计算利润和利润率，低于目标时直接提醒。</p>
+            </article>
+            <article class="feature">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M7 3h10v18H7zM9.5 8h5M9.5 12h5M9.5 16h3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              <h3>输出正式报价单</h3>
+              <p>一键打印或保存 PDF，适合直接发给客户确认。</p>
+            </article>
+            <article class="feature">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 3 5 6v6c0 4.2 2.8 7 7 9 4.2-2 7-4.8 7-9V6z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+              <h3>数据在你手里</h3>
+              <p>草稿保存在浏览器本地，也可以自己导入导出。</p>
+            </article>
           </div>
-          <p class="notice">付款后提交信息，确认到账后会收到唯一授权码。</p>
+        </section>
+
+        <section class="section pricing" id="pricing">
+          <article class="price-card" aria-label="专业版价格">
+            <div class="price-head">
+              <strong>专业版</strong>
+              <span class="tag">一次购买</span>
+            </div>
+            <div class="price">¥29 <small>RMB</small></div>
+            <ul class="check-list">
+              <li>去掉免费版水印</li>
+              <li>不限次数生成报价单</li>
+              <li>可导出 PDF 或复制报价文本</li>
+              <li>使用唯一签名授权码解锁</li>
+              <li>7 天内如无法解锁可处理或退款</li>
+            </ul>
+            <a class="button amber" href="./buy.html">立即购买 ¥29</a>
+            <p class="fine-print">当前是支付宝扫码付款，付款后提交邮箱和付款信息，确认到账后发授权码。</p>
+          </article>
+
+          <article class="truth-panel" aria-label="购买前说明">
+            <h2>把成交路径说清楚，不用假装全自动。</h2>
+            <div class="truth-grid">
+              <div class="truth-item">
+                <strong>先试用</strong>
+                <p>打开工具就能填报价，确认适合自己再买专业版。</p>
+              </div>
+              <div class="truth-item">
+                <strong>再付款</strong>
+                <p>购买页提供支付宝收款码，价格固定为 29 元。</p>
+              </div>
+              <div class="truth-item">
+                <strong>后发码</strong>
+                <p>付款后提交信息，核对到账后会收到唯一授权码。</p>
+              </div>
+              <div class="truth-item">
+                <strong>能追踪</strong>
+                <p>有首单跟进台和推广文案，方便记录真实试用和付款。</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="section">
+          <div class="final-cta">
+            <div>
+              <h2>现在就做一份报价单，看看这单到底赚不赚钱。</h2>
+              <p>免费版可以直接试用。需要正式发给客户时，再购买专业版去掉水印。</p>
+            </div>
+            <a class="button primary" href="./index.html">立即使用</a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>OfferDesk</span>
+        <div class="footer-links">
+          <a href="./privacy.html">隐私</a>
+          <a href="./terms.html">条款</a>
+          <a href="./refund.html">退款</a>
+          <a href="mailto:534403209@qq.com">534403209@qq.com</a>
         </div>
-
-        <aside class="preview" aria-label="报价单预览示意">
-          <div class="preview-top">
-            <span class="muted">报价单</span>
-            <strong>OD-20260611</strong>
-          </div>
-          <h2>官网设计与开发</h2>
-          <p>客户：星河工作室</p>
-          <div class="quote-table">
-            <span>项目</span>
-            <span>金额</span>
-            <strong>页面设计</strong>
-            <strong>¥8,000</strong>
-            <strong>前端开发</strong>
-            <strong>¥12,000</strong>
-            <strong>首付款</strong>
-            <strong>¥10,000</strong>
-          </div>
-          <div class="preview-total">
-            <span class="muted">预计利润率</span>
-            <strong>42%</strong>
-          </div>
-        </aside>
-      </section>
-
-      <section class="grid" aria-label="核心卖点">
-        <article class="card">
-          <h2>避免低报价</h2>
-          <p>输入内部成本后，系统会显示预计利润和利润状态，报价前就知道风险。</p>
-        </article>
-        <article class="card">
-          <h2>客户只看报价</h2>
-          <p>成本只在编辑区出现，正式报价单只展示项目、数量、单价和总价。</p>
-        </article>
-        <article class="card">
-          <h2>直接发 PDF</h2>
-          <p>报价单可以打印或保存为 PDF，适合快速发给客户确认。</p>
-        </article>
-      </section>
-
-      <section class="steps">
-        <h2>购买后怎么用</h2>
-        <ol>
-          <li>打开 OfferDesk 线上地址。</li>
-          <li>点击「解锁专业版」。</li>
-          <li>输入付款后收到的授权码。</li>
-          <li>看到「可正式交付」后，生成正式报价单。</li>
-        </ol>
-      </section>
-
-      <section class="trust" aria-label="购买前说明">
-        <article class="trust-card">
-          <h2>适合谁买</h2>
-          <ul>
-            <li>经常给客户报设计、开发、咨询、拍摄或运营服务价格的人。</li>
-            <li>报价前想知道利润率、首付款和折扣影响的人。</li>
-            <li>需要把报价单打印或保存成 PDF 发给客户的人。</li>
-          </ul>
-        </article>
-        <article class="trust-card">
-          <h2>付款后怎么交付</h2>
-          <ul>
-            <li>扫码付款后提交邮箱和付款信息。</li>
-            <li>确认到账后会回复唯一授权码。</li>
-            <li>输入授权码后，免费水印会消失。</li>
-            <li>如果授权码无法正常解锁，7 天内可通过客服邮箱申请处理或退款。</li>
-          </ul>
-        </article>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <span>OfferDesk</span>
-      <div class="footer-links">
-        <a href="./privacy.html">隐私</a>
-        <a href="./terms.html">条款</a>
-        <a href="./refund.html">退款</a>
-        <a href="mailto:534403209@qq.com">534403209@qq.com</a>
-      </div>
-    </footer>
+      </footer>
+    </div>
   </body>
 </html>
