@@ -61,7 +61,21 @@ https://8npyvz5bd8-lang.github.io/offerdesk/pay.html
 
 私钥留在 `secrets/`，不要上传。公钥写入 `app-config.js` 的 `licensePublicKey`。
 
-人工补发唯一授权码：
+收到支付宝付款后，运行这一条完成交付：生成唯一授权码、生成回复邮件、记录到销售表。
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/fulfill-manual-order.mjs \
+  --email "buyer@example.com" \
+  --paid-at "2026-06-11 18:20" \
+  --amount "29" \
+  --channel "manual-alipay" \
+  --name "买家昵称" \
+  --note "支付宝备注"
+```
+
+输出会放在 `dist/manual-orders/`。这里有明文授权码，不要上传。
+
+只想单独生成唯一授权码：
 
 ```bash
 /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/issue-signed-license.mjs \
@@ -130,9 +144,10 @@ dist/offerdesk-release
 2. 当前可以用支付宝收款码和付款页备用收款。
 3. 开通支付宝商家接口后部署 `scripts/alipay-payment-server.mjs`。
 4. 确认收到付款通知。
-5. 把 `dist/post-purchase-email.txt` 的内容发给买家。
-6. 确认买家能用授权码去掉水印并保存 PDF。
-7. 填写 `launch/release-acceptance.md`。
+5. 收到付款后运行 `scripts/fulfill-manual-order.mjs`。
+6. 把 `dist/manual-orders/` 里的回复邮件内容发给买家。
+7. 确认买家能用授权码去掉水印并保存 PDF。
+8. 填写 `launch/release-acceptance.md`。
 
 正式发布时按这份手册执行：
 

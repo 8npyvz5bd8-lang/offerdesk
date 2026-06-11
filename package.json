@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/pricing.test.mjs && node tests/license.test.mjs && node tests/signed-license.test.mjs && node tests/alipay-payment-server.test.mjs && node tests/templates.test.mjs && node tests/config-writer.test.mjs && node tests/delivery-email.test.mjs && node tests/acceptance.test.mjs && node tests/upload-zip.test.mjs && node tests/license-leak.test.mjs && node tests/prepare-release.test.mjs && node tests/release-status.test.mjs && node tests/release-report.test.mjs && node tests/static-assets.test.mjs",
+    "test": "node tests/pricing.test.mjs && node tests/license.test.mjs && node tests/signed-license.test.mjs && node tests/alipay-payment-server.test.mjs && node tests/templates.test.mjs && node tests/config-writer.test.mjs && node tests/delivery-email.test.mjs && node tests/manual-fulfillment.test.mjs && node tests/acceptance.test.mjs && node tests/upload-zip.test.mjs && node tests/license-leak.test.mjs && node tests/prepare-release.test.mjs && node tests/release-status.test.mjs && node tests/release-report.test.mjs && node tests/static-assets.test.mjs",
     "check:static": "node scripts/check-static-assets.mjs",
     "create:delivery-email": "node scripts/create-delivery-email.mjs",
     "check:license-leak": "node scripts/check-license-leak.mjs",
@@ -17,7 +17,8 @@
     "prepare:release": "node scripts/prepare-release.mjs",
     "server:alipay": "node scripts/alipay-payment-server.mjs",
     "license:keypair": "node scripts/generate-license-keypair.mjs",
-    "license:issue": "node scripts/issue-signed-license.mjs"
+    "license:issue": "node scripts/issue-signed-license.mjs",
+    "order:fulfill": "node scripts/fulfill-manual-order.mjs"
   },
   "dependencies": {
     "qrcode": "^1.5.4"

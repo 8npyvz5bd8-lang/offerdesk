@@ -132,7 +132,18 @@ https://8npyvz5bd8-lang.github.io/offerdesk/pipeline.html
 
 买家付款后，让他提交邮箱和付款信息。确认买家能解锁并去掉水印后，再记录到 `launch/sales-tracker.csv`。
 
-记录时至少填这几项：付款状态、付款时间、金额、买家邮箱、授权码是否已发送、下一步。
+收到钱后运行：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/fulfill-manual-order.mjs \
+  --email "买家邮箱" \
+  --paid-at "付款时间" \
+  --amount "29" \
+  --channel "manual-alipay" \
+  --name "买家昵称或支付宝备注"
+```
+
+这个命令会生成唯一授权码、回复邮件，并把订单写入 `launch/sales-tracker.csv`。
 
 ## 7 天验证标准
 

@@ -33,3 +33,18 @@ dist/offerdesk-release.zip
 - 不要把 `dist/post-purchase-email.txt` 上传到网页目录。
 - 付款后邮件里必须有线上地址和授权码。
 - 完成一次真实扫码付款后，填写 `launch/release-acceptance.md`。
+
+## 收到支付宝付款后
+
+运行：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/fulfill-manual-order.mjs \
+  --email "买家邮箱" \
+  --paid-at "付款时间" \
+  --amount "29" \
+  --channel "manual-alipay" \
+  --name "买家昵称或支付宝备注"
+```
+
+然后把 `dist/manual-orders/` 里的邮件内容发给买家。

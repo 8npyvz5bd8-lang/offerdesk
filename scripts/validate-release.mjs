@@ -32,6 +32,7 @@ const requiredFiles = [
   "scripts/validate-acceptance.mjs",
   "scripts/check-static-assets.mjs",
   "scripts/create-delivery-email.mjs",
+  "scripts/fulfill-manual-order.mjs",
   "scripts/hash-license.mjs",
   "scripts/write-config.mjs",
   "launch/listing.md",
