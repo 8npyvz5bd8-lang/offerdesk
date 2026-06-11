@@ -39,6 +39,12 @@ http://localhost:4173/sales.html
 https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
 ```
 
+当前销售页：
+
+```text
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+```
+
 当前付款页：
 
 ```text

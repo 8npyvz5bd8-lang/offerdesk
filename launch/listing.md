@@ -27,6 +27,7 @@ OfferDesk 报价单赚钱助手
 
 ## 当前线上链接
 
+- 销售页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 - 工具地址：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
 - 付款页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
 
