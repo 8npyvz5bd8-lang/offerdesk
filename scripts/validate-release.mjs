@@ -5,6 +5,7 @@ const configPath = readArg("--config") || new URL("../app-config.js", import.met
 const requiredFiles = [
   "index.html",
   "sales.html",
+  "share.html",
   "pay.html",
   "after-pay.html",
   "share-copy.txt",

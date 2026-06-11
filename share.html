@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>OfferDesk 首单推广复制页</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #f4f5f2;
+        color: #151916;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, "PingFang SC", sans-serif;
+        line-height: 1.7;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .wrap {
+        width: min(980px, 100%);
+        margin: 0 auto;
+        padding: 28px 18px 44px;
+      }
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 34px;
+        line-height: 1.12;
+      }
+
+      p {
+        margin: 8px 0 0;
+        color: #667065;
+      }
+
+      .links,
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 40px;
+        border: 1px solid #151916;
+        border-radius: 999px;
+        background: #ffffff;
+        padding: 0 16px;
+        color: #151916;
+        font-weight: 900;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .green {
+        border-color: #0f8a55;
+        background: #0f8a55;
+        color: #ffffff;
+      }
+
+      .blue {
+        border-color: #2563eb;
+        background: #2563eb;
+        color: #ffffff;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        border: 1px solid #d9ded7;
+        border-radius: 10px;
+        background: #ffffff;
+        padding: 18px;
+        box-shadow: 0 14px 38px rgba(20, 26, 22, 0.08);
+      }
+
+      .card h2 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 220px;
+        border: 1px solid #d9ded7;
+        border-radius: 8px;
+        background: #f8faf7;
+        padding: 12px;
+        color: #151916;
+        font: inherit;
+        resize: vertical;
+      }
+
+      .plan {
+        margin: 0;
+        padding-left: 22px;
+        color: #303830;
+      }
+
+      .plan li {
+        margin-top: 8px;
+      }
+
+      .notice {
+        min-height: 22px;
+        margin-top: 14px;
+        color: #0f8a55;
+        font-weight: 900;
+      }
+
+      @media (max-width: 760px) {
+        .top {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .links .btn,
+        .actions .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="top">
+        <div>
+          <h1>OfferDesk 首单推广复制页</h1>
+          <p>目标：今天发给 10 个真实接单的人，拿到至少 1 个愿意付款的人。</p>
+        </div>
+        <nav class="links" aria-label="常用链接">
+          <a class="btn" href="./sales.html">销售页</a>
+          <a class="btn" href="./index.html">试用工具</a>
+          <a class="btn green" href="./pay.html">付款页</a>
+          <a class="btn blue" href="./after-pay.html">付款后提交</a>
+        </nav>
+      </header>
+
+      <section class="card">
+        <h2>今天照这个顺序做</h2>
+        <ol class="plan">
+          <li>先把“朋友圈/群聊版”发到朋友圈或熟人群。</li>
+          <li>再找 10 个设计师、开发者、摄影师、咨询顾问或小工作室，逐个发“私信版”。</li>
+          <li>有人回复“看看”时，直接发销售页和试用工具。</li>
+          <li>有人说有用时，发付款页。</li>
+          <li>对方付款后，让他打开付款后提交页；你确认到账后发授权码。</li>
+          <li>每联系 1 个人，都记到 `launch/sales-tracker.csv`。</li>
+        </ol>
+      </section>
+
+      <section class="grid" aria-label="可复制文案">
+        <article class="card">
+          <h2>朋友圈/群聊版</h2>
+          <textarea id="copy-public" readonly>我做了一个报价单工具，给自由职业者、小团队和接单工作室用。
+
+它能算成本、利润率、首付款，还能生成可以发给客户的报价单。免费版能试用，29 元专业版去水印。
+
+如果你最近有报价场景，可以试 5 分钟：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+
+不适合也没关系，直接告诉我哪里没用。</textarea>
+          <div class="actions">
+            <button class="btn green" type="button" data-copy="copy-public">复制朋友圈版</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>私信版</h2>
+          <textarea id="copy-dm" readonly>你好，我看到你有接单/工作室相关内容。
+
+我做了一个报价单工具，能自动算利润率和首付款，也能生成给客户看的报价单。
+
+想请你试用 5 分钟。如果它真的帮你省时间，再考虑买专业版。不合适也没关系，我主要想听真实反馈。
+
+销售页：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+
+试用工具：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/</textarea>
+          <div class="actions">
+            <button class="btn green" type="button" data-copy="copy-dm">复制私信版</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>有人说有用时</h2>
+          <textarea id="copy-pay" readonly>如果这个工具能帮你正式给客户发报价单，可以买 29 元专业版去掉水印。
+
+付款页：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
+
+付款后提交信息：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
+
+确认到账后，我会把授权码发给你。</textarea>
+          <div class="actions">
+            <button class="btn green" type="button" data-copy="copy-pay">复制付款跟进</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>付款后你发给买家</h2>
+          <textarea id="copy-after" readonly>我看到你的付款信息了。
+
+我确认到账后会发送 OfferDesk 专业版授权码。
+
+拿到授权码后：
+1. 打开软件：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
+2. 输入授权码。
+3. 看到“已解锁专业版”后，水印会消失。
+
+如果授权码无效，直接回复我处理。</textarea>
+          <div class="actions">
+            <button class="btn green" type="button" data-copy="copy-after">复制付款后回复</button>
+          </div>
+        </article>
+      </section>
+
+      <p class="notice" id="notice"></p>
+    </main>
+
+    <script>
+      const notice = document.getElementById("notice");
+      document.querySelectorAll("[data-copy]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const target = document.getElementById(button.dataset.copy);
+          await navigator.clipboard.writeText(target.value);
+          notice.textContent = "已复制：" + button.textContent;
+        });
+      });
+    </script>
+  </body>
+</html>

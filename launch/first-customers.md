@@ -73,6 +73,9 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 公开可复制版本：
 https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share-copy.txt
 
+一键复制推广页：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share.html
+
 ## 付款跟进话术
 
 买家付款后，让他打开付款后提交页：
