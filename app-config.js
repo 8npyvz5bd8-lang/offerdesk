@@ -2,7 +2,7 @@ window.OFFERDESK_CONFIG = {
   checkoutUrl: "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
   autoCheckoutUrl: "",
   autoPaymentApiBase: "",
-  paymentQrImage: "",
+  paymentQrImage: "./launch/payment-alipay.jpeg",
   licenseProvider: "signed",
   lemonSqueezyProductId: "",
   lemonSqueezyVariantId: "",

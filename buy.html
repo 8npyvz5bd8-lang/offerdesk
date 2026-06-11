@@ -267,7 +267,7 @@
         </article>
 
         <aside class="card qr">
-          <img id="autoQrImage" alt="支付宝专属付款码" hidden />
+          <img id="autoQrImage" alt="支付宝收款码" hidden />
           <canvas id="qr" width="260" height="260" aria-label="支付宝收款二维码"></canvas>
           <div class="price">¥29</div>
           <p class="small" id="checkoutCaption">扫码或点击按钮付款</p>
@@ -366,6 +366,7 @@
       const config = window.OFFERDESK_CONFIG || {};
       const autoCheckoutUrl = String(config.autoCheckoutUrl || "").trim();
       const autoPaymentApiBase = String(config.autoPaymentApiBase || "").trim().replace(/\/+$/, "");
+      const paymentQrImage = String(config.paymentQrImage || "").trim();
       const licenseProvider = String(config.licenseProvider || "").trim().toLowerCase();
       const autoBuyForm = document.getElementById("autoBuyForm");
       const buyerEmail = document.getElementById("buyerEmail");
@@ -381,6 +382,13 @@
       const copyLicenseButton = document.getElementById("copyLicenseButton");
       const openWithLicenseButton = document.getElementById("openWithLicenseButton");
       let pollTimer = 0;
+
+      if (paymentQrImage) {
+        autoQrImage.src = paymentQrImage;
+        autoQrImage.hidden = false;
+        canvas.hidden = true;
+        checkoutCaption.textContent = "打开支付宝扫一扫付款";
+      }
 
       if (licenseProvider === "lemonsqueezy" && autoCheckoutUrl.startsWith("https://")) {
         checkoutButton.href = autoCheckoutUrl;
