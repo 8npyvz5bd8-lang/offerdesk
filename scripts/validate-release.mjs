@@ -31,6 +31,7 @@ const requiredFiles = [
   "scripts/alipay-payment-server.mjs",
   "scripts/generate-license-keypair.mjs",
   "scripts/issue-signed-license.mjs",
+  "scripts/validate-alipay-service.mjs",
   "scripts/validate-auto-payment.mjs",
   "scripts/validate-acceptance.mjs",
   "scripts/check-static-assets.mjs",

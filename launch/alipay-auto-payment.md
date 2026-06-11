@@ -73,6 +73,16 @@ https://你的支付服务器域名/api/health
 
 确认 `ready` 是 `true`。
 
+再跑完整接口验收：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/validate-alipay-service.mjs \
+  --api-base "https://你的支付服务器域名" \
+  --email "534403209@qq.com"
+```
+
+这个命令会创建一个待支付测试订单，并检查订单状态接口能返回。
+
 ## 接入前端
 
 部署成功后，用命令检查服务并写进 `app-config.js`：
