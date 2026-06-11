@@ -71,7 +71,7 @@ function isRealAutoCheckoutUrl(value) {
     !value.includes("example") &&
     !value.includes("your-") &&
     !value.includes("你的") &&
-    !/github\.io\/graphics-debug\/offerdesk\/(buy|pay|after-pay)\.html/.test(value);
+    !/github\.io\/(?:graphics-debug\/)?offerdesk\/(buy|pay|after-pay)\.html/.test(value);
 }
 
 function isRealEmail(value) {

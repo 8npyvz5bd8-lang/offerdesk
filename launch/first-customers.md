@@ -18,9 +18,9 @@
 
 线上预览入口：
 
-- 商品封面图：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/launch/social-posters.html?poster=cover
-- 痛点说明图：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/launch/social-posters.html?poster=profit
-- 交付说明图：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/launch/social-posters.html?poster=delivery
+- 商品封面图：https://8npyvz5bd8-lang.github.io/offerdesk/launch/social-posters.html?poster=cover
+- 痛点说明图：https://8npyvz5bd8-lang.github.io/offerdesk/launch/social-posters.html?poster=profit
+- 交付说明图：https://8npyvz5bd8-lang.github.io/offerdesk/launch/social-posters.html?poster=delivery
 
 ## 闲鱼商品版
 
@@ -48,7 +48,7 @@
 免费版可以试用，专业版 29 元去水印。
 
 试用链接：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+https://8npyvz5bd8-lang.github.io/offerdesk/sales.html
 
 付款后平台会自动把授权码发到买家邮箱。
 
@@ -67,7 +67,7 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 免费版能试用，专业版去水印。想要链接可以评论“报价”。
 
 链接：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+https://8npyvz5bd8-lang.github.io/offerdesk/sales.html
 
 ## 即刻
 
@@ -80,7 +80,7 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 现在想找 10 个真实接单的人试用，愿意反馈的我可以发链接。
 
 链接：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+https://8npyvz5bd8-lang.github.io/offerdesk/sales.html
 
 ## 朋友圈
 
@@ -89,7 +89,7 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 它会自动算成本、利润率、首付款，避免报价太低。需要给客户发正式报价单的人可以找我试用。
 
 链接：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+https://8npyvz5bd8-lang.github.io/offerdesk/sales.html
 
 ## 私信话术
 
@@ -98,13 +98,13 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 想请你试用 5 分钟。如果它真的帮你省时间，再考虑买专业版。不合适也没关系，我主要想听真实反馈。
 
 销售页：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+https://8npyvz5bd8-lang.github.io/offerdesk/sales.html
 
 试用工具：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
+https://8npyvz5bd8-lang.github.io/offerdesk/
 
 购买专业版：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html
+https://8npyvz5bd8-lang.github.io/offerdesk/buy.html
 
 付款后平台会自动把授权码发到邮箱。收到后回到工具里输入授权码即可去水印。
 
@@ -115,18 +115,18 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html
 它能算成本、利润率、首付款，还能生成可以发给客户的报价单。免费版能试用，29 元专业版去水印。
 
 你如果最近有报价场景，可以试 5 分钟：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+https://8npyvz5bd8-lang.github.io/offerdesk/sales.html
 
 如果不适合你，也可以直接告诉我哪里没用。
 
 公开可复制版本：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share-copy.txt
+https://8npyvz5bd8-lang.github.io/offerdesk/share-copy.txt
 
 一键复制推广页：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share.html
+https://8npyvz5bd8-lang.github.io/offerdesk/share.html
 
 首单跟进台：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pipeline.html
+https://8npyvz5bd8-lang.github.io/offerdesk/pipeline.html
 
 ## 付款跟进话术
 

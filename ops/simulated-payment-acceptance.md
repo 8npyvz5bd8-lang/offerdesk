@@ -9,7 +9,7 @@
 - 产品：OfferDesk 专业版
 - 金额：29 元
 - 收款方式：支付宝收款码和支付宝付款链接
-- 付款页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
+- 付款页：https://8npyvz5bd8-lang.github.io/offerdesk/pay.html
 - 客服邮箱：534403209@qq.com
 - 授权码：不在此文件写明文，明文只保存在 `dist/post-purchase-email.txt`
 - 模拟结果：授权码可解锁，专业版水印消失，PDF 可保存

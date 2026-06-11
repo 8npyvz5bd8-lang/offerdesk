@@ -36,19 +36,19 @@ http://localhost:4173/sales.html
 当前线上地址：
 
 ```text
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
+https://8npyvz5bd8-lang.github.io/offerdesk/
 ```
 
 当前销售页：
 
 ```text
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+https://8npyvz5bd8-lang.github.io/offerdesk/sales.html
 ```
 
 当前付款页：
 
 ```text
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
+https://8npyvz5bd8-lang.github.io/offerdesk/pay.html
 ```
 
 当前已改成“唯一签名授权码”。还缺支付宝商家自动收款服务地址和一次真实付款验收，所以只能说“已上架、可备用收款”，不能说“已完成全自动售卖闭环”。

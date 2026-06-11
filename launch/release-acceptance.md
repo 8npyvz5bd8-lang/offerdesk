@@ -5,11 +5,11 @@
 ## 基本信息
 
 - 验收日期：2026-06-11
-- 线上地址：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
+- 线上地址：https://8npyvz5bd8-lang.github.io/offerdesk/
 - 收款平台：支付宝官方商家接口，待开通
 - 收款方式：支付宝扫码支付 notify_url，待部署
-- 成交页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html
-- 付款页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
+- 成交页：https://8npyvz5bd8-lang.github.io/offerdesk/buy.html
+- 付款页：https://8npyvz5bd8-lang.github.io/offerdesk/pay.html
 - 客服邮箱：534403209@qq.com
 - 是否已接入自动收款平台：否
 - 是否自动生成并发送授权码：否

@@ -97,7 +97,7 @@ const completeAcceptance = `# 真实发布验收记录
 
 const completeStatus = buildReleaseStatus({
   configText: `window.OFFERDESK_CONFIG = {
-  checkoutUrl: "https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html",
+  checkoutUrl: "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
   autoCheckoutUrl: "https://offerdesk.lemonsqueezy.com/buy/demo",
   paymentQrImage: "",
   licenseProvider: "lemonsqueezy",
@@ -120,7 +120,7 @@ assert.equal(completeStatus.nextStep, "可以公开售卖，并开始发首批�
 
 const autoWithoutLocalEmailStatus = buildReleaseStatus({
   configText: `window.OFFERDESK_CONFIG = {
-  checkoutUrl: "https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html",
+  checkoutUrl: "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
   autoCheckoutUrl: "https://offerdesk.lemonsqueezy.com/buy/demo",
   paymentQrImage: "./launch/payment-alipay.jpeg",
   licenseProvider: "lemonsqueezy",

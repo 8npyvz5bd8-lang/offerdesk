@@ -1,7 +1,7 @@
 import { pathToFileURL } from "node:url";
 import { writeConfig } from "./write-config.mjs";
 
-const defaultCheckoutUrl = "https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html";
+const defaultCheckoutUrl = "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html";
 const defaultPaymentQrImage = "./launch/payment-alipay.jpeg";
 const defaultSupportEmail = "534403209@qq.com";
 

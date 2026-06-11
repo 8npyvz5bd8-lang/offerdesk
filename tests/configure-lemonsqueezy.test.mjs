@@ -25,7 +25,7 @@ assert.deepEqual(
     lemonSqueezyVariantId: "456",
     licenseCode: "OFFERDESK-FALLBACK-2026",
     supportEmail: "534403209@qq.com",
-    checkoutUrl: "https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html",
+    checkoutUrl: "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
     paymentQrImage: "./launch/payment-alipay.jpeg",
     out: tempFile
   }
@@ -37,7 +37,7 @@ await configureLemonSqueezy({
   lemonSqueezyVariantId: "456",
   licenseCode: "OFFERDESK-FALLBACK-2026",
   supportEmail: "support@offerdesk.app",
-  checkoutUrl: "https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html",
+  checkoutUrl: "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
   paymentQrImage: "./launch/payment-alipay.jpeg",
   out: tempFile
 });

@@ -60,7 +60,7 @@ assert.ok(createConfigText({
   supportEmail: "support@offerdesk.com"
 }).includes('paymentQrImage: "./launch/payment-alipay.jpeg"'));
 const lemonConfig = createConfigText({
-  checkoutUrl: "https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html",
+  checkoutUrl: "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
   autoCheckoutUrl: "https://offerdesk.lemonsqueezy.com/buy/demo",
   licenseProvider: "lemonsqueezy",
   lemonSqueezyProductId: "123",
@@ -72,7 +72,7 @@ assert.ok(lemonConfig.includes('licenseProvider: "lemonsqueezy"'));
 assert.ok(lemonConfig.includes('autoCheckoutUrl: "https://offerdesk.lemonsqueezy.com/buy/demo"'));
 assert.ok(lemonConfig.includes('lemonSqueezyProductId: "123"'));
 const signedConfig = createConfigText({
-  checkoutUrl: "https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html",
+  checkoutUrl: "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
   paymentQrImage: "./launch/payment-alipay.jpeg",
   licenseProvider: "signed",
   licensePublicKey: { kty: "EC", crv: "P-256", x: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", y: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" },

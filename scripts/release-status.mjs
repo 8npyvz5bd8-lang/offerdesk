@@ -4,7 +4,7 @@ import { validateAcceptanceText } from "./validate-acceptance.mjs";
 
 const root = new URL("../", import.meta.url);
 
-export function buildReleaseStatus({ configText, acceptanceText, artifacts }) {
+export function buildReleaseStatus({ configText, acceptanceText, artifacts, checkoutPageText = "" }) {
   const checkoutUrl = readConfigValue(configText, "checkoutUrl");
   const autoCheckoutUrl = readConfigValue(configText, "autoCheckoutUrl");
   const paymentQrImage = readConfigValue(configText, "paymentQrImage");
@@ -27,7 +27,11 @@ export function buildReleaseStatus({ configText, acceptanceText, artifacts }) {
   const checks = [
     {
       name: "真实收款方式",
-      pass: isRealHttpsUrl(autoCheckoutUrl) || isRealHttpsUrl(checkoutUrl) || isRealPaymentQrImage(paymentQrImage),
+      pass:
+        isRealHttpsUrl(autoCheckoutUrl) ||
+        isRealHttpsUrl(checkoutUrl) ||
+        hasInternalAlipayCheckout(checkoutUrl, checkoutPageText) ||
+        isRealPaymentQrImage(paymentQrImage),
       fix: "准备真实付款链接或收款码图片。"
     },
     {
@@ -177,7 +181,12 @@ function isAutomaticPaymentReady({ autoCheckoutUrl, autoPaymentApiBase, licenseP
 }
 
 function isInternalOfferDeskPaymentPage(value) {
-  return /github\.io\/graphics-debug\/offerdesk\/(buy|pay|after-pay)\.html/.test(String(value || ""));
+  return /github\.io\/(?:graphics-debug\/)?offerdesk\/(buy|pay|after-pay)\.html/.test(String(value || ""));
+}
+
+function hasInternalAlipayCheckout(checkoutUrl, checkoutPageText) {
+  return isInternalOfferDeskPaymentPage(checkoutUrl) &&
+    /https:\/\/qr\.alipay\.com\/[A-Za-z0-9]+/.test(String(checkoutPageText || ""));
 }
 
 function readConfigValue(source, key) {
@@ -229,6 +238,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     const status = buildReleaseStatus({
       configText,
       acceptanceText,
+      checkoutPageText: await readFile(new URL("../buy.html", import.meta.url), "utf8"),
       artifacts: {
         releaseDir: await exists("dist/offerdesk-release"),
         uploadZip: await exists("dist/offerdesk-release.zip"),

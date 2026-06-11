@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://8npyvz5bd8-lang.github.io/graphics-debug/sitemap.xml
+Sitemap: https://8npyvz5bd8-lang.github.io/offerdesk/sitemap.xml

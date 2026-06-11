@@ -23,7 +23,7 @@
 6. Receipt email / Button link 填：
 
 ```text
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/?license_key=[license_key]&email=[email]&order_id=[order_id]
+https://8npyvz5bd8-lang.github.io/offerdesk/?license_key=[license_key]&email=[email]&order_id=[order_id]
 ```
 
 7. 复制 checkout URL。
@@ -60,7 +60,7 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/?license_key=[license
 
 ```bash
 /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/write-config.mjs \
-  --checkout-url "https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html" \
+  --checkout-url "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html" \
   --payment-qr-image "./launch/payment-alipay.jpeg" \
   --license-code "发给买家的授权码" \
   --support-email "534403209@qq.com"
@@ -78,7 +78,7 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/?license_key=[license
 当前付款后提交信息页：
 
 ```text
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
+https://8npyvz5bd8-lang.github.io/offerdesk/after-pay.html
 ```
 
 只有用支付宝收款码时，才需要把这个链接发给已付款买家。买家填写付款时间、邮箱和支付宝昵称后，会自动生成邮件给客服邮箱。

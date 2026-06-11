@@ -63,6 +63,7 @@ const checks = [];
 await checkRequiredFiles();
 
 const configText = await readFile(configPath, "utf8");
+const checkoutPageText = await readFile(new URL("../buy.html", import.meta.url), "utf8");
 const checkoutUrl = readConfigValue(configText, "checkoutUrl");
 const autoCheckoutUrl = readConfigValue(configText, "autoCheckoutUrl");
 const paymentQrImage = readConfigValue(configText, "paymentQrImage");
@@ -73,7 +74,10 @@ const supportEmail = readConfigValue(configText, "supportEmail");
 
 check(
   "真实收款方式",
-  isRealCheckoutUrl(autoCheckoutUrl) || isRealCheckoutUrl(checkoutUrl) || await isRealPaymentQrImage(paymentQrImage),
+  isRealCheckoutUrl(autoCheckoutUrl) ||
+    isRealCheckoutUrl(checkoutUrl) ||
+    hasInternalAlipayCheckout(checkoutUrl, checkoutPageText) ||
+    await isRealPaymentQrImage(paymentQrImage),
   "用 scripts/write-config.mjs 写入真实 https 付款链接，或配置项目内收款码图片。"
 );
 
@@ -183,7 +187,16 @@ function isRealCheckoutUrl(value) {
     !value.includes("example") &&
     !value.includes("你的") &&
     !value.includes("your-") &&
-    !/github\.io\/graphics-debug\/offerdesk\/(buy|pay|after-pay)\.html/.test(value);
+    !isInternalOfferDeskPaymentPage(value);
+}
+
+function isInternalOfferDeskPaymentPage(value) {
+  return /github\.io\/(?:graphics-debug\/)?offerdesk\/(buy|pay|after-pay)\.html/.test(String(value || ""));
+}
+
+function hasInternalAlipayCheckout(checkoutUrl, checkoutPageText) {
+  return isInternalOfferDeskPaymentPage(checkoutUrl) &&
+    /https:\/\/qr\.alipay\.com\/[A-Za-z0-9]+/.test(String(checkoutPageText || ""));
 }
 
 async function isRealPaymentQrImage(value) {

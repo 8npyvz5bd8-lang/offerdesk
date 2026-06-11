@@ -27,14 +27,14 @@ OfferDesk 报价单赚钱助手
 
 ## 当前线上链接
 
-- 销售页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
-- 工具地址：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
-- 成交页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html
-- 付款页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
-- 付款后提交信息：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
-- 可复制推广文案：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share-copy.txt
-- 一键复制推广页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share.html
-- 首单跟进台：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pipeline.html
+- 销售页：https://8npyvz5bd8-lang.github.io/offerdesk/sales.html
+- 工具地址：https://8npyvz5bd8-lang.github.io/offerdesk/
+- 成交页：https://8npyvz5bd8-lang.github.io/offerdesk/buy.html
+- 付款页：https://8npyvz5bd8-lang.github.io/offerdesk/pay.html
+- 付款后提交信息：https://8npyvz5bd8-lang.github.io/offerdesk/after-pay.html
+- 可复制推广文案：https://8npyvz5bd8-lang.github.io/offerdesk/share-copy.txt
+- 一键复制推广页：https://8npyvz5bd8-lang.github.io/offerdesk/share.html
+- 首单跟进台：https://8npyvz5bd8-lang.github.io/offerdesk/pipeline.html
 
 ## 上架短描述
 
