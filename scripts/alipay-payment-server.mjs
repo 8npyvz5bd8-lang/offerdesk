@@ -3,6 +3,7 @@ import { createServer } from "node:http";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { pathToFileURL } from "node:url";
+import { createDeliveryEmailText } from "./create-delivery-email.mjs";
 import { createSignedLicensePayload, signLicensePayload } from "../src/license.js";
 
 const defaultGateway = "https://openapi.alipay.com/gateway.do";
@@ -44,12 +45,14 @@ export function buildHealthPayload(env = process.env) {
     String(env.OFFERDESK_PUBLIC_BASE_URL || "").trim() &&
       String(env.OFFERDESK_LICENSE_PRIVATE_JWK || env.OFFERDESK_LICENSE_PRIVATE_KEY_FILE || "").trim()
   );
+  const emailDeliveryConfigured = isEmailDeliveryConfigured(env);
 
   return {
     ok: true,
     service: "offerdesk-alipay-payment",
     alipayConfigured,
     offerdeskConfigured,
+    emailDeliveryConfigured,
     ready: alipayConfigured && offerdeskConfigured
   };
 }
@@ -127,7 +130,7 @@ export function createPaymentServer(env = process.env, controls = {}) {
         if (!successStatuses.has(order.status)) {
           const queried = await callAlipayQuery({ env, fetchImpl, orderId });
           if (successStatuses.has(queried.status)) {
-            await markPaidAndIssueLicense({ storeFile, store, order, env, alipayTradeNo: queried.tradeNo });
+            await markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo: queried.tradeNo });
           }
         }
 
@@ -154,7 +157,7 @@ export function createPaymentServer(env = process.env, controls = {}) {
         }
 
         if (successStatuses.has(String(params.trade_status || ""))) {
-          await markPaidAndIssueLicense({ storeFile, store, order, env, alipayTradeNo: params.trade_no || "" });
+          await markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo: params.trade_no || "" });
         }
 
         res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
@@ -235,7 +238,7 @@ async function callAlipay({ env, fetchImpl, method, bizContent, notifyUrl = "" }
   }
 }
 
-async function markPaidAndIssueLicense({ storeFile, store, order, env, alipayTradeNo }) {
+async function markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo }) {
   if (!order.licenseCode) {
     const privateJwk = await readOfferDeskLicensePrivateJwk(env);
     const payload = createSignedLicensePayload({
@@ -250,6 +253,18 @@ async function markPaidAndIssueLicense({ storeFile, store, order, env, alipayTra
   order.status = "TRADE_SUCCESS";
   order.alipayTradeNo = alipayTradeNo || order.alipayTradeNo || "";
   order.paidAt = order.paidAt || new Date().toISOString();
+  if (isEmailDeliveryConfigured(env) && order.emailDeliveryStatus !== "sent" && order.emailDeliveryStatus !== "failed") {
+    try {
+      await sendDeliveryEmail({ env, fetchImpl, order });
+      order.emailDeliveryStatus = "sent";
+      order.emailDeliveryError = "";
+      order.emailDeliveryAt = new Date().toISOString();
+    } catch (error) {
+      order.emailDeliveryStatus = "failed";
+      order.emailDeliveryError = error.message;
+      order.emailDeliveryAt = new Date().toISOString();
+    }
+  }
   await writeStore(storeFile, store);
 }
 
@@ -259,8 +274,41 @@ function publicOrder(order) {
     amount: order.amount,
     status: order.status,
     paidAt: order.paidAt || "",
-    licenseCode: successStatuses.has(order.status) ? order.licenseCode : ""
+    licenseCode: successStatuses.has(order.status) ? order.licenseCode : "",
+    emailDeliveryStatus: order.emailDeliveryStatus || ""
   };
+}
+
+async function sendDeliveryEmail({ env, fetchImpl, order }) {
+  const from = String(env.OFFERDESK_EMAIL_FROM || "").trim();
+  const apiKey = String(env.RESEND_API_KEY || "").trim();
+  const appUrl = String(env.OFFERDESK_APP_URL || "https://8npyvz5bd8-lang.github.io/offerdesk/").trim();
+  const supportEmail = String(env.OFFERDESK_SUPPORT_EMAIL || "534403209@qq.com").trim();
+  const text = createDeliveryEmailText({
+    appUrl,
+    licenseCode: order.licenseCode,
+    supportEmail
+  });
+  const response = await fetchImpl(env.RESEND_API_BASE || "https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      from,
+      to: order.email,
+      subject: "你的 OfferDesk 专业版授权码",
+      text
+    })
+  });
+  if (!response.ok) {
+    throw new Error(`授权邮件发送失败：HTTP ${response.status}`);
+  }
+}
+
+function isEmailDeliveryConfigured(env) {
+  return Boolean(String(env.RESEND_API_KEY || "").trim() && String(env.OFFERDESK_EMAIL_FROM || "").trim());
 }
 
 async function renderQrImage(qrCode) {

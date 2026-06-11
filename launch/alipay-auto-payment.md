@@ -38,6 +38,17 @@ launch/alipay-server-env.example
 
 这个命令只检查缺项和格式，不会打印密钥。
 
+如需付款成功后自动发邮件，还要填：
+
+```text
+RESEND_API_KEY
+OFFERDESK_EMAIL_FROM
+OFFERDESK_APP_URL
+OFFERDESK_SUPPORT_EMAIL
+```
+
+没填邮件配置时，买家仍可在付款页轮询拿到授权码；填了邮件配置后，到账发码时会同时给买家邮箱发送授权码。
+
 ## 本地启动命令
 
 ```bash

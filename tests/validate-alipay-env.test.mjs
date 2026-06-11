@@ -43,11 +43,13 @@ const okReport = await validateAlipayEnv({
     OFFERDESK_PUBLIC_BASE_URL: "https://pay.offerdesk.com",
     OFFERDESK_ALLOWED_ORIGIN: "https://8npyvz5bd8-lang.github.io",
     OFFERDESK_AMOUNT: "29.00",
-    OFFERDESK_LICENSE_PRIVATE_JWK: privateJwkText
+    OFFERDESK_LICENSE_PRIVATE_JWK: privateJwkText,
+    RESEND_API_KEY: "re_test",
+    OFFERDESK_EMAIL_FROM: "OfferDesk <support@offerdesk.com>"
   }
 });
 assert.equal(okReport.failed, 0);
-assert.equal(okReport.passed, 7);
+assert.equal(okReport.passed, 8);
 
 const badReport = await validateAlipayEnv({
   env: {
@@ -57,10 +59,12 @@ const badReport = await validateAlipayEnv({
     OFFERDESK_PUBLIC_BASE_URL: "http://example.com",
     OFFERDESK_ALLOWED_ORIGIN: "你的前端地址",
     OFFERDESK_AMOUNT: "0",
-    OFFERDESK_LICENSE_PRIVATE_JWK: "{}"
+    OFFERDESK_LICENSE_PRIVATE_JWK: "{}",
+    RESEND_API_KEY: "re_test",
+    OFFERDESK_EMAIL_FROM: "你的发件人"
   }
 });
-assert.equal(badReport.failed, 7);
+assert.equal(badReport.failed, 8);
 assert.ok(badReport.checks.every((item) => item.pass === false));
 
 const tempRoot = await mkdtemp(join(tmpdir(), "offerdesk-alipay-env-"));
@@ -83,7 +87,7 @@ await writeFile(envFile, [
 
 const fileReport = await validateAlipayEnv({ file: envFile, env: {} });
 assert.equal(fileReport.failed, 0);
-assert.equal(fileReport.passed, 7);
+assert.equal(fileReport.passed, 8);
 
 await rm(tempRoot, { recursive: true, force: true });
 

@@ -16,7 +16,8 @@ export async function validateAlipayEnv(options = {}) {
     checkUrl("OFFERDESK_PUBLIC_BASE_URL", env.OFFERDESK_PUBLIC_BASE_URL, "填写公网支付服务地址。"),
     checkAllowedOrigin(env.OFFERDESK_ALLOWED_ORIGIN),
     checkAmount(env.OFFERDESK_AMOUNT),
-    await checkLicensePrivateJwk(env)
+    await checkLicensePrivateJwk(env),
+    checkEmailDelivery(env)
   ];
 
   return {
@@ -130,6 +131,23 @@ async function checkLicensePrivateJwk(env) {
   };
 }
 
+function checkEmailDelivery(env) {
+  const apiKey = String(env.RESEND_API_KEY || "").trim();
+  const from = String(env.OFFERDESK_EMAIL_FROM || "").trim();
+  if (!apiKey && !from) {
+    return {
+      name: "付款成功邮件配置",
+      pass: true,
+      fix: "如需自动邮件，填写 RESEND_API_KEY 和 OFFERDESK_EMAIL_FROM。"
+    };
+  }
+  return {
+    name: "付款成功邮件配置",
+    pass: hasRealValue(apiKey) && hasRealValue(from) && hasEmailAddress(from),
+    fix: "如需自动邮件，填写 RESEND_API_KEY 和 OFFERDESK_EMAIL_FROM，例如 OfferDesk <support@your-domain.com>。"
+  };
+}
+
 async function readSecretValue(inlineValue, fileValue) {
   const inline = String(inlineValue || "").trim();
   if (inline) {
@@ -196,6 +214,10 @@ function containsPlaceholder(value) {
     text.includes("你的") ||
     text.includes("把 ") ||
     text.includes("放到这里");
+}
+
+function hasEmailAddress(value) {
+  return /[^@\s<>]+@[^@\s<>]+\.[^@\s<>]+/u.test(String(value || ""));
 }
 
 function normalizeEnvValue(value) {
