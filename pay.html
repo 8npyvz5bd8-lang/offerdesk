@@ -148,7 +148,7 @@
           <p>专业版用于去掉免费水印，适合把报价单正式发给客户。</p>
           <div class="actions">
             <a class="btn primary" href="https://qr.alipay.com/fkx18699evozd44sg2kip49" target="_blank" rel="noreferrer">打开支付宝付款</a>
-            <a class="btn blue" href="./after-pay.html">付款后提交信息</a>
+            <a class="btn blue" id="claimLink" href="./after-pay.html">付款后提交信息</a>
             <a class="btn" href="./index.html">打开软件</a>
           </div>
           <ol class="steps">
@@ -219,6 +219,22 @@
           }
         });
       });
+
+      document.getElementById("claimLink").href = `./after-pay.html?order_id=${encodeURIComponent(createManualOrderId())}`;
+
+      function createManualOrderId() {
+        const now = new Date();
+        const stamp = [
+          now.getFullYear(),
+          String(now.getMonth() + 1).padStart(2, "0"),
+          String(now.getDate()).padStart(2, "0"),
+          String(now.getHours()).padStart(2, "0"),
+          String(now.getMinutes()).padStart(2, "0"),
+          String(now.getSeconds()).padStart(2, "0")
+        ].join("");
+        const random = Math.random().toString(36).slice(2, 10).toUpperCase();
+        return `OD-MANUAL-${stamp}-${random}`;
+      }
     </script>
   </body>
 </html>

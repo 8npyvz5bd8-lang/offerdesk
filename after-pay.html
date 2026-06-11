@@ -175,7 +175,7 @@
           </label>
           <label>
             订单号
-            <input id="orderId" type="text" placeholder="例如：OD-20260611190000-ABCD1234EF567890ABCD" />
+            <input id="orderId" type="text" placeholder="自动生成，不用手填" />
           </label>
           <label>
             你的邮箱
@@ -214,7 +214,7 @@
       const $ = (id) => document.getElementById(id);
       const supportEmail = "534403209@qq.com";
       const params = new URLSearchParams(window.location.search);
-      $("orderId").value = params.get("order_id") || "";
+      $("orderId").value = params.get("order_id") || getStoredOrderId();
 
       function buildBody() {
         return [
@@ -238,6 +238,31 @@
         const body = encodeURIComponent(bodyText);
         $("submitContent").value = bodyText;
         $("mailLink").href = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
+      }
+
+      function getStoredOrderId() {
+        const key = "offerdesk.manual.order.id";
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          return saved;
+        }
+        const created = createManualOrderId();
+        localStorage.setItem(key, created);
+        return created;
+      }
+
+      function createManualOrderId() {
+        const now = new Date();
+        const stamp = [
+          now.getFullYear(),
+          String(now.getMonth() + 1).padStart(2, "0"),
+          String(now.getDate()).padStart(2, "0"),
+          String(now.getHours()).padStart(2, "0"),
+          String(now.getMinutes()).padStart(2, "0"),
+          String(now.getSeconds()).padStart(2, "0")
+        ].join("");
+        const random = Math.random().toString(36).slice(2, 10).toUpperCase();
+        return `OD-MANUAL-${stamp}-${random}`;
       }
 
       document.querySelectorAll("input, textarea").forEach((el) => el.addEventListener("input", updateMailLink));

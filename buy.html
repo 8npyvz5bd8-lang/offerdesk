@@ -389,6 +389,7 @@
         canvas.hidden = true;
         checkoutCaption.textContent = "打开支付宝扫一扫付款";
       }
+      manualClaimButton.href = `./after-pay.html?order_id=${encodeURIComponent(createManualOrderId())}`;
 
       if (licenseProvider === "lemonsqueezy" && autoCheckoutUrl.startsWith("https://")) {
         checkoutButton.href = autoCheckoutUrl;
@@ -482,6 +483,20 @@
           throw new Error(payload?.error || "请求失败。");
         }
         return payload;
+      }
+
+      function createManualOrderId() {
+        const now = new Date();
+        const stamp = [
+          now.getFullYear(),
+          String(now.getMonth() + 1).padStart(2, "0"),
+          String(now.getDate()).padStart(2, "0"),
+          String(now.getHours()).padStart(2, "0"),
+          String(now.getMinutes()).padStart(2, "0"),
+          String(now.getSeconds()).padStart(2, "0")
+        ].join("");
+        const random = Math.random().toString(36).slice(2, 10).toUpperCase();
+        return `OD-MANUAL-${stamp}-${random}`;
       }
     </script>
   </body>
