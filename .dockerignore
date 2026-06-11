@@ -1,0 +1,7 @@
+.git
+dist
+node_modules
+runtime
+secrets
+*.log
+.DS_Store

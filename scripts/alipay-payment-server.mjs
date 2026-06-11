@@ -34,6 +34,26 @@ export function createOrderId(now = new Date()) {
   return `OD-${stamp}-${randomBytes(12).toString("hex").toUpperCase()}`;
 }
 
+export function buildHealthPayload(env = process.env) {
+  const alipayConfigured = Boolean(
+    String(env.ALIPAY_APP_ID || "").trim() &&
+      String(env.ALIPAY_PRIVATE_KEY || env.ALIPAY_PRIVATE_KEY_FILE || "").trim() &&
+      String(env.ALIPAY_PUBLIC_KEY || env.ALIPAY_PUBLIC_KEY_FILE || "").trim()
+  );
+  const offerdeskConfigured = Boolean(
+    String(env.OFFERDESK_PUBLIC_BASE_URL || "").trim() &&
+      String(env.OFFERDESK_LICENSE_PRIVATE_JWK || env.OFFERDESK_LICENSE_PRIVATE_KEY_FILE || "").trim()
+  );
+
+  return {
+    ok: true,
+    service: "offerdesk-alipay-payment",
+    alipayConfigured,
+    offerdeskConfigured,
+    ready: alipayConfigured && offerdeskConfigured
+  };
+}
+
 export function createPaymentServer(env = process.env, controls = {}) {
   const storeFile = env.OFFERDESK_DATA_FILE || "runtime/orders.json";
   const amount = env.OFFERDESK_AMOUNT || "29.00";
@@ -48,8 +68,8 @@ export function createPaymentServer(env = process.env, controls = {}) {
       }
 
       const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
-      if (req.method === "GET" && url.pathname === "/health") {
-        sendJson(res, 200, { ok: true }, allowedOrigin);
+      if (req.method === "GET" && (url.pathname === "/health" || url.pathname === "/api/health")) {
+        sendJson(res, 200, buildHealthPayload(env), allowedOrigin);
         return;
       }
 
@@ -217,7 +237,7 @@ async function callAlipay({ env, fetchImpl, method, bizContent, notifyUrl = "" }
 
 async function markPaidAndIssueLicense({ storeFile, store, order, env, alipayTradeNo }) {
   if (!order.licenseCode) {
-    const privateJwk = JSON.parse(await readFile(env.OFFERDESK_LICENSE_PRIVATE_KEY_FILE || "secrets/offerdesk-license-private.jwk.json", "utf8"));
+    const privateJwk = await readOfferDeskLicensePrivateJwk(env);
     const payload = createSignedLicensePayload({
       email: order.email,
       orderId: order.orderId,
@@ -300,8 +320,7 @@ function sendJson(res, status, payload, allowedOrigin) {
 function assertServerConfig(env) {
   const required = [
     "ALIPAY_APP_ID",
-    "OFFERDESK_PUBLIC_BASE_URL",
-    "OFFERDESK_LICENSE_PRIVATE_KEY_FILE"
+    "OFFERDESK_PUBLIC_BASE_URL"
   ];
   const missing = required.filter((key) => !String(env[key] || "").trim());
   if (!String(env.ALIPAY_PRIVATE_KEY || env.ALIPAY_PRIVATE_KEY_FILE || "").trim()) {
@@ -309,6 +328,9 @@ function assertServerConfig(env) {
   }
   if (!String(env.ALIPAY_PUBLIC_KEY || env.ALIPAY_PUBLIC_KEY_FILE || "").trim()) {
     missing.push("ALIPAY_PUBLIC_KEY 或 ALIPAY_PUBLIC_KEY_FILE");
+  }
+  if (!String(env.OFFERDESK_LICENSE_PRIVATE_JWK || env.OFFERDESK_LICENSE_PRIVATE_KEY_FILE || "").trim()) {
+    missing.push("OFFERDESK_LICENSE_PRIVATE_JWK 或 OFFERDESK_LICENSE_PRIVATE_KEY_FILE");
   }
   if (missing.length > 0) {
     throw new Error(`缺少配置：${missing.join("、")}。`);
@@ -327,6 +349,13 @@ async function readAlipayPrivateKey(env) {
 
 async function readAlipayPublicKey(env) {
   return env.ALIPAY_PUBLIC_KEY || readFile(env.ALIPAY_PUBLIC_KEY_FILE, "utf8");
+}
+
+async function readOfferDeskLicensePrivateJwk(env) {
+  if (env.OFFERDESK_LICENSE_PRIVATE_JWK) {
+    return JSON.parse(env.OFFERDESK_LICENSE_PRIVATE_JWK);
+  }
+  return JSON.parse(await readFile(env.OFFERDESK_LICENSE_PRIVATE_KEY_FILE || "secrets/offerdesk-license-private.jwk.json", "utf8"));
 }
 
 function toPrivatePem(value) {

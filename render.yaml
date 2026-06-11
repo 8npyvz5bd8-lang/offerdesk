@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: offerdesk-alipay-payment
+    env: docker
+    healthCheckPath: /api/health
+    envVars:
+      - key: OFFERDESK_AMOUNT
+        value: "29.00"
+      - key: OFFERDESK_ALLOWED_ORIGIN
+        value: "https://8npyvz5bd8-lang.github.io"
+      - key: ALIPAY_APP_ID
+        sync: false
+      - key: ALIPAY_PRIVATE_KEY
+        sync: false
+      - key: ALIPAY_PUBLIC_KEY
+        sync: false
+      - key: OFFERDESK_PUBLIC_BASE_URL
+        sync: false
+      - key: OFFERDESK_LICENSE_PRIVATE_JWK
+        sync: false

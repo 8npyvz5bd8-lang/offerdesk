@@ -21,7 +21,13 @@
 - 支付宝应用私钥：`ALIPAY_PRIVATE_KEY` 或 `ALIPAY_PRIVATE_KEY_FILE`
 - 支付宝公钥：`ALIPAY_PUBLIC_KEY` 或 `ALIPAY_PUBLIC_KEY_FILE`
 - 可公网访问的服务器地址，用作 `OFFERDESK_PUBLIC_BASE_URL`
-- 本项目生成的授权私钥文件：`secrets/offerdesk-license-private.jwk.json`
+- 本项目生成的授权私钥：本地可用 `secrets/offerdesk-license-private.jwk.json`，线上部署用 `OFFERDESK_LICENSE_PRIVATE_JWK`
+
+环境变量模板见：
+
+```text
+launch/alipay-server-env.example
+```
 
 ## 本地启动命令
 
@@ -36,11 +42,58 @@ PORT=8787 \
 /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/alipay-payment-server.mjs
 ```
 
-启动后，把服务器地址写进 `app-config.js`：
+启动后检查：
+
+```bash
+curl https://你的支付服务器域名/api/health
+```
+
+返回里的 `ready` 必须是 `true`。
+
+## Render 部署方式
+
+1. 把代码推到 GitHub。
+2. 在 Render 新建 Blueprint，选择本仓库。
+3. Render 会读取根目录的 `render.yaml` 和 `Dockerfile`。
+4. 填好这些环境变量：
+
+```text
+ALIPAY_APP_ID
+ALIPAY_PRIVATE_KEY
+ALIPAY_PUBLIC_KEY
+OFFERDESK_PUBLIC_BASE_URL
+OFFERDESK_LICENSE_PRIVATE_JWK
+```
+
+5. 部署完成后打开：
+
+```text
+https://你的支付服务器域名/api/health
+```
+
+确认 `ready` 是 `true`。
+
+## 接入前端
+
+部署成功后，用命令把服务器地址写进 `app-config.js`：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/write-config.mjs \
+  --checkout-url "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html" \
+  --auto-payment-api-base "https://你的支付服务器域名" \
+  --payment-qr-image "./launch/payment-alipay.jpeg" \
+  --license-provider "signed" \
+  --license-public-key '把 app-config.js 当前 licensePublicKey 的 JSON 放这里' \
+  --support-email "534403209@qq.com"
+```
+
+或者手动把服务器地址写进 `app-config.js`：
 
 ```js
 autoPaymentApiBase: "https://你的支付服务器域名"
 ```
+
+然后提交并推送 GitHub Pages。
 
 ## 不能做的假自动
 

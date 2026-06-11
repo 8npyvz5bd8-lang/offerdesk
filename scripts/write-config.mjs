@@ -5,6 +5,7 @@ import { pathToFileURL } from "node:url";
 export function createConfigText({
   checkoutUrl,
   autoCheckoutUrl,
+  autoPaymentApiBase,
   paymentQrImage,
   licenseProvider,
   lemonSqueezyProductId,
@@ -15,6 +16,7 @@ export function createConfigText({
 }) {
   const cleanCheckoutUrl = String(checkoutUrl || "").trim();
   const cleanAutoCheckoutUrl = String(autoCheckoutUrl || "").trim();
+  const cleanAutoPaymentApiBase = String(autoPaymentApiBase || "").trim().replace(/\/+$/u, "");
   const cleanPaymentQrImage = String(paymentQrImage || "").trim();
   const cleanLicenseProvider = String(licenseProvider || "local").trim().toLowerCase();
   const cleanLemonSqueezyProductId = String(lemonSqueezyProductId || "").trim();
@@ -24,6 +26,7 @@ export function createConfigText({
   const cleanSupportEmail = String(supportEmail || "").trim();
 
   assertValidPaymentMethod(cleanCheckoutUrl, cleanAutoCheckoutUrl, cleanPaymentQrImage);
+  assertValidAutoPaymentApiBase(cleanAutoPaymentApiBase);
   assertValidLicenseProvider(cleanLicenseProvider, cleanAutoCheckoutUrl, cleanLemonSqueezyProductId, cleanLicensePublicKey);
   if (cleanLicenseProvider !== "signed") {
     assertValidLicenseCode(cleanLicenseCode);
@@ -37,7 +40,7 @@ export function createConfigText({
 return `window.OFFERDESK_CONFIG = {
   checkoutUrl: ${JSON.stringify(cleanCheckoutUrl)},
   autoCheckoutUrl: ${JSON.stringify(cleanAutoCheckoutUrl)},
-  autoPaymentApiBase: "",
+  autoPaymentApiBase: ${JSON.stringify(cleanAutoPaymentApiBase)},
   paymentQrImage: ${JSON.stringify(cleanPaymentQrImage)},
   licenseProvider: ${JSON.stringify(cleanLicenseProvider)},
   lemonSqueezyProductId: ${JSON.stringify(cleanLemonSqueezyProductId)},
@@ -70,6 +73,7 @@ export function parseArgs(args) {
   return {
     checkoutUrl: values["checkout-url"],
     autoCheckoutUrl: values["auto-checkout-url"],
+    autoPaymentApiBase: values["auto-payment-api-base"],
     paymentQrImage: values["payment-qr-image"],
     licenseProvider: values["license-provider"],
     lemonSqueezyProductId: values["lemonsqueezy-product-id"],
@@ -116,6 +120,18 @@ function assertValidPaymentMethod(checkoutUrl, autoCheckoutUrl, paymentQrImage) 
   }
   if (hasPaymentQrImage && containsPlaceholder(paymentQrImage)) {
     throw new Error("收款码图片不能是示例路径。");
+  }
+}
+
+function assertValidAutoPaymentApiBase(value) {
+  if (!value) {
+    return;
+  }
+  if (!/^https:\/\/.+/.test(value)) {
+    throw new Error("支付宝自动收款服务地址必须是 https 开头的真实地址。");
+  }
+  if (containsPlaceholder(value) || value.includes(".test") || value.includes(".invalid")) {
+    throw new Error("支付宝自动收款服务地址不能是示例链接。");
   }
 }
 

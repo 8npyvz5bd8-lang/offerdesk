@@ -16,6 +16,7 @@
     "build:upload": "node scripts/build-upload-zip.mjs",
     "prepare:release": "node scripts/prepare-release.mjs",
     "server:alipay": "node scripts/alipay-payment-server.mjs",
+    "start:alipay": "node scripts/alipay-payment-server.mjs",
     "license:keypair": "node scripts/generate-license-keypair.mjs",
     "license:issue": "node scripts/issue-signed-license.mjs",
     "order:fulfill": "node scripts/fulfill-manual-order.mjs",

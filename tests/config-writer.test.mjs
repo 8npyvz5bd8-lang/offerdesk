@@ -25,6 +25,8 @@ assert.deepEqual(
     "https://pay.offerdesk.com/checkout",
     "--auto-checkout-url",
     "https://offerdesk.lemonsqueezy.com/buy/demo",
+    "--auto-payment-api-base",
+    "https://pay.offerdesk.com/",
     "--license-provider",
     "lemonsqueezy",
     "--lemonsqueezy-product-id",
@@ -43,6 +45,7 @@ assert.deepEqual(
   {
     checkoutUrl: "https://pay.offerdesk.com/checkout",
     autoCheckoutUrl: "https://offerdesk.lemonsqueezy.com/buy/demo",
+    autoPaymentApiBase: "https://pay.offerdesk.com/",
     paymentQrImage: undefined,
     licenseProvider: "lemonsqueezy",
     lemonSqueezyProductId: "123",
@@ -56,9 +59,16 @@ assert.deepEqual(
 
 assert.ok(createConfigText({
   paymentQrImage: "./launch/payment-alipay.jpeg",
+  autoPaymentApiBase: "https://pay.offerdesk.com/",
   licenseCode: "OFFERDESK-DEMO-2026",
   supportEmail: "support@offerdesk.com"
 }).includes('paymentQrImage: "./launch/payment-alipay.jpeg"'));
+assert.ok(createConfigText({
+  paymentQrImage: "./launch/payment-alipay.jpeg",
+  autoPaymentApiBase: "https://pay.offerdesk.com/",
+  licenseCode: "OFFERDESK-DEMO-2026",
+  supportEmail: "support@offerdesk.com"
+}).includes('autoPaymentApiBase: "https://pay.offerdesk.com"'));
 const lemonConfig = createConfigText({
   checkoutUrl: "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
   autoCheckoutUrl: "https://offerdesk.lemonsqueezy.com/buy/demo",
@@ -93,6 +103,12 @@ assert.throws(() => createConfigText({
 }));
 assert.throws(() => createConfigText({
   paymentQrImage: "/tmp/payment.jpeg",
+  licenseCode: "OFFERDESK-DEMO-2026",
+  supportEmail: "support@offerdesk.com"
+}));
+assert.throws(() => createConfigText({
+  checkoutUrl: "https://pay.offerdesk.com/checkout",
+  autoPaymentApiBase: "http://pay.offerdesk.com",
   licenseCode: "OFFERDESK-DEMO-2026",
   supportEmail: "support@offerdesk.com"
 }));
