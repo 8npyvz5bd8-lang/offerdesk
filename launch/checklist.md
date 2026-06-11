@@ -24,7 +24,7 @@
 - 运行当前上架状态诊断：`node scripts/release-status.mjs`。
 - 开通支付宝官方商家扫码支付接口。
 - 按 `launch/alipay-auto-payment.md` 部署自动收款服务。
-- 把支付服务器地址写入 `app-config.js` 的 `autoPaymentApiBase`。
+- 用 `scripts/connect-alipay-service.mjs` 检查支付服务并写入 `app-config.js`。
 - 四项信息齐全后，可用 `node scripts/prepare-release.mjs` 一键准备发布。
 - 用 `scripts/write-config.mjs` 生成 `app-config.js`。
 - 用 `scripts/create-delivery-email.mjs` 生成付款后邮件。

@@ -75,19 +75,16 @@ https://你的支付服务器域名/api/health
 
 ## 接入前端
 
-部署成功后，用命令把服务器地址写进 `app-config.js`：
+部署成功后，用命令检查服务并写进 `app-config.js`：
 
 ```bash
-/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/write-config.mjs \
-  --checkout-url "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html" \
-  --auto-payment-api-base "https://你的支付服务器域名" \
-  --payment-qr-image "./launch/payment-alipay.jpeg" \
-  --license-provider "signed" \
-  --license-public-key '把 app-config.js 当前 licensePublicKey 的 JSON 放这里' \
-  --support-email "534403209@qq.com"
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/connect-alipay-service.mjs \
+  --api-base "https://你的支付服务器域名"
 ```
 
-或者手动把服务器地址写进 `app-config.js`：
+这个命令会先请求 `/api/health`，只有返回 `ready=true` 才会写配置。
+
+也可以手动把服务器地址写进 `app-config.js`：
 
 ```js
 autoPaymentApiBase: "https://你的支付服务器域名"
