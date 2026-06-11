@@ -253,6 +253,37 @@
         margin-top: 14px;
       }
 
+      .trust {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        width: min(1180px, calc(100vw - 32px));
+        margin: 14px auto 0;
+      }
+
+      .trust-card {
+        border: 1px solid #d9ded7;
+        border-radius: 10px;
+        background: #ffffff;
+        padding: 22px;
+      }
+
+      .trust-card h2 {
+        margin: 0 0 12px;
+        font-size: 22px;
+      }
+
+      .trust-card ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .trust-card li {
+        margin-top: 8px;
+        color: #343a35;
+        line-height: 1.7;
+      }
+
       .footer {
         padding: 28px 0 36px;
       }
@@ -261,7 +292,8 @@
         .topbar,
         .footer,
         .hero,
-        .grid {
+        .grid,
+        .trust {
           width: min(100vw - 28px, 680px);
         }
 
@@ -272,7 +304,8 @@
         }
 
         .hero,
-        .grid {
+        .grid,
+        .trust {
           grid-template-columns: 1fr;
         }
 
@@ -360,6 +393,25 @@
           <li>输入付款后收到的授权码。</li>
           <li>看到「可正式交付」后，生成正式报价单。</li>
         </ol>
+      </section>
+
+      <section class="trust" aria-label="购买前说明">
+        <article class="trust-card">
+          <h2>适合谁买</h2>
+          <ul>
+            <li>经常给客户报设计、开发、咨询、拍摄或运营服务价格的人。</li>
+            <li>报价前想知道利润率、首付款和折扣影响的人。</li>
+            <li>需要把报价单打印或保存成 PDF 发给客户的人。</li>
+          </ul>
+        </article>
+        <article class="trust-card">
+          <h2>付款后怎么交付</h2>
+          <ul>
+            <li>付款后提交邮箱、付款时间和支付宝备注，用于核对到账。</li>
+            <li>确认到账后发送授权码，输入后免费水印会消失。</li>
+            <li>如果授权码无法正常解锁，7 天内可通过客服邮箱申请处理或退款。</li>
+          </ul>
+        </article>
       </section>
     </main>
 
