@@ -29,6 +29,8 @@ const files = [
   "privacy.html",
   "terms.html",
   "refund.html",
+  "sitemap.xml",
+  "robots.txt",
   "vercel.json",
   "netlify.toml",
   "src",

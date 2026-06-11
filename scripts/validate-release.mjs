@@ -37,7 +37,9 @@ const requiredFiles = [
   "launch/sales-tracker.csv",
   "privacy.html",
   "terms.html",
-  "refund.html"
+  "refund.html",
+  "sitemap.xml",
+  "robots.txt"
 ];
 
 const checks = [];
