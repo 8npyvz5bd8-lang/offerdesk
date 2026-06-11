@@ -77,7 +77,7 @@
         line-height: 1;
       }
 
-      .screen {
+      .mock {
         position: absolute;
         right: 60px;
         bottom: 80px;
@@ -85,9 +85,31 @@
         height: 520px;
         border: 2px solid #151916;
         border-radius: 20px;
-        object-fit: cover;
-        object-position: top left;
+        background: #ffffff;
+        padding: 34px;
         box-shadow: 0 28px 80px rgba(20, 26, 22, 0.2);
+      }
+
+      .mock-title {
+        font-size: 30px;
+        font-weight: 1000;
+      }
+
+      .mock-line {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        border-bottom: 2px solid #eef1ed;
+        padding: 20px 0;
+        font-size: 26px;
+      }
+
+      .mock-total {
+        margin-top: 28px;
+        color: #0f8a55;
+        font-size: 52px;
+        font-weight: 1000;
+        text-align: right;
       }
 
       .panel {
@@ -213,7 +235,14 @@
         <strong>29 元</strong>
         <span>专业版去水印<br />一次性买断</span>
       </div>
-      <img class="screen" src="./offerdesk-screenshot.jpg" alt="OfferDesk 软件截图" />
+      <div class="mock">
+        <div class="mock-title">客户报价单</div>
+        <div class="mock-line"><span>品牌官网设计</span><strong>¥8,000</strong></div>
+        <div class="mock-line"><span>前端开发</span><strong>¥12,000</strong></div>
+        <div class="mock-line"><span>首付款</span><strong>¥10,000</strong></div>
+        <div class="mock-line"><span>利润率</span><strong class="green">42%</strong></div>
+        <div class="mock-total">合计 ¥20,000</div>
+      </div>
       <div class="foot">
         <span>OfferDesk 报价单赚钱助手</span>
         <span>先试用，再购买</span>
