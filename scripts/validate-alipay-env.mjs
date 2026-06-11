@@ -168,7 +168,7 @@ async function readSecretValue(inlineValue, fileValue) {
     return "";
   }
   try {
-    return readFile(resolveInput(file), "utf8");
+    return await readFile(resolveInput(file), "utf8");
   } catch {
     return "";
   }

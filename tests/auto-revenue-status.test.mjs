@@ -3,6 +3,7 @@ import { buildAutoRevenueStatus, renderAutoRevenueStatusMarkdown } from "../scri
 
 const status = await buildAutoRevenueStatus({
   env: {},
+  envFile: null,
   testsPassed: true,
   staticCheckPassed: true
 });

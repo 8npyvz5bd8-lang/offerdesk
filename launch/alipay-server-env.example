@@ -1,11 +1,12 @@
+# 不要把真实密钥提交到 Git。
 ALIPAY_APP_ID=你的支付宝应用ID
-ALIPAY_PRIVATE_KEY=你的支付宝应用私钥
-ALIPAY_PUBLIC_KEY=你的支付宝公钥
+ALIPAY_PRIVATE_KEY_FILE=secrets/alipay-app-private.pem
+ALIPAY_PUBLIC_KEY_FILE=secrets/alipay-public.pem
 OFFERDESK_PUBLIC_BASE_URL=https://你的支付服务器域名
 OFFERDESK_ALLOWED_ORIGIN=https://8npyvz5bd8-lang.github.io
 OFFERDESK_AMOUNT=29.00
 OFFERDESK_DATA_FILE=/data/orders.json
-OFFERDESK_LICENSE_PRIVATE_JWK=把 secrets/offerdesk-license-private.jwk.json 的整段 JSON 放到这里
+OFFERDESK_LICENSE_PRIVATE_KEY_FILE=secrets/offerdesk-license-private.jwk.json
 RESEND_API_KEY=
 OFFERDESK_EMAIL_FROM=
 OFFERDESK_APP_URL=https://8npyvz5bd8-lang.github.io/offerdesk/

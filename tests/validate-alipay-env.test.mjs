@@ -69,6 +69,23 @@ const badReport = await validateAlipayEnv({
 assert.equal(badReport.failed, 9);
 assert.ok(badReport.checks.every((item) => item.pass === false));
 
+const missingFileReport = await validateAlipayEnv({
+  env: {
+    ALIPAY_APP_ID: "2021000000000000",
+    ALIPAY_PRIVATE_KEY_FILE: "/tmp/offerdesk-missing-private.pem",
+    ALIPAY_PUBLIC_KEY_FILE: "/tmp/offerdesk-missing-public.pem",
+    OFFERDESK_PUBLIC_BASE_URL: "https://pay.offerdesk.com",
+    OFFERDESK_ALLOWED_ORIGIN: "https://8npyvz5bd8-lang.github.io",
+    OFFERDESK_AMOUNT: "29.00",
+    OFFERDESK_DATA_FILE: "/data/orders.json",
+    OFFERDESK_LICENSE_PRIVATE_KEY_FILE: "/tmp/offerdesk-missing-license.jwk.json"
+  }
+});
+assert.equal(missingFileReport.failed, 3);
+assert.equal(missingFileReport.checks.find((item) => item.name === "ALIPAY_PRIVATE_KEY").pass, false);
+assert.equal(missingFileReport.checks.find((item) => item.name === "ALIPAY_PUBLIC_KEY").pass, false);
+assert.equal(missingFileReport.checks.find((item) => item.name === "OFFERDESK_LICENSE_PRIVATE_JWK").pass, false);
+
 const tempRoot = await mkdtemp(join(tmpdir(), "offerdesk-alipay-env-"));
 const envFile = join(tempRoot, "deploy.env");
 const privateKeyFile = join(tempRoot, "alipay-private.pem");

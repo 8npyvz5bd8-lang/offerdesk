@@ -2,6 +2,7 @@ import { readFile, stat, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { buildReleaseStatus } from "./release-status.mjs";
 import { validateAcceptanceText } from "./validate-acceptance.mjs";
+import { validateAlipayEnv } from "./validate-alipay-env.mjs";
 
 const root = new URL("../", import.meta.url);
 
@@ -34,6 +35,11 @@ export async function buildAutoRevenueStatus(options = {}) {
   });
 
   const env = options.env || process.env;
+  const envFile = options.envFile === undefined ? "secrets/alipay-auto-payment.env" : options.envFile;
+  const alipayEnvFile = envFile ? await inspectAlipayEnvFile(envFile) : { exists: false, ready: false };
+  const alipayRuntimeEnv = await inspectAlipayRuntimeEnv(env);
+  const alipayMerchantReady = hasAlipayMerchantEnv(env) || alipayEnvFile.ready;
+  const alipayFullEnvReady = alipayRuntimeEnv.ready || alipayEnvFile.ready;
   const planStepCount = countPlanSteps(planText);
   const pagesWithSurface = await countPagesWithSurface();
   const releaseHasSiteCss = await exists("dist/offerdesk-release/site.css");
@@ -56,11 +62,11 @@ export async function buildAutoRevenueStatus(options = {}) {
     step(6, "跑静态页面检查", options.staticCheckPassed === true, "本次状态脚本收到 staticCheckPassed=true。", "运行 node scripts/check-static-assets.mjs。", "needs_command"),
     step(7, "确认当前上架状态", true, `当前阶段：${releaseStatus.stage}。`, "运行 node scripts/release-status.mjs。"),
     step(8, "选择自动收款路线", licenseProvider === "signed" && paymentQrImage, "当前配置是 signed 授权 + 支付宝路线。", "确认走支付宝官方商家接口或切换 Lemon Squeezy。"),
-    step(9, "准备支付宝商家参数", hasAlipayMerchantEnv(env), hasAlipayMerchantEnv(env) ? "当前环境变量里有支付宝商家参数。" : "当前环境变量里没有完整支付宝商家参数。", "补 ALIPAY_APP_ID、ALIPAY_PRIVATE_KEY、ALIPAY_PUBLIC_KEY、OFFERDESK_PUBLIC_BASE_URL。", "blocked"),
+    step(9, "准备支付宝商家参数", alipayMerchantReady, alipayMerchantReady ? "已发现可通过预检的支付宝商家参数。" : alipayEnvEvidence(alipayEnvFile), "补 ALIPAY_APP_ID、ALIPAY_PRIVATE_KEY、ALIPAY_PUBLIC_KEY、OFFERDESK_PUBLIC_BASE_URL。", "blocked"),
     step(10, "准备授权签名私钥", hasPrivateJwk, "本地授权私钥文件存在且字段完整。", "运行 node scripts/generate-license-keypair.mjs 生成授权密钥。"),
     step(11, "准备订单持久存储", hasPersistentStore, "render.yaml 已配置 /data/orders.json 和 /data 持久磁盘。", "给部署平台补持久磁盘和 OFFERDESK_DATA_FILE。"),
     step(12, "准备自动邮件", hasEmailEnv(env), hasEmailEnv(env) ? "当前环境变量里有自动邮件配置。" : "当前环境变量里没有自动邮件配置。", "补 RESEND_API_KEY 和 OFFERDESK_EMAIL_FROM；没有也可先让买家页面显示授权码。", "needs_manual"),
-    step(13, "写真实环境变量文件", hasAlipayMerchantEnv(env), hasAlipayMerchantEnv(env) ? "当前运行环境已有真实支付宝变量。" : "当前没有真实支付宝环境变量文件或完整运行环境变量。", "复制 launch/alipay-server-env.example，填真实值，文件不要提交。", "blocked"),
+    step(13, "写真实环境变量文件", alipayFullEnvReady, alipayFullEnvReady ? "当前运行环境或本地 env 文件已通过支付宝预检。" : alipayEnvEvidence(alipayEnvFile), "运行 node scripts/create-alipay-env-draft.mjs 生成草稿，再填真实值，文件不要提交。", "blocked"),
     step(14, "部署自动收款服务", isRealAutoPaymentApiBase(autoPaymentApiBase), isRealAutoPaymentApiBase(autoPaymentApiBase) ? "app-config.js 已写入自动收款服务地址。" : "app-config.js 的 autoPaymentApiBase 为空或不是可用自动服务地址。", "部署 scripts/alipay-payment-server.mjs，并拿到 https 服务地址。", "blocked"),
     step(15, "检查服务健康状态", isRealAutoPaymentApiBase(autoPaymentApiBase), isRealAutoPaymentApiBase(autoPaymentApiBase) ? "已有自动服务地址，下一步请求 /api/health。" : "还没有自动服务地址，无法请求 /api/health。", "服务上线后请求 /api/health，必须 ready=true。", "blocked"),
     step(16, "创建测试订单", isRealAutoPaymentApiBase(autoPaymentApiBase), isRealAutoPaymentApiBase(autoPaymentApiBase) ? "已有自动服务地址，可运行 validate-alipay-service。" : "还没有自动服务地址，无法创建测试订单。", "运行 node scripts/validate-alipay-service.mjs。", "blocked"),
@@ -171,6 +177,41 @@ async function hasValidPrivateJwk() {
   } catch {
     return false;
   }
+}
+
+async function inspectAlipayEnvFile(file) {
+  if (!await exists(file)) {
+    return { exists: false, ready: false };
+  }
+  try {
+    const report = await validateAlipayEnv({ file, env: {} });
+    return {
+      exists: true,
+      ready: report.failed === 0,
+      failed: report.failed
+    };
+  } catch {
+    return { exists: true, ready: false };
+  }
+}
+
+async function inspectAlipayRuntimeEnv(env) {
+  try {
+    const report = await validateAlipayEnv({ env });
+    return {
+      ready: report.failed === 0,
+      failed: report.failed
+    };
+  } catch {
+    return { ready: false };
+  }
+}
+
+function alipayEnvEvidence(result) {
+  if (!result.exists) {
+    return "当前没有真实支付宝环境变量文件或完整运行环境变量。";
+  }
+  return `已发现本地 env 草稿，但还有 ${result.failed ?? "若干"} 项支付宝预检未通过。`;
 }
 
 function hasAlipayMerchantEnv(env) {
