@@ -66,6 +66,7 @@
         gap: 10px;
       }
 
+      .qr img,
       .qr canvas {
         width: min(260px, 100%);
         height: auto;
@@ -136,7 +137,8 @@
     <main class="wrap">
       <section class="card">
         <div class="qr">
-          <canvas id="qr" width="260" height="260" aria-label="支付宝收款二维码"></canvas>
+          <img src="./launch/payment-alipay.jpeg" alt="支付宝收款码" />
+          <canvas id="qr" width="260" height="260" aria-label="支付宝收款二维码" hidden></canvas>
           <strong>支付宝扫码付款</strong>
         </div>
         <div>
