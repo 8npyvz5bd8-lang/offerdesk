@@ -1,7 +1,10 @@
 const config = window.OFFERDESK_CONFIG || {};
 const checkoutUrl = String(config.checkoutUrl || "").trim();
+const autoCheckoutUrl = String(config.autoCheckoutUrl || "").trim();
 const paymentQrImage = String(config.paymentQrImage || "").trim();
-const hasCheckout = checkoutUrl.startsWith("https://");
+const preferredCheckoutUrl = autoCheckoutUrl || checkoutUrl;
+const hasCheckout = preferredCheckoutUrl.startsWith("https://");
+const hasAutoCheckout = autoCheckoutUrl.startsWith("https://");
 const hasPaymentQr = paymentQrImage.length > 0;
 const checkoutLinks = document.querySelectorAll("[data-checkout-link]");
 const notices = document.querySelectorAll("[data-buy-notice]");
@@ -16,8 +19,8 @@ checkoutLinks.forEach((link) => {
     return;
   }
 
-  link.href = hasCheckout ? checkoutUrl : paymentQrImage;
-  link.textContent = hasCheckout ? "29 元购买专业版" : "查看支付宝收款码";
+  link.href = hasCheckout ? preferredCheckoutUrl : paymentQrImage;
+  link.textContent = hasAutoCheckout ? "29 元自动购买专业版" : hasCheckout ? "29 元购买专业版" : "查看支付宝收款码";
   link.setAttribute("target", hasCheckout ? "_blank" : "_self");
   link.setAttribute("rel", "noreferrer");
 });
@@ -31,6 +34,10 @@ paymentQrImages.forEach((image) => {
 });
 
 notices.forEach((notice) => {
+  if (hasAutoCheckout) {
+    notice.textContent = "付款后平台会自动发送专业版授权码。";
+    return;
+  }
   if (hasCheckout) {
     notice.textContent = "付款后会收到专业版授权码。";
     return;

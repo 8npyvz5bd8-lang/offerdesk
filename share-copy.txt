@@ -13,7 +13,7 @@ OfferDesk 报价单赚钱助手
 试用链接：
 https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 
-付款后提交邮箱和付款信息，确认到账后发送授权码。
+付款后平台会自动把授权码发到买家邮箱。
 
 朋友圈/群聊版：
 
@@ -26,10 +26,9 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 
 如果觉得适合，再点页面里的 29 元购买专业版。
 
-付款页：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
+成交页：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html
 
-付款后提交信息：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
+付款后平台会自动把授权码发到你的邮箱。收到后回到工具里输入授权码即可去水印。
 
 客服邮箱：534403209@qq.com

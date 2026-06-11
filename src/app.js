@@ -7,11 +7,20 @@ import {
   importQuoteFromJsonText,
   normalizeQuote
 } from "./pricing.js";
-import { getDeliveryStatus, hashLicenseCode, isValidLicenseHash, normalizeLicenseHash } from "./license.js";
+import {
+  activateLemonSqueezyLicense,
+  getDeliveryStatus,
+  hashLicenseCode,
+  isLemonSqueezyProvider,
+  isValidLicenseHash,
+  normalizeLicenseHash,
+  validateLemonSqueezyLicense
+} from "./license.js";
 import { getQuoteTemplate } from "./templates.js";
 
 const storageKey = "offerdesk.quote.v1";
 const licenseKey = "offerdesk.license.v1";
+const externalLicenseKey = "offerdesk.externalLicense.v1";
 const config = window.OFFERDESK_CONFIG || {};
 
 const fields = {
@@ -41,6 +50,7 @@ const elements = {
   unlockButton: document.querySelector("#unlockButton"),
   unlockDialog: document.querySelector("#unlockDialog"),
   checkoutLink: document.querySelector("#checkoutLink"),
+  manualClaimLink: document.querySelector("#manualClaimLink"),
   paymentQrBox: document.querySelector("#paymentQrBox"),
   paymentQrImage: document.querySelector("#paymentQrImage"),
   licenseInput: document.querySelector("#licenseInput"),
@@ -72,6 +82,7 @@ const elements = {
 };
 
 let state = loadQuote();
+let externalLicenseVerified = false;
 
 function loadQuote() {
   try {
@@ -85,7 +96,7 @@ function loadQuote() {
 function isProUnlocked() {
   const configuredHash = normalizeLicenseHash(config.licenseHash);
   const savedHash = normalizeLicenseHash(localStorage.getItem(licenseKey));
-  return isValidLicenseHash(configuredHash) && savedHash === configuredHash;
+  return externalLicenseVerified || (isValidLicenseHash(configuredHash) && savedHash === configuredHash);
 }
 
 function saveQuote() {
@@ -265,22 +276,33 @@ function showButtonStatus(button, text) {
 
 function openUnlockDialog() {
   const checkoutUrl = String(config.checkoutUrl || "").trim();
+  const autoCheckoutUrl = String(config.autoCheckoutUrl || "").trim();
   const paymentQrImage = String(config.paymentQrImage || "").trim();
-  const hasCheckout = checkoutUrl.startsWith("http://") || checkoutUrl.startsWith("https://");
+  const preferredCheckoutUrl = autoCheckoutUrl || checkoutUrl;
+  const hasCheckout = preferredCheckoutUrl.startsWith("http://") || preferredCheckoutUrl.startsWith("https://");
   const hasPaymentQr = paymentQrImage.length > 0;
+  const autoLicense = isLemonSqueezyProvider(config) && autoCheckoutUrl.startsWith("https://");
 
-  elements.checkoutLink.href = hasCheckout ? checkoutUrl : hasPaymentQr ? paymentQrImage : "#";
-  elements.checkoutLink.textContent = hasCheckout ? "去付款" : hasPaymentQr ? "查看收款码" : "去付款";
+  elements.checkoutLink.href = hasCheckout ? preferredCheckoutUrl : hasPaymentQr ? paymentQrImage : "#";
+  elements.checkoutLink.textContent = autoLicense ? "自动付款并收授权码" : hasCheckout ? "去付款" : hasPaymentQr ? "查看收款码" : "去付款";
   elements.checkoutLink.classList.toggle("disabled", !hasCheckout && !hasPaymentQr);
+  elements.manualClaimLink.hidden = autoLicense;
   elements.paymentQrBox.hidden = !hasPaymentQr;
   elements.paymentQrImage.src = hasPaymentQr ? paymentQrImage : "";
-  elements.paymentNotice.textContent = hasCheckout || hasPaymentQr
+  elements.paymentNotice.textContent = autoLicense
+    ? "付款平台会自动把授权码发到邮箱。收到后在这里输入即可解锁。"
+    : hasCheckout || hasPaymentQr
     ? "付款后输入你配置的授权码即可去掉水印。"
     : "还没有配置真实收款方式。现在不能收钱，请先配置 app-config.js。";
   elements.unlockDialog.showModal();
 }
 
 async function applyLicense() {
+  if (isLemonSqueezyProvider(config)) {
+    await applyLemonSqueezyLicense();
+    return;
+  }
+
   const configuredHash = normalizeLicenseHash(config.licenseHash);
   const inputCode = elements.licenseInput.value.trim();
   if (!isValidLicenseHash(configuredHash)) {
@@ -304,6 +326,68 @@ async function applyLicense() {
   localStorage.setItem(licenseKey, inputHash);
   elements.paymentNotice.textContent = "已解锁专业版。";
   renderPreview();
+}
+
+async function applyLemonSqueezyLicense() {
+  const inputCode = elements.licenseInput.value.trim();
+  if (!inputCode) {
+    elements.paymentNotice.textContent = "请输入付款平台发来的授权码。";
+    return;
+  }
+
+  elements.paymentNotice.textContent = "正在验证授权码...";
+  try {
+    const record = await activateLemonSqueezyLicense({
+      licenseKey: inputCode,
+      instanceName: createLicenseInstanceName(),
+      config
+    });
+    localStorage.setItem(externalLicenseKey, JSON.stringify(record));
+    externalLicenseVerified = true;
+    elements.paymentNotice.textContent = "已自动验证并解锁专业版。";
+    renderPreview();
+  } catch (error) {
+    elements.paymentNotice.textContent = error.message;
+  }
+}
+
+function createLicenseInstanceName() {
+  const seller = fields.sellerName.value.trim() || "OfferDesk";
+  const suffix = Date.now().toString(36).toUpperCase();
+  return `${seller}-${suffix}`;
+}
+
+async function validateStoredExternalLicense() {
+  if (!isLemonSqueezyProvider(config)) {
+    return;
+  }
+
+  const record = readStoredExternalLicense();
+  if (!record?.key) {
+    return;
+  }
+
+  try {
+    await validateLemonSqueezyLicense({
+      licenseKey: record.key,
+      instanceId: record.instanceId,
+      config
+    });
+    externalLicenseVerified = true;
+    renderPreview();
+  } catch {
+    localStorage.removeItem(externalLicenseKey);
+    externalLicenseVerified = false;
+    renderPreview();
+  }
+}
+
+function readStoredExternalLicense() {
+  try {
+    return JSON.parse(localStorage.getItem(externalLicenseKey) || "null");
+  } catch {
+    return null;
+  }
 }
 
 function createQuoteNumber(quote) {
@@ -346,8 +430,9 @@ elements.unlockButton.addEventListener("click", openUnlockDialog);
 elements.applyLicenseButton.addEventListener("click", applyLicense);
 elements.checkoutLink.addEventListener("click", (event) => {
   const checkoutUrl = String(config.checkoutUrl || "").trim();
+  const autoCheckoutUrl = String(config.autoCheckoutUrl || "").trim();
   const paymentQrImage = String(config.paymentQrImage || "").trim();
-  if (!checkoutUrl.startsWith("http") && !paymentQrImage) {
+  if (!autoCheckoutUrl.startsWith("http") && !checkoutUrl.startsWith("http") && !paymentQrImage) {
     event.preventDefault();
   }
 });
@@ -373,3 +458,25 @@ elements.itemsBody.addEventListener("click", (event) => {
 
 syncForm();
 renderPreview();
+validateStoredExternalLicense();
+applyLicenseFromUrl();
+
+async function applyLicenseFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const licenseFromUrl = params.get("license_key");
+  if (!licenseFromUrl || !isLemonSqueezyProvider(config)) {
+    return;
+  }
+
+  elements.licenseInput.value = licenseFromUrl;
+  openUnlockDialog();
+  await applyLicense();
+
+  params.delete("license_key");
+  params.delete("email");
+  params.delete("order_id");
+  params.delete("order_identifier");
+  const nextQuery = params.toString();
+  const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}${window.location.hash}`;
+  window.history.replaceState({}, document.title, nextUrl);
+}

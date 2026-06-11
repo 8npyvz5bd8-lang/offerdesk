@@ -50,7 +50,7 @@
 试用链接：
 https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 
-付款后提交邮箱和付款信息，确认到账后发送授权码。
+付款后平台会自动把授权码发到买家邮箱。
 
 ## 小红书
 
@@ -104,10 +104,9 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
 
 购买专业版：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html
 
-付款后提交信息：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
+付款后平台会自动把授权码发到邮箱。收到后回到工具里输入授权码即可去水印。
 
 ## 今天直接发
 
@@ -131,11 +130,7 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pipeline.html
 
 ## 付款跟进话术
 
-买家付款后，让他打开付款后提交页：
-
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
-
-确认支付宝到账后，把 `dist/post-purchase-email.txt` 里的授权码邮件内容发给买家。确认买家能解锁并去掉水印后，再记录到 `launch/sales-tracker.csv`。
+买家付款后，让他查邮箱里的授权码。确认买家能解锁并去掉水印后，再记录到 `launch/sales-tracker.csv`。
 
 记录时至少填这几项：付款状态、付款时间、金额、买家邮箱、授权码是否已发送、下一步。
 

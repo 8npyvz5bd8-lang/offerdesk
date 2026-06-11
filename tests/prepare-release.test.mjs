@@ -12,8 +12,16 @@ assert.deepEqual(
   parseArgs([
     "--checkout-url",
     "https://pay.offerdesk.app/checkout",
+    "--auto-checkout-url",
+    "https://offerdesk.lemonsqueezy.com/buy/demo",
     "--payment-qr-image",
     "./launch/payment-alipay.jpeg",
+    "--license-provider",
+    "lemonsqueezy",
+    "--lemonsqueezy-product-id",
+    "123",
+    "--lemonsqueezy-variant-id",
+    "456",
     "--app-url",
     "https://offerdesk.app",
     "--license-code",
@@ -27,7 +35,11 @@ assert.deepEqual(
   ]),
   {
     checkoutUrl: "https://pay.offerdesk.app/checkout",
+    autoCheckoutUrl: "https://offerdesk.lemonsqueezy.com/buy/demo",
     paymentQrImage: "./launch/payment-alipay.jpeg",
+    licenseProvider: "lemonsqueezy",
+    lemonSqueezyProductId: "123",
+    lemonSqueezyVariantId: "456",
     appUrl: "https://offerdesk.app",
     licenseCode: "OFFERDESK-PRO-2026",
     supportEmail: "support@offerdesk.app",
@@ -38,6 +50,9 @@ assert.deepEqual(
 
 const result = await prepareRelease({
   checkoutUrl: "https://pay.offerdesk.app/checkout",
+  autoCheckoutUrl: "https://offerdesk.lemonsqueezy.com/buy/demo",
+  licenseProvider: "lemonsqueezy",
+  lemonSqueezyProductId: "123",
   appUrl: "https://offerdesk.app",
   licenseCode: "OFFERDESK-PRO-2026",
   supportEmail: "support@offerdesk.app",
@@ -51,6 +66,9 @@ const emailText = await readFile(result.emailOut, "utf8");
 await rm(tempRoot, { recursive: true, force: true });
 
 assert.ok(configText.includes('checkoutUrl: "https://pay.offerdesk.app/checkout"'));
+assert.ok(configText.includes('autoCheckoutUrl: "https://offerdesk.lemonsqueezy.com/buy/demo"'));
+assert.ok(configText.includes('licenseProvider: "lemonsqueezy"'));
+assert.ok(configText.includes('lemonSqueezyProductId: "123"'));
 assert.ok(configText.includes('paymentQrImage: ""'));
 assert.ok(configText.includes('supportEmail: "support@offerdesk.app"'));
 assert.equal(configText.includes("OFFERDESK-PRO-2026"), false);

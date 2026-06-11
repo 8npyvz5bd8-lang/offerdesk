@@ -17,14 +17,16 @@ const complete = `# 真实发布验收记录
 
 - 验收日期：2026-06-11
 - 线上地址：https://offerdesk.app
-- 收款平台：Gumroad
-- 收款方式：支付宝收款码
+- 收款平台：Lemon Squeezy
+- 收款方式：自动 checkout
 - 客服邮箱：support@offerdesk.app
-- 授权码是否已写入付款后邮件：是
+- 是否已接入自动收款平台：是
+- 是否自动生成并发送授权码：是
 
 ## 发布前命令
 
 - \`node scripts/validate-release.mjs\`：通过
+- \`node scripts/validate-auto-payment.mjs\`：通过
 - \`node scripts/build-release.mjs\`：通过
 
 ## 线上页面检查
@@ -35,13 +37,14 @@ const complete = `# 真实发布验收记录
 - 条款页能打开：是
 - 退款页能打开：是
 - 购买入口能打开收款方式：是
+- 自动付款页能打开：是
 
 ## 真实付款检查
 
 - 已完成一笔真实付款：是
 - 已收到付款通知：是
-- 已收到付款后邮件：是
-- 邮件里的授权码正确：是
+- 已收到平台自动邮件：是
+- 邮件里的自动授权码正确：是
 - 输入授权码后水印消失：是
 - PDF 打印或保存正常：是
 

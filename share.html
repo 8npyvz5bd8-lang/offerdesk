@@ -158,7 +158,7 @@
           <a class="btn" href="./pipeline.html">跟进台</a>
           <a class="btn" href="./sales.html">销售页</a>
           <a class="btn" href="./index.html">试用工具</a>
-          <a class="btn green" href="./pay.html">付款页</a>
+          <a class="btn green" href="./buy.html">成交页</a>
           <a class="btn blue" href="./after-pay.html">付款后提交</a>
         </nav>
       </header>
@@ -170,8 +170,8 @@
           <li>再把“小红书版”和“朋友圈/群聊版”发出去。</li>
           <li>找 10 个设计师、开发者、摄影师、咨询顾问或小工作室，逐个发“私信版”。</li>
           <li>有人回复“看看”时，直接发销售页和试用工具。</li>
-          <li>有人说有用时，发付款页。</li>
-          <li>对方付款后，让他打开付款后提交页；你确认到账后发授权码。</li>
+          <li>有人说有用时，发成交页。</li>
+          <li>对方付款后，让他查邮箱里的授权码；没收到再联系你补发。</li>
           <li>每联系 1 个人，都记到 `launch/sales-tracker.csv`。</li>
         </ol>
       </section>
@@ -210,7 +210,7 @@
 试用链接：
 https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 
-付款后提交邮箱和付款信息，确认到账后发送授权码。</textarea>
+付款后平台会自动把授权码发到买家邮箱。</textarea>
           <div class="actions">
             <button class="btn green" type="button" data-copy="copy-xianyu">复制闲鱼商品版</button>
           </div>
@@ -276,23 +276,20 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/</textarea>
           <h2>有人说有用时</h2>
           <textarea id="copy-pay" readonly>如果这个工具能帮你正式给客户发报价单，可以买 29 元专业版去掉水印。
 
-付款页：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
+成交页：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html
 
-付款后提交信息：
-https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
-
-确认到账后，我会把授权码发给你。</textarea>
+付款后平台会自动把授权码发到你的邮箱。收到后回到工具里输入授权码即可去水印。</textarea>
           <div class="actions">
             <button class="btn green" type="button" data-copy="copy-pay">复制付款跟进</button>
           </div>
         </article>
 
         <article class="card">
-          <h2>付款后你发给买家</h2>
-          <textarea id="copy-after" readonly>我看到你的付款信息了。
+          <h2>自动邮件没收到时</h2>
+          <textarea id="copy-after" readonly>付款平台正常会自动发送 OfferDesk 专业版授权码。
 
-我确认到账后会发送 OfferDesk 专业版授权码。
+如果你没收到邮件，我会帮你核对订单并补发。
 
 拿到授权码后：
 1. 打开软件：

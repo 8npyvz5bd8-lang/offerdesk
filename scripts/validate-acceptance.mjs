@@ -10,8 +10,10 @@ const requiredTextFields = [
 ];
 
 const requiredYesFields = [
-  "授权码是否已写入付款后邮件",
+  "是否已接入自动收款平台",
+  "是否自动生成并发送授权码",
   "`node scripts/validate-release.mjs`",
+  "`node scripts/validate-auto-payment.mjs`",
   "`node scripts/build-release.mjs`",
   "首页能打开",
   "报价能计算",
@@ -19,10 +21,11 @@ const requiredYesFields = [
   "条款页能打开",
   "退款页能打开",
   "购买入口能打开收款方式",
+  "自动付款页能打开",
   "已完成一笔真实付款",
   "已收到付款通知",
-  "已收到付款后邮件",
-  "邮件里的授权码正确",
+  "已收到平台自动邮件",
+  "邮件里的自动授权码正确",
   "输入授权码后水印消失",
   "PDF 打印或保存正常",
   "是否可以正式公开售卖"

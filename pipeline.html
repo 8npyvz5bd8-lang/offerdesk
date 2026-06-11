@@ -189,7 +189,7 @@
         <nav class="links" aria-label="常用链接">
           <a class="btn" href="./share.html">复制文案</a>
           <a class="btn" href="./sales.html">销售页</a>
-          <a class="btn" href="./pay.html">付款页</a>
+          <a class="btn" href="./buy.html">成交页</a>
           <a class="btn green" href="./after-pay.html">付款后提交</a>
         </nav>
       </header>
@@ -209,7 +209,7 @@
           <button class="btn" type="button" id="copyCsv">复制 CSV</button>
           <button class="btn danger" type="button" id="clearDone">清空空白行</button>
         </div>
-        <p>状态到“已付款”后，去支付宝确认到账，再用付款后邮件发授权码。</p>
+        <p>状态到“已付款”后，确认买家已收到平台自动授权码；没收到再人工补发。</p>
       </section>
 
       <section class="panel table-wrap">
@@ -319,7 +319,7 @@
         tr.appendChild(cell(select(index, "status", lead.status)));
         tr.appendChild(cell(input(index, "amount", lead.amount, "29")));
         tr.appendChild(cell(input(index, "email", lead.email, "买家邮箱")));
-        tr.appendChild(cell(input(index, "nextAction", lead.nextAction, "继续跟进/发付款页")));
+        tr.appendChild(cell(input(index, "nextAction", lead.nextAction, "继续跟进/发成交页")));
         tr.appendChild(cell(textarea(index, "note", lead.note, "反馈/付款备注")));
         return tr;
       }

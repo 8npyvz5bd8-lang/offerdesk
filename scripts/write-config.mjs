@@ -2,13 +2,27 @@ import { createHash } from "node:crypto";
 import { writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
-export function createConfigText({ checkoutUrl, paymentQrImage, licenseCode, supportEmail }) {
+export function createConfigText({
+  checkoutUrl,
+  autoCheckoutUrl,
+  paymentQrImage,
+  licenseProvider,
+  lemonSqueezyProductId,
+  lemonSqueezyVariantId,
+  licenseCode,
+  supportEmail
+}) {
   const cleanCheckoutUrl = String(checkoutUrl || "").trim();
+  const cleanAutoCheckoutUrl = String(autoCheckoutUrl || "").trim();
   const cleanPaymentQrImage = String(paymentQrImage || "").trim();
+  const cleanLicenseProvider = String(licenseProvider || "local").trim().toLowerCase();
+  const cleanLemonSqueezyProductId = String(lemonSqueezyProductId || "").trim();
+  const cleanLemonSqueezyVariantId = String(lemonSqueezyVariantId || "").trim();
   const cleanLicenseCode = String(licenseCode || "").trim();
   const cleanSupportEmail = String(supportEmail || "").trim();
 
-  assertValidPaymentMethod(cleanCheckoutUrl, cleanPaymentQrImage);
+  assertValidPaymentMethod(cleanCheckoutUrl, cleanAutoCheckoutUrl, cleanPaymentQrImage);
+  assertValidLicenseProvider(cleanLicenseProvider, cleanAutoCheckoutUrl, cleanLemonSqueezyProductId);
   assertValidLicenseCode(cleanLicenseCode);
   assertValidSupportEmail(cleanSupportEmail);
 
@@ -16,7 +30,11 @@ export function createConfigText({ checkoutUrl, paymentQrImage, licenseCode, sup
 
 return `window.OFFERDESK_CONFIG = {
   checkoutUrl: ${JSON.stringify(cleanCheckoutUrl)},
+  autoCheckoutUrl: ${JSON.stringify(cleanAutoCheckoutUrl)},
   paymentQrImage: ${JSON.stringify(cleanPaymentQrImage)},
+  licenseProvider: ${JSON.stringify(cleanLicenseProvider)},
+  lemonSqueezyProductId: ${JSON.stringify(cleanLemonSqueezyProductId)},
+  lemonSqueezyVariantId: ${JSON.stringify(cleanLemonSqueezyVariantId)},
   licenseHash: ${JSON.stringify(licenseHash)},
   supportEmail: ${JSON.stringify(cleanSupportEmail)}
 };
@@ -43,7 +61,11 @@ export function parseArgs(args) {
 
   return {
     checkoutUrl: values["checkout-url"],
+    autoCheckoutUrl: values["auto-checkout-url"],
     paymentQrImage: values["payment-qr-image"],
+    licenseProvider: values["license-provider"],
+    lemonSqueezyProductId: values["lemonsqueezy-product-id"],
+    lemonSqueezyVariantId: values["lemonsqueezy-variant-id"],
     licenseCode: values["license-code"],
     supportEmail: values["support-email"],
     out: values.out || "app-config.js"
@@ -57,19 +79,27 @@ export async function writeConfig(options) {
   return output;
 }
 
-function assertValidPaymentMethod(checkoutUrl, paymentQrImage) {
+function assertValidPaymentMethod(checkoutUrl, autoCheckoutUrl, paymentQrImage) {
   const hasCheckoutUrl = checkoutUrl.length > 0;
+  const hasAutoCheckoutUrl = autoCheckoutUrl.length > 0;
   const hasPaymentQrImage = paymentQrImage.length > 0;
 
-  if (!hasCheckoutUrl && !hasPaymentQrImage) {
-    throw new Error("必须配置真实付款链接或收款码图片。");
+  if (!hasCheckoutUrl && !hasAutoCheckoutUrl && !hasPaymentQrImage) {
+    throw new Error("必须配置购买页、自动付款链接或收款码图片。");
   }
 
   if (hasCheckoutUrl && !/^https:\/\/.+/.test(checkoutUrl)) {
-    throw new Error("付款链接必须是 https 开头的真实链接。");
+    throw new Error("购买页链接必须是 https 开头的真实链接。");
   }
   if (hasCheckoutUrl && (containsPlaceholder(checkoutUrl) || checkoutUrl.includes(".test") || checkoutUrl.includes(".invalid"))) {
-    throw new Error("付款链接不能是示例链接。");
+    throw new Error("购买页链接不能是示例链接。");
+  }
+
+  if (hasAutoCheckoutUrl && !/^https:\/\/.+/.test(autoCheckoutUrl)) {
+    throw new Error("自动付款链接必须是 https 开头的真实链接。");
+  }
+  if (hasAutoCheckoutUrl && (containsPlaceholder(autoCheckoutUrl) || autoCheckoutUrl.includes(".test") || autoCheckoutUrl.includes(".invalid"))) {
+    throw new Error("自动付款链接不能是示例链接。");
   }
 
   if (hasPaymentQrImage && !/^\.\/.+\.(png|jpe?g|webp)$/i.test(paymentQrImage)) {
@@ -77,6 +107,18 @@ function assertValidPaymentMethod(checkoutUrl, paymentQrImage) {
   }
   if (hasPaymentQrImage && containsPlaceholder(paymentQrImage)) {
     throw new Error("收款码图片不能是示例路径。");
+  }
+}
+
+function assertValidLicenseProvider(provider, autoCheckoutUrl, lemonSqueezyProductId) {
+  if (!["local", "lemonsqueezy"].includes(provider)) {
+    throw new Error("licenseProvider 只能是 local 或 lemonsqueezy。");
+  }
+  if (provider === "lemonsqueezy" && !autoCheckoutUrl) {
+    throw new Error("Lemon Squeezy 自动发码必须配置 autoCheckoutUrl。");
+  }
+  if (provider === "lemonsqueezy" && !/^\d+$/.test(lemonSqueezyProductId)) {
+    throw new Error("Lemon Squeezy 自动发码必须配置产品 ID。");
   }
 }
 

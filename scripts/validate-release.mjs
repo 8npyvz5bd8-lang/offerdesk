@@ -7,6 +7,7 @@ const requiredFiles = [
   "sales.html",
   "share.html",
   "pipeline.html",
+  "buy.html",
   "pay.html",
   "after-pay.html",
   "share-copy.txt",
@@ -23,6 +24,7 @@ const requiredFiles = [
   "scripts/check-license-leak.mjs",
   "scripts/prepare-release.mjs",
   "scripts/release-status.mjs",
+  "scripts/validate-auto-payment.mjs",
   "scripts/validate-acceptance.mjs",
   "scripts/check-static-assets.mjs",
   "scripts/create-delivery-email.mjs",
@@ -57,13 +59,14 @@ await checkRequiredFiles();
 
 const configText = await readFile(configPath, "utf8");
 const checkoutUrl = readConfigValue(configText, "checkoutUrl");
+const autoCheckoutUrl = readConfigValue(configText, "autoCheckoutUrl");
 const paymentQrImage = readConfigValue(configText, "paymentQrImage");
 const licenseHash = readConfigValue(configText, "licenseHash");
 const supportEmail = readConfigValue(configText, "supportEmail");
 
 check(
   "真实收款方式",
-  isRealCheckoutUrl(checkoutUrl) || await isRealPaymentQrImage(paymentQrImage),
+  isRealCheckoutUrl(autoCheckoutUrl) || isRealCheckoutUrl(checkoutUrl) || await isRealPaymentQrImage(paymentQrImage),
   "用 scripts/write-config.mjs 写入真实 https 付款链接，或配置项目内收款码图片。"
 );
 
@@ -142,7 +145,8 @@ function isRealCheckoutUrl(value) {
   return /^https:\/\/.+/.test(value) &&
     !value.includes("example") &&
     !value.includes("你的") &&
-    !value.includes("your-");
+    !value.includes("your-") &&
+    !/github\.io\/graphics-debug\/offerdesk\/(buy|pay|after-pay)\.html/.test(value);
 }
 
 async function isRealPaymentQrImage(value) {

@@ -7,6 +7,7 @@ const pages = [
   "sales.html",
   "share.html",
   "pipeline.html",
+  "buy.html",
   "pay.html",
   "after-pay.html",
   "privacy.html",

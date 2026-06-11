@@ -29,7 +29,11 @@ export function parseArgs(args) {
 
   return {
     checkoutUrl: values["checkout-url"],
+    autoCheckoutUrl: values["auto-checkout-url"],
     paymentQrImage: values["payment-qr-image"],
+    licenseProvider: values["license-provider"],
+    lemonSqueezyProductId: values["lemonsqueezy-product-id"],
+    lemonSqueezyVariantId: values["lemonsqueezy-variant-id"],
     appUrl: values["app-url"],
     licenseCode: values["license-code"],
     supportEmail: values["support-email"],
@@ -49,7 +53,11 @@ export async function prepareRelease(options, controls = {}) {
 
   await writeConfig({
     checkoutUrl: options.checkoutUrl,
+    autoCheckoutUrl: options.autoCheckoutUrl,
     paymentQrImage: options.paymentQrImage,
+    licenseProvider: options.licenseProvider,
+    lemonSqueezyProductId: options.lemonSqueezyProductId,
+    lemonSqueezyVariantId: options.lemonSqueezyVariantId,
     licenseCode: options.licenseCode,
     supportEmail: options.supportEmail,
     out: configOut

@@ -6,22 +6,35 @@ const root = new URL("../", import.meta.url);
 
 export function buildReleaseStatus({ configText, acceptanceText, artifacts }) {
   const checkoutUrl = readConfigValue(configText, "checkoutUrl");
+  const autoCheckoutUrl = readConfigValue(configText, "autoCheckoutUrl");
   const paymentQrImage = readConfigValue(configText, "paymentQrImage");
+  const licenseProvider = readConfigValue(configText, "licenseProvider");
+  const lemonSqueezyProductId = readConfigValue(configText, "lemonSqueezyProductId");
   const licenseHash = readConfigValue(configText, "licenseHash");
   const supportEmail = readConfigValue(configText, "supportEmail");
   const acceptanceChecks = validateAcceptanceText(acceptanceText);
   const acceptancePass = acceptanceChecks.length > 0 && acceptanceChecks.every((item) => item.pass);
+  const autoPaymentReady = isAutomaticPaymentReady({
+    autoCheckoutUrl,
+    licenseProvider,
+    lemonSqueezyProductId
+  });
 
   const checks = [
     {
       name: "真实收款方式",
-      pass: isRealHttpsUrl(checkoutUrl) || isRealPaymentQrImage(paymentQrImage),
+      pass: isRealHttpsUrl(autoCheckoutUrl) || isRealHttpsUrl(checkoutUrl) || isRealPaymentQrImage(paymentQrImage),
       fix: "准备真实付款链接或收款码图片。"
     },
     {
+      name: "全自动收款发码",
+      pass: autoPaymentReady,
+      fix: "创建 Lemon Squeezy 一次性购买商品，开启授权码，把 checkout URL 和产品 ID 写入 app-config.js。"
+    },
+    {
       name: "授权码哈希",
-      pass: /^[a-f0-9]{64}$/.test(licenseHash),
-      fix: "准备至少 8 位授权码。"
+      pass: autoPaymentReady || /^[a-f0-9]{64}$/.test(licenseHash),
+      fix: "准备至少 8 位授权码，或完成 Lemon Squeezy 自动授权配置。"
     },
     {
       name: "真实客服邮箱",
@@ -39,9 +52,9 @@ export function buildReleaseStatus({ configText, acceptanceText, artifacts }) {
       fix: "运行 scripts/prepare-release.mjs 或 scripts/build-upload-zip.mjs。"
     },
     {
-      name: "付款后邮件",
-      pass: Boolean(artifacts.deliveryEmail),
-      fix: "提供真实线上地址后，运行 scripts/create-delivery-email.mjs。"
+      name: "自动邮件或补发邮件",
+      pass: autoPaymentReady || Boolean(artifacts.deliveryEmail),
+      fix: "接入平台自动授权邮件，或运行 scripts/create-delivery-email.mjs 生成补发邮件。"
     },
     {
       name: "真实付款验收",
@@ -85,20 +98,24 @@ function getStage(checks) {
     return "缺真实收款方式";
   }
 
-  if (!checks[1].pass || !checks[2].pass) {
+  if (!checks[1].pass) {
+    return "待接入全自动收款";
+  }
+
+  if (!checks[2].pass || !checks[3].pass) {
     return "缺授权或客服配置";
   }
 
-  const missingReleasePackage = !checks[3].pass || !checks[4].pass;
+  const missingReleasePackage = !checks[4].pass || !checks[5].pass;
   if (missingReleasePackage) {
     return "待生成发布包";
   }
 
-  if (!checks[5].pass) {
-    return "待生成付款后邮件";
+  if (!checks[6].pass) {
+    return "待配置自动邮件或补发邮件";
   }
 
-  if (!checks[6].pass) {
+  if (!checks[7].pass) {
     return "待真实付款验收";
   }
 
@@ -106,20 +123,20 @@ function getStage(checks) {
 }
 
 function getNextStep(checks) {
-  const missingConfig = checks.slice(0, 3).filter((item) => !item.pass);
+  const missingConfig = checks.slice(0, 4).filter((item) => !item.pass);
   if (missingConfig.length > 0) {
     return `补齐：${missingConfig.map((item) => item.name).join("、")}。`;
   }
 
-  if (!checks[3].pass || !checks[4].pass) {
+  if (!checks[4].pass || !checks[5].pass) {
     return "运行 scripts/build-upload-zip.mjs 生成发布目录和上传压缩包。";
   }
 
-  if (!checks[5].pass) {
-    return "提供真实线上地址后，运行 scripts/create-delivery-email.mjs 生成付款后邮件。";
+  if (!checks[6].pass) {
+    return "接入平台自动授权邮件，或运行 scripts/create-delivery-email.mjs 生成补发邮件。";
   }
 
-  if (!checks[6].pass) {
+  if (!checks[7].pass) {
     return "完成真实付款测试，并填写 launch/release-acceptance.md。";
   }
 
@@ -127,7 +144,7 @@ function getNextStep(checks) {
 }
 
 function isRealHttpsUrl(value) {
-  return /^https:\/\/.+/.test(value) && !containsPlaceholder(value);
+  return /^https:\/\/.+/.test(value) && !containsPlaceholder(value) && !isInternalOfferDeskPaymentPage(value);
 }
 
 function isRealEmail(value) {
@@ -141,6 +158,16 @@ function isRealPaymentQrImage(value) {
 function containsPlaceholder(value) {
   const lower = String(value || "").toLowerCase();
   return lower.includes("example") || lower.includes("your-") || value.includes("你的");
+}
+
+function isAutomaticPaymentReady({ autoCheckoutUrl, licenseProvider, lemonSqueezyProductId }) {
+  return String(licenseProvider || "").trim().toLowerCase() === "lemonsqueezy" &&
+    isRealHttpsUrl(autoCheckoutUrl) &&
+    /^\d+$/.test(String(lemonSqueezyProductId || "").trim());
+}
+
+function isInternalOfferDeskPaymentPage(value) {
+  return /github\.io\/graphics-debug\/offerdesk\/(buy|pay|after-pay)\.html/.test(String(value || ""));
 }
 
 function readConfigValue(source, key) {

@@ -29,6 +29,7 @@ OfferDesk 报价单赚钱助手
 
 - 销售页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 - 工具地址：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
+- 成交页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html
 - 付款页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
 - 付款后提交信息：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
 - 可复制推广文案：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share-copy.txt
@@ -63,12 +64,14 @@ OfferDesk 是一个简单直接的报价单工具。你只需要输入项目、�
 - 首批获客文案：`launch/first-customers.md`
 - 首单推广复制页：`share.html`
 - 首单跟进台：`pipeline.html`
+- 一页式成交页：`buy.html`
 - 销售记录表：`launch/sales-tracker.csv`
 - 最终发布执行手册：`launch/final-release-runbook.md`
 - 手动上传清单：`launch/manual-upload-checklist.md`
 - 真实发布验收记录：`launch/release-acceptance.md`
 - 一键准备发布：`scripts/prepare-release.mjs`
 - 上架状态诊断：`scripts/release-status.mjs`
+- 全自动收款检查：`scripts/validate-auto-payment.mjs`
 - 授权码泄漏检查：`scripts/check-license-leak.mjs`
 - 自托管销售页：`sales.html`
 - 隐私页：`privacy.html`
