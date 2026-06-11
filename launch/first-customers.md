@@ -16,6 +16,9 @@
 
 免费版能试用，专业版去水印。想要链接可以评论“报价”。
 
+链接：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+
 ## 即刻
 
 我做了一个给自由职业者用的小工具：OfferDesk。
@@ -26,11 +29,17 @@
 
 现在想找 10 个真实接单的人试用，愿意反馈的我可以发链接。
 
+链接：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+
 ## 朋友圈
 
 做了个小工具，给自由职业者和小团队生成报价单用。
 
 它会自动算成本、利润率、首付款，避免报价太低。需要给客户发正式报价单的人可以找我试用。
+
+链接：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 
 ## 私信话术
 
@@ -38,11 +47,28 @@
 
 想请你试用 5 分钟。如果它真的帮你省时间，再考虑买专业版。不合适也没关系，我主要想听真实反馈。
 
-试用地址：
+销售页：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+
+试用工具：
 https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
 
 购买专业版：
 https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
+
+## 今天直接发
+
+我做了一个报价单工具，给接单的人用。
+
+它能算成本、利润率、首付款，还能生成可以发给客户的报价单。免费版能试用，29 元专业版去水印。
+
+你如果最近有报价场景，可以试 5 分钟：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
+
+如果不适合你，也可以直接告诉我哪里没用。
+
+公开可复制版本：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share-copy.txt
 
 ## 付款跟进话术
 
