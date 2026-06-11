@@ -93,7 +93,18 @@ https://你的支付服务器域名/api/health
 
 确认 `ready` 是 `true`。
 
-再跑完整接口验收：
+部署完成后，直接跑最终收尾命令：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/finalize-alipay-launch.mjs \
+  --env-file "你的环境变量文件.env" \
+  --api-base "https://你的支付服务器域名" \
+  --email "534403209@qq.com"
+```
+
+这个命令会预检环境变量、创建待支付测试订单、检查订单状态接口，并把服务地址写进 `app-config.js`。
+
+也可以分开跑接口验收：
 
 ```bash
 /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/validate-alipay-service.mjs \

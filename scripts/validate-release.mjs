@@ -25,6 +25,7 @@ const requiredFiles = [
   "scripts/build-upload-zip.mjs",
   "scripts/check-license-leak.mjs",
   "scripts/connect-alipay-service.mjs",
+  "scripts/finalize-alipay-launch.mjs",
   "scripts/prepare-release.mjs",
   "scripts/release-status.mjs",
   "scripts/configure-lemonsqueezy.mjs",

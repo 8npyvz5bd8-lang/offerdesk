@@ -13,6 +13,7 @@ run(process.execPath, ["tests/config-writer.test.mjs"]);
 run(process.execPath, ["tests/connect-alipay-service.test.mjs"]);
 run(process.execPath, ["tests/validate-alipay-env.test.mjs"]);
 run(process.execPath, ["tests/validate-alipay-service.test.mjs"]);
+run(process.execPath, ["tests/finalize-alipay-launch.test.mjs"]);
 run(process.execPath, ["tests/configure-lemonsqueezy.test.mjs"]);
 run(process.execPath, ["tests/delivery-email.test.mjs"]);
 run(process.execPath, ["tests/manual-fulfillment.test.mjs"]);
