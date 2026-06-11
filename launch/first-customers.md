@@ -132,18 +132,19 @@ https://8npyvz5bd8-lang.github.io/offerdesk/pipeline.html
 
 买家付款后，让他提交邮箱和付款信息。确认买家能解锁并去掉水印后，再记录到 `launch/sales-tracker.csv`。
 
-收到钱后运行：
+收到钱后，复制买家发来的整段邮件正文，然后运行：
 
 ```bash
-/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/fulfill-manual-order.mjs \
-  --email "买家邮箱" \
-  --paid-at "付款时间" \
-  --amount "29" \
-  --channel "manual-alipay" \
-  --name "买家昵称或支付宝备注"
+pbpaste | /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/fulfill-from-email.mjs
 ```
 
-这个命令会生成唯一授权码、回复邮件，并把订单写入 `launch/sales-tracker.csv`。
+这个命令会自动读出买家邮箱、订单号、金额和支付宝备注，生成唯一授权码、回复邮件，并把订单写入 `launch/sales-tracker.csv`。
+
+如果邮件正文存在文件里，用：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/fulfill-from-email.mjs --file "邮件正文.txt"
+```
 
 ## 7 天验证标准
 

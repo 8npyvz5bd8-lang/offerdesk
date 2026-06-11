@@ -36,15 +36,10 @@ dist/offerdesk-release.zip
 
 ## 收到支付宝付款后
 
-运行：
+复制买家发来的整段邮件正文，然后运行：
 
 ```bash
-/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/fulfill-manual-order.mjs \
-  --email "买家邮箱" \
-  --paid-at "付款时间" \
-  --amount "29" \
-  --channel "manual-alipay" \
-  --name "买家昵称或支付宝备注"
+pbpaste | /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/fulfill-from-email.mjs
 ```
 
 然后把 `dist/manual-orders/` 里的邮件内容发给买家。

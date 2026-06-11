@@ -13,6 +13,7 @@ run(process.execPath, ["tests/config-writer.test.mjs"]);
 run(process.execPath, ["tests/configure-lemonsqueezy.test.mjs"]);
 run(process.execPath, ["tests/delivery-email.test.mjs"]);
 run(process.execPath, ["tests/manual-fulfillment.test.mjs"]);
+run(process.execPath, ["tests/fulfill-from-email.test.mjs"]);
 run(process.execPath, ["tests/acceptance.test.mjs"]);
 run(process.execPath, ["tests/upload-zip.test.mjs"]);
 run(process.execPath, ["tests/license-leak.test.mjs"]);
