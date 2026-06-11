@@ -56,6 +56,9 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
 购买专业版：
 https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
 
+付款后提交信息：
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
+
 ## 今天直接发
 
 我做了一个报价单工具，给接单的人用。

@@ -30,6 +30,7 @@ OfferDesk 报价单赚钱助手
 - 销售页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 - 工具地址：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
 - 付款页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
+- 付款后提交信息：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
 - 可复制推广文案：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share-copy.txt
 
 ## 上架短描述

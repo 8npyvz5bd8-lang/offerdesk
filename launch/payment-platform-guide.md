@@ -24,6 +24,14 @@
 3. Lemon Squeezy：适合数字产品，能拿到产品 checkout URL。
 4. Stripe Payment Links：适合已有 Stripe 账号的人。
 
+当前付款后提交信息页：
+
+```text
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
+```
+
+用支付宝收款码时，把这个链接发给已付款买家。买家填写付款时间、邮箱和支付宝昵称后，会自动生成邮件给客服邮箱。
+
 ## Gumroad
 
 官方入口：https://gumroad.com/help/article/149-adding-a-product
