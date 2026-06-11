@@ -71,6 +71,7 @@ OfferDesk 是一个简单直接的报价单工具。你只需要输入项目、�
 - 真实发布验收记录：`launch/release-acceptance.md`
 - 一键准备发布：`scripts/prepare-release.mjs`
 - 上架状态诊断：`scripts/release-status.mjs`
+- Lemon Squeezy 一键配置：`scripts/configure-lemonsqueezy.mjs`
 - 全自动收款检查：`scripts/validate-auto-payment.mjs`
 - 授权码泄漏检查：`scripts/check-license-leak.mjs`
 - 自托管销售页：`sales.html`

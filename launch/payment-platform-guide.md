@@ -32,14 +32,16 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/?license_key=[license
 写入项目配置：
 
 ```bash
-/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/write-config.mjs \
-  --checkout-url "https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html" \
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/configure-lemonsqueezy.mjs \
   --auto-checkout-url "Lemon Squeezy checkout URL" \
-  --license-provider "lemonsqueezy" \
-  --lemonsqueezy-product-id "Lemon Squeezy product ID" \
-  --payment-qr-image "./launch/payment-alipay.jpeg" \
-  --license-code "本地备用测试授权码" \
-  --support-email "534403209@qq.com"
+  --product-id "Lemon Squeezy product ID" \
+  --fallback-license-code "本地备用测试授权码"
+```
+
+如果有 variant ID，再加：
+
+```bash
+  --variant-id "Lemon Squeezy variant ID"
 ```
 
 检查是否已经全自动：

@@ -24,6 +24,7 @@ const requiredFiles = [
   "scripts/check-license-leak.mjs",
   "scripts/prepare-release.mjs",
   "scripts/release-status.mjs",
+  "scripts/configure-lemonsqueezy.mjs",
   "scripts/validate-auto-payment.mjs",
   "scripts/validate-acceptance.mjs",
   "scripts/check-static-assets.mjs",
