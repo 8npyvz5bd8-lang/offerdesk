@@ -1,0 +1,19 @@
+{
+  "name": "offerdesk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/pricing.test.mjs && node tests/license.test.mjs && node tests/templates.test.mjs && node tests/config-writer.test.mjs && node tests/delivery-email.test.mjs && node tests/acceptance.test.mjs && node tests/upload-zip.test.mjs && node tests/license-leak.test.mjs && node tests/prepare-release.test.mjs && node tests/release-status.test.mjs && node tests/release-report.test.mjs && node tests/static-assets.test.mjs",
+    "check:static": "node scripts/check-static-assets.mjs",
+    "create:delivery-email": "node scripts/create-delivery-email.mjs",
+    "check:license-leak": "node scripts/check-license-leak.mjs",
+    "write:config": "node scripts/write-config.mjs",
+    "validate:release": "node scripts/validate-release.mjs",
+    "validate:acceptance": "node scripts/validate-acceptance.mjs",
+    "status:release": "node scripts/release-status.mjs",
+    "build:release": "node scripts/build-release.mjs",
+    "build:upload": "node scripts/build-upload-zip.mjs",
+    "prepare:release": "node scripts/prepare-release.mjs"
+  }
+}

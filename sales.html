@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>购买 OfferDesk 报价单赚钱助手</title>
+    <meta
+      name="description"
+      content="OfferDesk 帮自由职业者和小团队生成专业报价单，并计算利润率、首付款和折扣。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./index.html" aria-label="OfferDesk 首页">
+          <span class="brand-mark">OD</span>
+          <span>
+            <strong>OfferDesk</strong>
+            <small>报价单赚钱助手</small>
+          </span>
+        </a>
+        <nav class="top-actions" aria-label="销售页操作">
+          <a class="text-button" href="./index.html">打开工具</a>
+          <a class="primary-link" href="#buy">购买专业版</a>
+        </nav>
+      </header>
+
+      <main class="sales-shell">
+        <section class="sales-hero" id="buy">
+          <div class="sales-copy">
+            <h1>接单报价前，先知道这单赚不赚钱。</h1>
+            <p>
+              OfferDesk 帮自由职业者和小团队快速生成客户报价单，同时算清成本、利润率、首付款和折扣。
+              免费版可试用，专业版去掉水印。
+            </p>
+            <div class="sales-actions">
+              <a class="accent-button sales-buy-link" data-checkout-link href="#">29 元购买专业版</a>
+              <a class="text-button" href="./index.html">先试用免费版</a>
+            </div>
+            <figure class="payment-qr sales-payment-qr" data-payment-qr hidden>
+              <img data-payment-qr-image alt="支付宝收款码" />
+              <figcaption>打开支付宝扫一扫付款，付款后联系卖家获取授权码。</figcaption>
+            </figure>
+            <p class="sales-notice" data-buy-notice>还没有配置真实收款方式，暂时不能购买。</p>
+          </div>
+          <figure class="sales-preview">
+            <img src="./launch/offerdesk-screenshot.jpg" alt="OfferDesk 报价单工具界面截图" />
+          </figure>
+        </section>
+
+        <section class="sales-grid" aria-label="核心卖点">
+          <article>
+            <h2>避免低报价</h2>
+            <p>输入内部成本后，系统会显示预计利润和利润状态，报价前就知道风险。</p>
+          </article>
+          <article>
+            <h2>客户只看报价</h2>
+            <p>成本只在编辑区出现，正式报价单只展示项目、数量、单价和总价。</p>
+          </article>
+          <article>
+            <h2>直接发 PDF</h2>
+            <p>报价单可以打印或保存为 PDF，适合快速发给客户确认。</p>
+          </article>
+        </section>
+
+        <section class="sales-steps">
+          <h2>购买后怎么用</h2>
+          <ol>
+            <li>打开 OfferDesk 线上地址。</li>
+            <li>点击「解锁专业版」。</li>
+            <li>输入付款后收到的授权码。</li>
+            <li>看到「可正式交付」后，生成正式报价单。</li>
+          </ol>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>OfferDesk</span>
+        <a href="./privacy.html">隐私</a>
+        <a href="./terms.html">条款</a>
+        <a href="./refund.html">退款</a>
+        <a href="#" data-support-email>未配置</a>
+      </footer>
+    </div>
+
+    <script src="./app-config.js"></script>
+    <script type="module" src="./src/legal.js"></script>
+    <script type="module" src="./src/sales.js"></script>
+  </body>
+</html>

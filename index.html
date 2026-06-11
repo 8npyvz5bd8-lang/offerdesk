@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OfferDesk 报价单赚钱助手</title>
+    <meta
+      name="description"
+      content="给自由职业者和小团队使用的报价单、利润率、首付款计算工具。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="OfferDesk 首页">
+          <span class="brand-mark">OD</span>
+          <span>
+            <strong>OfferDesk</strong>
+            <small>报价单赚钱助手</small>
+          </span>
+        </a>
+        <nav class="top-actions" aria-label="主要操作">
+          <button class="ghost-button" id="saveButton" type="button">保存草稿</button>
+          <button class="ghost-button" id="importButton" type="button">导入数据</button>
+          <button class="ghost-button" id="exportButton" type="button">导出数据</button>
+          <button class="ghost-button" id="copyButton" type="button">复制报价</button>
+          <button class="primary-button" id="printButton" type="button">导出 PDF</button>
+          <button class="accent-button" id="unlockButton" type="button">解锁专业版</button>
+        </nav>
+      </header>
+
+      <main class="workspace" id="top">
+        <section class="editor-panel" aria-labelledby="editorTitle">
+          <div class="panel-heading">
+            <div>
+              <h1 id="editorTitle">报价编辑</h1>
+              <p>输入成本、工时和目标利润，右侧会自动生成可发给客户的报价单。</p>
+            </div>
+            <div class="mode-pill" id="modePill">免费版</div>
+          </div>
+
+          <form id="quoteForm" class="quote-form">
+            <fieldset class="form-grid">
+              <label class="wide-field">
+                快速模板
+                <select id="templateSelect" name="templateSelect">
+                  <option value="">选择模板后套用</option>
+                  <option value="website">官网设计与开发</option>
+                  <option value="brand">品牌视觉设计</option>
+                  <option value="consulting">顾问咨询服务</option>
+                </select>
+              </label>
+            </fieldset>
+
+            <fieldset class="form-grid">
+              <label>
+                你的品牌
+                <input id="sellerName" name="sellerName" type="text" autocomplete="organization" />
+              </label>
+              <label>
+                客户名称
+                <input id="clientName" name="clientName" type="text" autocomplete="organization" />
+              </label>
+              <label class="wide-field">
+                项目名称
+                <input id="projectName" name="projectName" type="text" />
+              </label>
+              <label>
+                币种符号
+                <input id="currency" name="currency" type="text" maxlength="4" />
+              </label>
+              <label>
+                报价有效期
+                <input id="validUntil" name="validUntil" type="date" />
+              </label>
+            </fieldset>
+
+            <section class="items-section" aria-labelledby="itemsTitle">
+              <div class="section-row">
+                <div>
+                  <h2 id="itemsTitle">报价项目</h2>
+                  <p>成本用于内部利润计算，不会出现在客户报价单里。</p>
+                </div>
+                <button class="small-button" id="addItemButton" type="button">添加一项</button>
+              </div>
+
+              <div class="items-table" role="table" aria-label="报价项目明细">
+                <div class="items-head" role="row">
+                  <span>项目</span>
+                  <span>数量</span>
+                  <span>单价</span>
+                  <span>成本</span>
+                  <span></span>
+                </div>
+                <div id="itemsBody"></div>
+              </div>
+            </section>
+
+            <fieldset class="settings-grid">
+              <label>
+                税费 %
+                <input id="taxRate" name="taxRate" type="number" min="0" step="0.1" />
+              </label>
+              <label>
+                折扣 %
+                <input id="discountRate" name="discountRate" type="number" min="0" max="100" step="0.1" />
+              </label>
+              <label>
+                首付款 %
+                <input id="depositRate" name="depositRate" type="number" min="0" max="100" step="1" />
+              </label>
+              <label>
+                目标利润 %
+                <input id="targetMargin" name="targetMargin" type="number" min="0" max="95" step="1" />
+              </label>
+            </fieldset>
+
+            <label class="wide-field">
+              付款条款
+              <textarea id="terms" name="terms" rows="4"></textarea>
+            </label>
+          </form>
+        </section>
+
+        <aside class="preview-panel" aria-labelledby="previewTitle">
+          <div class="summary-strip">
+            <div class="health-card" id="profitHealth">
+              <span>利润状态</span>
+              <strong>计算中</strong>
+            </div>
+            <div>
+              <span>预计利润</span>
+              <strong id="profitValue">¥0</strong>
+            </div>
+            <div>
+              <span>首付款</span>
+              <strong id="depositValue">¥0</strong>
+            </div>
+          </div>
+
+          <section class="advice-card" id="profitAdvice" aria-label="内部利润建议">
+            <span>内部建议</span>
+            <strong id="profitAdviceTitle">计算中</strong>
+            <p id="profitAdviceBody"></p>
+          </section>
+
+          <section class="delivery-card" id="deliveryStatus" aria-label="交付状态">
+            <span>交付状态</span>
+            <strong id="deliveryStatusTitle">检查中</strong>
+            <p id="deliveryStatusBody"></p>
+          </section>
+
+          <article class="quote-paper" id="quotePaper">
+            <div class="watermark" id="watermark">OfferDesk Free</div>
+            <header class="quote-header">
+              <div>
+                <p class="document-label">报价单</p>
+                <h2 id="previewTitle">项目报价</h2>
+                <p id="previewSeller">你的品牌</p>
+              </div>
+              <div class="quote-meta">
+                <span id="quoteNumber">OD-0001</span>
+                <span id="previewDate"></span>
+              </div>
+            </header>
+
+            <section class="client-block">
+              <span>客户</span>
+              <strong id="previewClient">客户名称</strong>
+              <small id="previewValid">有效期未设置</small>
+            </section>
+
+            <table class="quote-table">
+              <thead>
+                <tr>
+                  <th>项目</th>
+                  <th>数量</th>
+                  <th>单价</th>
+                  <th>金额</th>
+                </tr>
+              </thead>
+              <tbody id="previewItems"></tbody>
+            </table>
+
+            <section class="totals">
+              <div><span>小计</span><strong id="subtotalValue">¥0</strong></div>
+              <div><span>折扣</span><strong id="discountValue">¥0</strong></div>
+              <div><span>税费</span><strong id="taxValue">¥0</strong></div>
+              <div class="grand-total"><span>总价</span><strong id="totalValue">¥0</strong></div>
+            </section>
+
+            <section class="terms-block">
+              <h3>条款</h3>
+              <p id="previewTerms"></p>
+            </section>
+          </article>
+        </aside>
+      </main>
+
+      <footer class="site-footer">
+        <span>OfferDesk</span>
+        <a href="./sales.html">购买</a>
+        <a href="./privacy.html">隐私</a>
+        <a href="./terms.html">条款</a>
+        <a href="./refund.html">退款</a>
+      </footer>
+    </div>
+
+    <dialog id="unlockDialog" class="unlock-dialog">
+      <form method="dialog">
+        <div class="dialog-head">
+          <h2>解锁专业版</h2>
+          <button class="icon-button" value="cancel" aria-label="关闭">×</button>
+        </div>
+        <p>专业版去掉免费水印，适合正式发给客户。付款后输入授权码即可解锁。</p>
+        <div class="dialog-actions">
+          <a class="primary-link" id="checkoutLink" href="#" target="_blank" rel="noreferrer">去付款</a>
+          <figure class="payment-qr" id="paymentQrBox" hidden>
+            <img id="paymentQrImage" alt="支付宝收款码" />
+            <figcaption>打开支付宝扫一扫付款，付款后输入授权码解锁。</figcaption>
+          </figure>
+          <label>
+            授权码
+            <input id="licenseInput" type="text" placeholder="付款后输入授权码" />
+          </label>
+          <button class="accent-button" id="applyLicenseButton" type="button">应用授权码</button>
+        </div>
+        <p class="notice" id="paymentNotice"></p>
+      </form>
+    </dialog>
+
+    <input id="importFile" type="file" accept="application/json,.json" hidden />
+    <script src="./app-config.js"></script>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

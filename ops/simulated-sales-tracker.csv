@@ -1,0 +1,2 @@
+date,channel,person,role,contacted,trial_sent,used_once,paid,feedback,next_action
+2026-06-11,manual-demo,模拟买家,模拟客户,yes,yes,yes,模拟付款-非真实到账,演示流程通过,等待真实付款验收
