@@ -23,6 +23,9 @@ OfferDesk 是一个打开就能用的报价单工具。你输入项目、数量�
 ## 上传素材
 
 - 产品截图：`launch/offerdesk-screenshot.jpg`
+- 商品封面图：`launch/social-cover.jpg`
+- 痛点说明图：`launch/social-profit.jpg`
+- 交付说明图：`launch/social-delivery.jpg`
 - 买家交付说明：`launch/buyer-guide.md`
 - 付款后邮件：用 `scripts/create-delivery-email.mjs` 生成
 

@@ -10,7 +10,8 @@ const pages = [
   "after-pay.html",
   "privacy.html",
   "terms.html",
-  "refund.html"
+  "refund.html",
+  "launch/social-posters.html"
 ];
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

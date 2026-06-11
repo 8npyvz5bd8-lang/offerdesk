@@ -51,6 +51,10 @@ OfferDesk 是一个简单直接的报价单工具。你只需要输入项目、�
 ## 产品页需要上传的素材
 
 - 产品截图：`launch/offerdesk-screenshot.jpg`
+- 商品封面图：`launch/social-cover.jpg`
+- 痛点说明图：`launch/social-profit.jpg`
+- 交付说明图：`launch/social-delivery.jpg`
+- 海报模板：`launch/social-posters.html`
 - 买家交付说明：`launch/buyer-guide.md`
 - 付款后邮件：用 `scripts/create-delivery-email.mjs` 生成
 - 产品页填写内容：`launch/product-page-fields.md`
