@@ -29,6 +29,15 @@
 launch/alipay-server-env.example
 ```
 
+填完本地环境变量文件后，先预检：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/validate-alipay-env.mjs \
+  --file "你的环境变量文件.env"
+```
+
+这个命令只检查缺项和格式，不会打印密钥。
+
 ## 本地启动命令
 
 ```bash
