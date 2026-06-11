@@ -1,0 +1,337 @@
+:root {
+  color-scheme: light;
+  --site-bg: #faf9f3;
+  --site-paper: #ffffff;
+  --site-ink: #171a17;
+  --site-muted: #697168;
+  --site-line: #d8ded4;
+  --site-line-strong: #aeb9aa;
+  --site-green: #0f6f45;
+  --site-green-dark: #0a4d31;
+  --site-amber: #b97805;
+  --site-danger: #a33232;
+  --site-shadow: 12px 14px 0 rgba(23, 26, 23, 0.07);
+  --site-radius: 8px;
+}
+
+.surface-page {
+  margin: 0;
+  background:
+    linear-gradient(90deg, rgba(23, 26, 23, 0.045) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(23, 26, 23, 0.035) 1px, transparent 1px),
+    var(--site-bg);
+  background-size: 28px 28px;
+  color: var(--site-ink);
+  font-family: "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", Georgia, serif;
+}
+
+.surface-page a {
+  color: inherit;
+}
+
+.surface-page .wrap {
+  width: min(1180px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 24px 0 44px;
+}
+
+.surface-page .top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 26px;
+}
+
+.surface-page p.top {
+  display: block;
+  margin-bottom: 18px;
+  color: var(--site-muted);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.surface-page .top > strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 30px;
+  line-height: 0.95;
+}
+
+.surface-page .top > strong::before {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--site-ink);
+  border-radius: var(--site-radius);
+  background: var(--site-ink);
+  color: var(--site-paper);
+  content: "OD";
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.surface-page h1,
+.surface-page h2,
+.surface-page h3,
+.surface-page p {
+  margin: 0;
+}
+
+.surface-page h1 {
+  max-width: 780px;
+  font-size: clamp(40px, 5vw, 70px);
+  line-height: 0.98;
+  font-weight: 900;
+}
+
+.surface-page h2 {
+  font-size: 24px;
+  line-height: 1.16;
+}
+
+.surface-page p,
+.surface-page li {
+  color: var(--site-muted);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 700;
+  line-height: 1.75;
+}
+
+.surface-page .hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 28px;
+  align-items: stretch;
+}
+
+.surface-page .card,
+.surface-page .panel,
+.surface-page .step,
+.surface-page .stat,
+.surface-page .fact,
+.surface-page .trust-card {
+  border: 1px solid var(--site-line-strong);
+  border-radius: var(--site-radius);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: var(--site-shadow);
+}
+
+.surface-page .card,
+.surface-page .panel,
+.surface-page .step {
+  padding: 24px;
+}
+
+.surface-page .panel,
+.surface-page .card {
+  margin-top: 14px;
+}
+
+.surface-page .links,
+.surface-page .actions,
+.surface-page .facts,
+.surface-page .stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.surface-page .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border: 1px solid var(--site-ink);
+  border-radius: var(--site-radius);
+  padding: 0 18px;
+  background: var(--site-paper);
+  color: var(--site-ink);
+  cursor: pointer;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 4px 4px 0 rgba(23, 26, 23, 0.14);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.surface-page .btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 rgba(23, 26, 23, 0.16);
+}
+
+.surface-page .green,
+.surface-page .primary {
+  border-color: var(--site-green);
+  background: var(--site-green);
+  color: var(--site-paper);
+}
+
+.surface-page .blue {
+  border-color: #d28a04;
+  background: linear-gradient(180deg, #d99a18, var(--site-amber));
+  color: #fffdf6;
+}
+
+.surface-page .danger {
+  border-color: var(--site-danger);
+  color: var(--site-danger);
+}
+
+.surface-page .fact,
+.surface-page .stat {
+  padding: 12px 14px;
+}
+
+.surface-page .fact {
+  color: var(--site-green-dark);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.surface-page .price {
+  color: var(--site-ink);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: clamp(56px, 8vw, 78px);
+  font-weight: 1000;
+  line-height: 0.95;
+}
+
+.surface-page .qr {
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.surface-page .qr img,
+.surface-page .qr canvas {
+  width: min(280px, 100%);
+  height: auto;
+  border: 1px solid var(--site-line);
+  border-radius: var(--site-radius);
+  background: var(--site-paper);
+}
+
+.surface-page input,
+.surface-page textarea,
+.surface-page select,
+.surface-page .license-box {
+  width: 100%;
+  border: 1px solid var(--site-line);
+  border-radius: var(--site-radius);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 11px 12px;
+  color: var(--site-ink);
+  font: inherit;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 750;
+}
+
+.surface-page label {
+  color: var(--site-muted);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.surface-page textarea {
+  resize: vertical;
+}
+
+.surface-page .grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.surface-page .table-wrap {
+  overflow-x: auto;
+}
+
+.surface-page table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.surface-page th,
+.surface-page td {
+  border-bottom: 1px solid var(--site-line);
+  padding: 10px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.surface-page th {
+  color: var(--site-muted);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.surface-page .notice {
+  color: var(--site-green);
+  font-weight: 900;
+}
+
+.surface-page .legal-shell {
+  width: min(920px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.surface-page .legal-card {
+  border: 1px solid var(--site-line-strong);
+  border-radius: var(--site-radius);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--site-shadow);
+}
+
+.surface-page .legal-card h1 {
+  font-size: clamp(42px, 6vw, 70px);
+  line-height: 0.98;
+}
+
+.surface-page .legal-card h2 {
+  margin-top: 28px;
+}
+
+@media (max-width: 860px) {
+  .surface-page .top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .surface-page .hero,
+  .surface-page .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .surface-page .links .btn,
+  .surface-page .actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .surface-page .wrap {
+    width: min(100vw - 24px, 560px);
+    padding-top: 18px;
+  }
+
+  .surface-page h1 {
+    font-size: 38px;
+  }
+
+  .surface-page .card,
+  .surface-page .panel,
+  .surface-page .step {
+    padding: 18px;
+  }
+}

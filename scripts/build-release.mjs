@@ -40,6 +40,7 @@ const files = [
   "pay.html",
   "after-pay.html",
   "share-copy.txt",
+  "site.css",
   "styles.css",
   "app-config.js",
   "privacy.html",

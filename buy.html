@@ -222,8 +222,9 @@
         }
       }
     </style>
+    <link rel="stylesheet" href="./site.css" />
   </head>
-  <body>
+  <body class="surface-page">
     <main class="wrap">
       <header class="top">
         <strong>OfferDesk 专业版</strong>
@@ -245,6 +246,10 @@
             <span class="fact">7 天内可处理退款</span>
           </div>
           <div class="buy-form" id="autoBuyForm" hidden>
+            <label>
+              买家名称
+              <input id="buyerName" type="text" placeholder="可填昵称、公司名或使用者名称" autocomplete="name" />
+            </label>
             <label>
               接收授权码邮箱
               <input id="buyerEmail" type="email" placeholder="输入买家邮箱" autocomplete="email" />
@@ -369,6 +374,7 @@
       const paymentQrImage = String(config.paymentQrImage || "").trim();
       const licenseProvider = String(config.licenseProvider || "").trim().toLowerCase();
       const autoBuyForm = document.getElementById("autoBuyForm");
+      const buyerName = document.getElementById("buyerName");
       const buyerEmail = document.getElementById("buyerEmail");
       const createOrderButton = document.getElementById("createOrderButton");
       const checkoutButton = document.getElementById("checkoutButton");
@@ -427,7 +433,7 @@
           const order = await requestJson(`${autoPaymentApiBase}/api/create-order`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email })
+            body: JSON.stringify({ email, name: buyerName.value.trim() })
           });
           if (order.qrImage) {
             autoQrImage.src = order.qrImage;
