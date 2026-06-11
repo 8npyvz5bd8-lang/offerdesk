@@ -16,6 +16,12 @@
 - `launch/social-profit.jpg`
 - `launch/social-delivery.jpg`
 
+线上预览入口：
+
+- 商品封面图：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/launch/social-posters.html?poster=cover
+- 痛点说明图：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/launch/social-posters.html?poster=profit
+- 交付说明图：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/launch/social-posters.html?poster=delivery
+
 ## 闲鱼商品版
 
 标题：
