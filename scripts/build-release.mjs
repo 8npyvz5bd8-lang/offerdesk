@@ -24,6 +24,9 @@ await mkdir(outDir, { recursive: true });
 const files = [
   "index.html",
   "sales.html",
+  "pay.html",
+  "after-pay.html",
+  "share-copy.txt",
   "styles.css",
   "app-config.js",
   "privacy.html",

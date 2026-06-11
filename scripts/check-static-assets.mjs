@@ -5,6 +5,8 @@ import { pathToFileURL } from "node:url";
 const pages = [
   "index.html",
   "sales.html",
+  "pay.html",
+  "after-pay.html",
   "privacy.html",
   "terms.html",
   "refund.html"

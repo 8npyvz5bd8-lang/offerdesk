@@ -845,6 +845,55 @@ textarea {
   height: auto;
 }
 
+.sales-preview-card {
+  display: grid;
+  gap: 20px;
+  padding: 34px;
+}
+
+.sales-preview-top,
+.sales-preview-total,
+.sales-preview-table {
+  display: grid;
+  gap: 10px;
+}
+
+.sales-preview-top,
+.sales-preview-total {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.sales-preview-top span,
+.sales-preview-card p,
+.sales-preview-total span,
+.sales-preview-table span {
+  color: var(--muted);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+}
+
+.sales-preview-card h2 {
+  font-size: 40px;
+  line-height: 1.05;
+}
+
+.sales-preview-table {
+  grid-template-columns: 1fr auto;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 16px 0;
+}
+
+.sales-preview-table strong:nth-child(2n + 1) {
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.sales-preview-total strong {
+  color: var(--accent);
+  font-size: 38px;
+}
+
 .sales-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>购买 OfferDesk 专业版</title>
+    <meta
+      name="description"
+      content="支付 29 元购买 OfferDesk 专业版，去掉报价单水印。"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #f4f5f2;
+        color: #151916;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, "PingFang SC", sans-serif;
+        line-height: 1.7;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .wrap {
+        width: min(920px, 100%);
+        margin: 0 auto;
+        padding: 32px 18px;
+      }
+
+      .card {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 24px;
+        align-items: center;
+        border: 1px solid #d9ded7;
+        border-radius: 12px;
+        background: #ffffff;
+        padding: 24px;
+        box-shadow: 0 20px 60px rgba(20, 26, 22, 0.12);
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: 34px;
+        line-height: 1.08;
+      }
+
+      p {
+        margin: 0 0 12px;
+        color: #667065;
+      }
+
+      .price {
+        color: #0f8a55;
+        font-size: 42px;
+        font-weight: 900;
+      }
+
+      .qr {
+        display: grid;
+        justify-items: center;
+        gap: 10px;
+      }
+
+      .qr canvas {
+        width: min(260px, 100%);
+        height: auto;
+        border: 1px solid #d9ded7;
+        border-radius: 10px;
+        background: #ffffff;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 18px 0;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        border: 1px solid #151916;
+        border-radius: 999px;
+        padding: 0 18px;
+        color: #151916;
+        font-weight: 900;
+        text-decoration: none;
+      }
+
+      .primary {
+        border-color: #0f8a55;
+        background: #0f8a55;
+        color: #ffffff;
+      }
+
+      .blue {
+        border-color: #2563eb;
+        background: #2563eb;
+        color: #ffffff;
+      }
+
+      .steps {
+        margin: 16px 0 0;
+        padding-left: 20px;
+        color: #333333;
+      }
+
+      .foot {
+        margin-top: 16px;
+        font-size: 13px;
+      }
+
+      @media (max-width: 760px) {
+        .card {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 28px;
+        }
+
+        .actions .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="card">
+        <div class="qr">
+          <canvas id="qr" width="260" height="260" aria-label="支付宝收款二维码"></canvas>
+          <strong>支付宝扫码付款</strong>
+        </div>
+        <div>
+          <p><a href="./sales.html">返回销售页</a> · <a href="./index.html">打开软件</a></p>
+          <h1>购买 OfferDesk 专业版</h1>
+          <div class="price">29 元</div>
+          <p>专业版用于去掉免费水印，适合把报价单正式发给客户。</p>
+          <div class="actions">
+            <a class="btn primary" href="https://qr.alipay.com/fkx18699evozd44sg2kip49" target="_blank" rel="noreferrer">打开支付宝付款</a>
+            <a class="btn blue" href="./after-pay.html">付款后提交信息</a>
+            <a class="btn" href="./index.html">打开软件</a>
+          </div>
+          <ol class="steps">
+            <li>扫码或点击按钮支付 29 元。</li>
+            <li>付款后点击“付款后提交信息”，填写付款时间、邮箱和支付宝昵称或备注。</li>
+            <li>确认付款后，会通过邮箱发送专业版授权码。</li>
+            <li>回到 OfferDesk 输入授权码，水印会消失。</li>
+          </ol>
+          <p class="foot">客服邮箱：<a href="mailto:534403209@qq.com">534403209@qq.com</a></p>
+        </div>
+      </section>
+    </main>
+    <script>
+      const QR_ROWS = [
+        "00000000000000000000000000000000000000000",
+        "00000000000000000000000000000000000000000",
+        "00000000000000000000000000000000000000000",
+        "00000000000000000000000000000000000000000",
+        "00001111111001110010001100010011111110000",
+        "00001000001000111001101011001010000010000",
+        "00001011101011110011000011100010111010000",
+        "00001011101011100000001101010010111010000",
+        "00001011101011111111110010011010111010000",
+        "00001000001010001000010101001010000010000",
+        "00001111111010101010101010101011111110000",
+        "00000000000011000010100111100000000000000",
+        "00001011111000000110110100101011111000000",
+        "00000100110001111100011110110011011110000",
+        "00001111101100101111010010100100101100000",
+        "00000000000011101100111110001110111110000",
+        "00000110001010110011100111100001110110000",
+        "00001101010000110101001001011110000110000",
+        "00001001111010010011110011001110100100000",
+        "00000111100110111011001001001111011000000",
+        "00001110011110011111110000101101100010000",
+        "00001110010011011110001111010111011010000",
+        "00000100111110100101001011001001101100000",
+        "00001010000000110101000101110011111010000",
+        "00001110101000011100001001010100110100000",
+        "00001100000000000001110011110010011010000",
+        "00001001111110000110011101000001001100000",
+        "00001010100111110000100111101100001100000",
+        "00001000001010011010110100111111110110000",
+        "00000000000010100110010110101000101110000",
+        "00001111111000100101110000111010101100000",
+        "00001000001011000011011110001000111100000",
+        "00001011101011110111100111101111110100000",
+        "00001011101010000101011000000100111010000",
+        "00001011101010100111101011001111001000000",
+        "00001000001001110001001001100010101000000",
+        "00001111111010010111111000011111010100000",
+        "00000000000000000000000000000000000000000",
+        "00000000000000000000000000000000000000000",
+        "00000000000000000000000000000000000000000",
+        "00000000000000000000000000000000000000000"
+      ];
+
+      const canvas = document.getElementById("qr");
+      const ctx = canvas.getContext("2d");
+      const cell = canvas.width / QR_ROWS.length;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#000000";
+      QR_ROWS.forEach((row, y) => {
+        [...row].forEach((value, x) => {
+          if (value === "1") {
+            ctx.fillRect(Math.round(x * cell), Math.round(y * cell), Math.ceil(cell), Math.ceil(cell));
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
