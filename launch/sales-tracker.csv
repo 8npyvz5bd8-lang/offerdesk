@@ -1,1 +1,1 @@
-date,channel,person,role,contacted,trial_sent,used_once,paid,feedback,next_action
+date,channel,person,role,contact,trial_sent,used_once,payment_status,paid_at,amount,buyer_email,license_sent,feedback,next_action

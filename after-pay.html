@@ -82,6 +82,12 @@
         resize: vertical;
       }
 
+      .submit-content {
+        min-height: 168px;
+        color: #303830;
+        background: #f8faf7;
+      }
+
       .wide {
         grid-column: 1 / -1;
       }
@@ -175,17 +181,22 @@
             支付宝昵称或备注
             <input id="payerName" type="text" placeholder="方便核对到账" />
           </label>
-          <label class="wide">
-            其他说明
-            <textarea id="note" placeholder="可以写付款截图说明、订单备注或你希望绑定的使用者名称"></textarea>
-          </label>
-        </form>
-        <div class="actions">
-          <a class="btn primary" id="mailLink" href="mailto:534403209@qq.com">发送邮件领取授权码</a>
-          <button class="btn blue" id="copyButton" type="button">复制提交内容</button>
-          <a class="btn" href="./index.html">打开 OfferDesk</a>
-        </div>
-        <p class="notice" id="notice"></p>
+        <label class="wide">
+          其他说明
+          <textarea id="note" placeholder="可以写付款截图说明、订单备注或你希望绑定的使用者名称"></textarea>
+        </label>
+        <label class="wide">
+          要提交的内容
+          <textarea id="submitContent" class="submit-content" readonly></textarea>
+        </label>
+      </form>
+      <div class="actions">
+        <a class="btn primary" id="mailLink" href="mailto:534403209@qq.com">发送邮件领取授权码</a>
+        <button class="btn blue" id="copyButton" type="button">复制提交内容</button>
+        <button class="btn" id="copyEmailButton" type="button">复制客服邮箱</button>
+        <a class="btn" href="./index.html">打开 OfferDesk</a>
+      </div>
+      <p class="notice" id="notice"></p>
         <ol class="steps">
           <li>先在付款页用支付宝支付 29 元。</li>
           <li>填写上面的付款信息。</li>
@@ -216,15 +227,21 @@
 
       function updateMailLink() {
         const subject = encodeURIComponent("OfferDesk 专业版授权码领取");
-        const body = encodeURIComponent(buildBody());
+        const bodyText = buildBody();
+        const body = encodeURIComponent(bodyText);
+        $("submitContent").value = bodyText;
         $("mailLink").href = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
       }
 
       document.querySelectorAll("input, textarea").forEach((el) => el.addEventListener("input", updateMailLink));
       $("copyButton").addEventListener("click", async () => {
         updateMailLink();
-        await navigator.clipboard.writeText(buildBody());
+        await navigator.clipboard.writeText($("submitContent").value);
         $("notice").textContent = "提交内容已复制，可以粘贴到邮件或聊天里发送。";
+      });
+      $("copyEmailButton").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(supportEmail);
+        $("notice").textContent = "客服邮箱已复制。";
       });
       updateMailLink();
     </script>

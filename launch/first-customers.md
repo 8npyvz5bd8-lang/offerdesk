@@ -75,7 +75,13 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share-copy.txt
 
 ## 付款跟进话术
 
-收到付款后，把付款后邮件里的授权码发给买家。确认买家能解锁并去掉水印后，再记录到 `launch/sales-tracker.csv`。
+买家付款后，让他打开付款后提交页：
+
+https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
+
+确认支付宝到账后，把 `dist/post-purchase-email.txt` 里的授权码邮件内容发给买家。确认买家能解锁并去掉水印后，再记录到 `launch/sales-tracker.csv`。
+
+记录时至少填这几项：付款状态、付款时间、金额、买家邮箱、授权码是否已发送、下一步。
 
 ## 7 天验证标准
 
