@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>OfferDesk 首单跟进台</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #f4f5f2;
+        color: #151916;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, "PingFang SC", sans-serif;
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .wrap {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        padding: 24px 16px 40px;
+      }
+
+      .top,
+      .actions,
+      .stats,
+      .links {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .top {
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 32px;
+        line-height: 1.1;
+      }
+
+      p {
+        margin: 6px 0 0;
+        color: #667065;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        border: 1px solid #151916;
+        border-radius: 999px;
+        background: #ffffff;
+        padding: 0 15px;
+        color: #151916;
+        font-weight: 900;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .green {
+        border-color: #0f8a55;
+        background: #0f8a55;
+        color: #ffffff;
+      }
+
+      .danger {
+        border-color: #a33232;
+        color: #a33232;
+      }
+
+      .panel {
+        border: 1px solid #d9ded7;
+        border-radius: 10px;
+        background: #ffffff;
+        padding: 16px;
+        box-shadow: 0 14px 38px rgba(20, 26, 22, 0.08);
+        margin-top: 14px;
+      }
+
+      .stat {
+        min-width: 132px;
+        border: 1px solid #d9ded7;
+        border-radius: 10px;
+        background: #ffffff;
+        padding: 12px 14px;
+      }
+
+      .stat strong {
+        display: block;
+        color: #0f8a55;
+        font-size: 28px;
+        line-height: 1;
+      }
+
+      .stat span {
+        color: #667065;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 920px;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid #eef1ed;
+        padding: 10px 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: #667065;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid #d9ded7;
+        border-radius: 8px;
+        background: #f8faf7;
+        padding: 9px;
+        color: #151916;
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 74px;
+        resize: vertical;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      .copy-box {
+        width: 100%;
+        min-height: 180px;
+        margin-top: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 13px;
+      }
+
+      .notice {
+        min-height: 24px;
+        color: #0f8a55;
+        font-weight: 900;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 760px) {
+        .top {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .links .btn,
+        .actions .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="top">
+        <div>
+          <h1>OfferDesk 首单跟进台</h1>
+          <p>今天只盯 10 个人：发出、试用、愿付费、已付款。</p>
+        </div>
+        <nav class="links" aria-label="常用链接">
+          <a class="btn" href="./share.html">复制文案</a>
+          <a class="btn" href="./sales.html">销售页</a>
+          <a class="btn" href="./pay.html">付款页</a>
+          <a class="btn green" href="./after-pay.html">付款后提交</a>
+        </nav>
+      </header>
+
+      <section class="stats" aria-label="首单进度">
+        <div class="stat"><strong id="stat-contacted">0</strong><span>已联系</span></div>
+        <div class="stat"><strong id="stat-trial">0</strong><span>已发试用</span></div>
+        <div class="stat"><strong id="stat-interested">0</strong><span>愿意付费</span></div>
+        <div class="stat"><strong id="stat-paid">0</strong><span>已付款</span></div>
+        <div class="stat"><strong id="stat-revenue">¥0</strong><span>收入</span></div>
+      </section>
+
+      <section class="panel">
+        <div class="actions">
+          <button class="btn green" type="button" id="addRow">新增一行</button>
+          <button class="btn" type="button" id="exportCsv">生成 CSV</button>
+          <button class="btn" type="button" id="copyCsv">复制 CSV</button>
+          <button class="btn danger" type="button" id="clearDone">清空空白行</button>
+        </div>
+        <p>状态到“已付款”后，去支付宝确认到账，再用付款后邮件发授权码。</p>
+      </section>
+
+      <section class="panel table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>渠道</th>
+              <th>对象</th>
+              <th>角色</th>
+              <th>联系方式</th>
+              <th>状态</th>
+              <th>金额</th>
+              <th>邮箱</th>
+              <th>下一步</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>导出给销售记录表</h2>
+        <textarea class="copy-box" id="csvOutput" readonly></textarea>
+        <p class="notice" id="notice"></p>
+      </section>
+    </main>
+
+    <script>
+      const storageKey = "offerdesk-first-sale-pipeline-v1";
+      const emptyLead = () => ({
+        channel: "",
+        person: "",
+        role: "",
+        contact: "",
+        status: "未联系",
+        amount: "",
+        email: "",
+        nextAction: "",
+        note: ""
+      });
+
+      const statusOptions = ["未联系", "已联系", "已发试用", "已试用", "愿意付费", "已付款", "已发授权", "失败"];
+      const rowsEl = document.getElementById("rows");
+      const csvOutput = document.getElementById("csvOutput");
+      const notice = document.getElementById("notice");
+
+      let leads = loadLeads();
+      render();
+
+      document.getElementById("addRow").addEventListener("click", () => {
+        leads.push(emptyLead());
+        saveLeads();
+        render();
+      });
+
+      document.getElementById("exportCsv").addEventListener("click", () => {
+        csvOutput.value = toCsv(leads);
+        notice.textContent = "已生成 CSV，可以粘到 launch/sales-tracker.csv。";
+      });
+
+      document.getElementById("copyCsv").addEventListener("click", async () => {
+        csvOutput.value = toCsv(leads);
+        await navigator.clipboard.writeText(csvOutput.value);
+        notice.textContent = "CSV 已复制。";
+      });
+
+      document.getElementById("clearDone").addEventListener("click", () => {
+        leads = leads.filter((lead) => Object.values(lead).some((value) => String(value).trim()));
+        while (leads.length < 10) {
+          leads.push(emptyLead());
+        }
+        saveLeads();
+        render();
+      });
+
+      function loadLeads() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+          const normalized = Array.isArray(saved) ? saved.map((lead) => ({ ...emptyLead(), ...lead })) : [];
+          while (normalized.length < 10) {
+            normalized.push(emptyLead());
+          }
+          return normalized;
+        } catch {
+          return Array.from({ length: 10 }, emptyLead);
+        }
+      }
+
+      function saveLeads() {
+        localStorage.setItem(storageKey, JSON.stringify(leads));
+      }
+
+      function render() {
+        rowsEl.innerHTML = "";
+        leads.forEach((lead, index) => rowsEl.appendChild(renderRow(lead, index)));
+        updateStats();
+        csvOutput.value = toCsv(leads);
+      }
+
+      function renderRow(lead, index) {
+        const tr = document.createElement("tr");
+        tr.appendChild(cell(input(index, "channel", lead.channel, "闲鱼")));
+        tr.appendChild(cell(input(index, "person", lead.person, "姓名/账号")));
+        tr.appendChild(cell(input(index, "role", lead.role, "设计师")));
+        tr.appendChild(cell(input(index, "contact", lead.contact, "微信/主页")));
+        tr.appendChild(cell(select(index, "status", lead.status)));
+        tr.appendChild(cell(input(index, "amount", lead.amount, "29")));
+        tr.appendChild(cell(input(index, "email", lead.email, "买家邮箱")));
+        tr.appendChild(cell(input(index, "nextAction", lead.nextAction, "继续跟进/发付款页")));
+        tr.appendChild(cell(textarea(index, "note", lead.note, "反馈/付款备注")));
+        return tr;
+      }
+
+      function cell(child) {
+        const td = document.createElement("td");
+        td.appendChild(child);
+        return td;
+      }
+
+      function input(index, key, value, placeholder) {
+        const el = document.createElement("input");
+        el.value = value;
+        el.placeholder = placeholder;
+        el.addEventListener("input", () => updateLead(index, key, el.value));
+        return el;
+      }
+
+      function textarea(index, key, value, placeholder) {
+        const el = document.createElement("textarea");
+        el.value = value;
+        el.placeholder = placeholder;
+        el.addEventListener("input", () => updateLead(index, key, el.value));
+        return el;
+      }
+
+      function select(index, key, value) {
+        const el = document.createElement("select");
+        for (const option of statusOptions) {
+          const item = document.createElement("option");
+          item.value = option;
+          item.textContent = option;
+          item.selected = option === value;
+          el.appendChild(item);
+        }
+        el.addEventListener("change", () => updateLead(index, key, el.value));
+        return el;
+      }
+
+      function updateLead(index, key, value) {
+        leads[index][key] = value;
+        saveLeads();
+        updateStats();
+        csvOutput.value = toCsv(leads);
+        notice.textContent = "已保存到本机浏览器。";
+      }
+
+      function updateStats() {
+        const contacted = leads.filter((lead) => statusIndex(lead.status) >= statusIndex("已联系")).length;
+        const trial = leads.filter((lead) => statusIndex(lead.status) >= statusIndex("已发试用")).length;
+        const interested = leads.filter((lead) => statusIndex(lead.status) >= statusIndex("愿意付费")).length;
+        const paid = leads.filter((lead) => ["已付款", "已发授权"].includes(lead.status)).length;
+        const revenue = leads
+          .filter((lead) => ["已付款", "已发授权"].includes(lead.status))
+          .reduce((sum, lead) => sum + Number(lead.amount || 0), 0);
+
+        document.getElementById("stat-contacted").textContent = contacted;
+        document.getElementById("stat-trial").textContent = trial;
+        document.getElementById("stat-interested").textContent = interested;
+        document.getElementById("stat-paid").textContent = paid;
+        document.getElementById("stat-revenue").textContent = `¥${revenue}`;
+      }
+
+      function statusIndex(status) {
+        return Math.max(0, statusOptions.indexOf(status));
+      }
+
+      function toCsv(items) {
+        const header = [
+          "date",
+          "channel",
+          "person",
+          "role",
+          "contact",
+          "trial_sent",
+          "used_once",
+          "payment_status",
+          "paid_at",
+          "amount",
+          "buyer_email",
+          "license_sent",
+          "feedback",
+          "next_action"
+        ];
+        const today = new Date().toISOString().slice(0, 10);
+        const rows = items
+          .filter((lead) => Object.values(lead).some((value) => String(value).trim()))
+          .map((lead) => [
+            today,
+            lead.channel,
+            lead.person,
+            lead.role,
+            lead.contact,
+            statusIndex(lead.status) >= statusIndex("已发试用") ? "yes" : "",
+            statusIndex(lead.status) >= statusIndex("已试用") ? "yes" : "",
+            lead.status,
+            ["已付款", "已发授权"].includes(lead.status) ? today : "",
+            lead.amount,
+            lead.email,
+            lead.status === "已发授权" ? "yes" : "",
+            lead.note,
+            lead.nextAction
+          ]);
+        return [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\n");
+      }
+
+      function csvCell(value) {
+        const text = String(value ?? "");
+        return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+      }
+    </script>
+  </body>
+</html>

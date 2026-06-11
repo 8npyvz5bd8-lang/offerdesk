@@ -25,6 +25,7 @@ const files = [
   "index.html",
   "sales.html",
   "share.html",
+  "pipeline.html",
   "pay.html",
   "after-pay.html",
   "share-copy.txt",

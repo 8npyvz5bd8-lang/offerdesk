@@ -33,6 +33,7 @@ OfferDesk 报价单赚钱助手
 - 付款后提交信息：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/after-pay.html
 - 可复制推广文案：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share-copy.txt
 - 一键复制推广页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/share.html
+- 首单跟进台：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pipeline.html
 
 ## 上架短描述
 
@@ -61,6 +62,7 @@ OfferDesk 是一个简单直接的报价单工具。你只需要输入项目、�
 - 收款平台填写指南：`launch/payment-platform-guide.md`
 - 首批获客文案：`launch/first-customers.md`
 - 首单推广复制页：`share.html`
+- 首单跟进台：`pipeline.html`
 - 销售记录表：`launch/sales-tracker.csv`
 - 最终发布执行手册：`launch/final-release-runbook.md`
 - 手动上传清单：`launch/manual-upload-checklist.md`
