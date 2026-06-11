@@ -6,6 +6,8 @@ const outDir = new URL("../dist/offerdesk-release/", import.meta.url);
 
 run(process.execPath, ["tests/pricing.test.mjs"]);
 run(process.execPath, ["tests/license.test.mjs"]);
+run(process.execPath, ["tests/signed-license.test.mjs"]);
+run(process.execPath, ["tests/alipay-payment-server.test.mjs"]);
 run(process.execPath, ["tests/templates.test.mjs"]);
 run(process.execPath, ["tests/config-writer.test.mjs"]);
 run(process.execPath, ["tests/configure-lemonsqueezy.test.mjs"]);

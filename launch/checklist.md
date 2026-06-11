@@ -16,13 +16,15 @@
 - 最终发布执行手册已准备。
 - 真实发布验收记录模板已准备。
 - 支付宝收款码已接入。
+- 唯一签名授权码已实现。
 
 ## 上架前必须补齐
 
 - 确认支付宝收款码能真实收款。
 - 运行当前上架状态诊断：`node scripts/release-status.mjs`。
-- 按 `launch/payment-platform-guide.md` 填写产品页。
-- 设置一个至少 8 位的授权码。
+- 开通支付宝官方商家扫码支付接口。
+- 按 `launch/alipay-auto-payment.md` 部署自动收款服务。
+- 把支付服务器地址写入 `app-config.js` 的 `autoPaymentApiBase`。
 - 四项信息齐全后，可用 `node scripts/prepare-release.mjs` 一键准备发布。
 - 用 `scripts/write-config.mjs` 生成 `app-config.js`。
 - 用 `scripts/create-delivery-email.mjs` 生成付款后邮件。
@@ -41,7 +43,7 @@
 3. 运行 `scripts/release-status.mjs` 看真实缺口。
 4. 用 `scripts/prepare-release.mjs` 一键生成配置、付款后邮件、发布包和上传压缩包。
 5. 如果不用一键命令，再分别运行 `scripts/write-config.mjs` 和 `scripts/create-delivery-email.mjs`。
-6. 确认产品页和付款后邮件里的授权码一致。
+6. 确认每个订单生成的授权码都不同。
 7. 跑发布前检查。
 8. 生成正式发布包或上传压缩包。
 9. 检查发布包没有明文授权码。

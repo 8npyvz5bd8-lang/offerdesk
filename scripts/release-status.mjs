@@ -8,16 +8,20 @@ export function buildReleaseStatus({ configText, acceptanceText, artifacts }) {
   const checkoutUrl = readConfigValue(configText, "checkoutUrl");
   const autoCheckoutUrl = readConfigValue(configText, "autoCheckoutUrl");
   const paymentQrImage = readConfigValue(configText, "paymentQrImage");
+  const autoPaymentApiBase = readConfigValue(configText, "autoPaymentApiBase");
   const licenseProvider = readConfigValue(configText, "licenseProvider");
   const lemonSqueezyProductId = readConfigValue(configText, "lemonSqueezyProductId");
+  const licensePublicKey = readConfigObject(configText, "licensePublicKey");
   const licenseHash = readConfigValue(configText, "licenseHash");
   const supportEmail = readConfigValue(configText, "supportEmail");
   const acceptanceChecks = validateAcceptanceText(acceptanceText);
   const acceptancePass = acceptanceChecks.length > 0 && acceptanceChecks.every((item) => item.pass);
   const autoPaymentReady = isAutomaticPaymentReady({
     autoCheckoutUrl,
+    autoPaymentApiBase,
     licenseProvider,
-    lemonSqueezyProductId
+    lemonSqueezyProductId,
+    licensePublicKey
   });
 
   const checks = [
@@ -27,14 +31,16 @@ export function buildReleaseStatus({ configText, acceptanceText, artifacts }) {
       fix: "准备真实付款链接或收款码图片。"
     },
     {
-      name: "全自动收款发码",
+      name: "支付宝自动收款发码",
       pass: autoPaymentReady,
-      fix: "创建 Lemon Squeezy 一次性购买商品，开启授权码，把 checkout URL 和产品 ID 写入 app-config.js。"
+      fix: "部署 scripts/alipay-payment-server.mjs，把服务地址写入 app-config.js 的 autoPaymentApiBase。"
     },
     {
-      name: "授权码哈希",
-      pass: autoPaymentReady || /^[a-f0-9]{64}$/.test(licenseHash),
-      fix: "准备至少 8 位授权码，或完成 Lemon Squeezy 自动授权配置。"
+      name: "唯一授权配置",
+      pass: isSignedProvider(licenseProvider)
+        ? isValidLicensePublicKey(licensePublicKey)
+        : autoPaymentReady || /^[a-f0-9]{64}$/.test(licenseHash),
+      fix: "生成授权公私钥，把公钥写入 app-config.js，私钥留在服务器。"
     },
     {
       name: "真实客服邮箱",
@@ -99,7 +105,7 @@ function getStage(checks) {
   }
 
   if (!checks[1].pass) {
-    return "待接入全自动收款";
+    return "待部署支付宝自动收款服务";
   }
 
   if (!checks[2].pass || !checks[3].pass) {
@@ -133,7 +139,7 @@ function getNextStep(checks) {
   }
 
   if (!checks[6].pass) {
-    return "接入平台自动授权邮件，或运行 scripts/create-delivery-email.mjs 生成补发邮件。";
+    return "自动服务未上线前，先运行 scripts/issue-signed-license.mjs 生成补发授权码。";
   }
 
   if (!checks[7].pass) {
@@ -160,7 +166,11 @@ function containsPlaceholder(value) {
   return lower.includes("example") || lower.includes("your-") || value.includes("你的");
 }
 
-function isAutomaticPaymentReady({ autoCheckoutUrl, licenseProvider, lemonSqueezyProductId }) {
+function isAutomaticPaymentReady({ autoCheckoutUrl, autoPaymentApiBase, licenseProvider, lemonSqueezyProductId, licensePublicKey }) {
+  if (isSignedProvider(licenseProvider)) {
+    return isRealHttpsUrl(autoPaymentApiBase) && isValidLicensePublicKey(licensePublicKey);
+  }
+
   return String(licenseProvider || "").trim().toLowerCase() === "lemonsqueezy" &&
     isRealHttpsUrl(autoCheckoutUrl) &&
     /^\d+$/.test(String(lemonSqueezyProductId || "").trim());
@@ -173,6 +183,34 @@ function isInternalOfferDeskPaymentPage(value) {
 function readConfigValue(source, key) {
   const match = String(source || "").match(new RegExp(`${key}:\\s*["']([^"']*)["']`));
   return match ? match[1].trim() : "";
+}
+
+function readConfigObject(source, key) {
+  const match = String(source || "").match(new RegExp(`${key}:\\s*(\\{[^;]*?\\})\\s*,?\\n`));
+  if (!match) {
+    return {};
+  }
+  try {
+    return JSON.parse(match[1]);
+  } catch {
+    return {};
+  }
+}
+
+function isSignedProvider(value) {
+  return String(value || "").trim().toLowerCase() === "signed";
+}
+
+function isValidLicensePublicKey(value) {
+  return Boolean(
+    value &&
+      value.kty === "EC" &&
+      value.crv === "P-256" &&
+      typeof value.x === "string" &&
+      value.x.length > 20 &&
+      typeof value.y === "string" &&
+      value.y.length > 20
+  );
 }
 
 async function exists(file) {

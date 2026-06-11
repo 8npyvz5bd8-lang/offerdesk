@@ -9,6 +9,8 @@ const tempConfig = join(tmpdir(), `offerdesk-invalid-${Date.now()}.js`);
 await writeFile(tempConfig, `window.OFFERDESK_CONFIG = {
   checkoutUrl: "",
   paymentQrImage: "",
+  licenseProvider: "local",
+  licensePublicKey: {},
   licenseHash: "",
   supportEmail: ""
 };
@@ -24,7 +26,7 @@ await rm(tempConfig, { force: true });
 assert.equal(result.status, 1);
 assert.ok(result.stdout.includes("OfferDesk 发布检查"));
 assert.ok(result.stdout.includes("FAIL 真实收款方式"));
-assert.ok(result.stdout.includes("FAIL 授权码哈希"));
+assert.ok(result.stdout.includes("FAIL 唯一授权配置"));
 assert.ok(result.stdout.includes("FAIL 真实客服邮箱"));
 assert.equal(result.stderr.includes("AssertionError"), false);
 

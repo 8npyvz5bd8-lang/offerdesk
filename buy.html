@@ -158,6 +158,47 @@
         background: #ffffff;
       }
 
+      .qr img {
+        width: min(280px, 100%);
+        height: auto;
+        border: 1px solid #d9ded7;
+        border-radius: 10px;
+        background: #ffffff;
+      }
+
+      .buy-form,
+      .order-box {
+        display: grid;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .buy-form label {
+        display: grid;
+        gap: 6px;
+        color: #667065;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .buy-form input,
+      .license-box {
+        width: 100%;
+        border: 1px solid #d9ded7;
+        border-radius: 10px;
+        background: #f8faf7;
+        padding: 12px;
+        color: #151916;
+        font: inherit;
+        font-weight: 800;
+      }
+
+      .license-box {
+        min-height: 110px;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+      }
+
       .small {
         font-size: 13px;
       }
@@ -198,19 +239,35 @@
           <h1>29 元解锁专业版，正式报价单去水印。</h1>
           <div class="facts">
             <span class="fact">一次性买断</span>
-            <span class="fact">自动收款</span>
-            <span class="fact">自动发授权码</span>
+            <span class="fact">支付宝扫码</span>
+            <span class="fact">到账自动发码</span>
+            <span class="fact">每人唯一授权码</span>
             <span class="fact">7 天内可处理退款</span>
           </div>
+          <div class="buy-form" id="autoBuyForm" hidden>
+            <label>
+              接收授权码邮箱
+              <input id="buyerEmail" type="email" placeholder="输入买家邮箱" autocomplete="email" />
+            </label>
+            <button class="btn green" id="createOrderButton" type="button">生成专属付款码</button>
+          </div>
           <div class="actions" style="margin-top: 22px">
-            <a class="btn green" id="checkoutButton" href="https://qr.alipay.com/fkx18699evozd44sg2kip49" target="_blank" rel="noreferrer">打开支付宝付款</a>
+            <a class="btn green" id="checkoutButton" href="https://qr.alipay.com/fkx18699evozd44sg2kip49" target="_blank" rel="noreferrer">备用支付宝收款码</a>
             <a class="btn blue" id="manualClaimButton" href="./after-pay.html">付款后提交信息</a>
             <a class="btn" href="./index.html">打开软件</a>
           </div>
-          <p class="small" id="checkoutStatus" style="margin-top: 12px">自动收款平台未配置，当前是人工备用收款。</p>
+          <div class="order-box">
+            <p class="small" id="checkoutStatus">支付宝自动收款服务未配置，当前是备用收款码。</p>
+            <p class="small" id="orderStatus"></p>
+            <a class="btn green" id="autoPayLink" href="#" target="_blank" rel="noreferrer" hidden>打开支付宝付款</a>
+            <div class="license-box" id="licenseBox" hidden></div>
+            <button class="btn" id="copyLicenseButton" type="button" hidden>复制授权码</button>
+            <a class="btn blue" id="openWithLicenseButton" href="./index.html" hidden>带授权码打开软件</a>
+          </div>
         </article>
 
         <aside class="card qr">
+          <img id="autoQrImage" alt="支付宝专属付款码" hidden />
           <canvas id="qr" width="260" height="260" aria-label="支付宝收款二维码"></canvas>
           <div class="price">¥29</div>
           <p class="small" id="checkoutCaption">扫码或点击按钮付款</p>
@@ -226,12 +283,12 @@
         <article class="step">
           <strong>2</strong>
           <h2>付款 29 元</h2>
-          <p>打开自动付款页，按平台显示的方式完成付款。</p>
+          <p>输入邮箱生成专属支付宝付款码，扫码付款。</p>
         </article>
         <article class="step">
           <strong>3</strong>
           <h2>收到授权码</h2>
-          <p>平台自动把授权码发到邮箱。输入后免费水印消失，可正式发给客户。</p>
+          <p>到账后页面自动显示唯一授权码。输入后水印消失，可正式发给客户。</p>
         </article>
       </section>
 
@@ -308,11 +365,22 @@
 
       const config = window.OFFERDESK_CONFIG || {};
       const autoCheckoutUrl = String(config.autoCheckoutUrl || "").trim();
+      const autoPaymentApiBase = String(config.autoPaymentApiBase || "").trim().replace(/\/+$/, "");
       const licenseProvider = String(config.licenseProvider || "").trim().toLowerCase();
+      const autoBuyForm = document.getElementById("autoBuyForm");
+      const buyerEmail = document.getElementById("buyerEmail");
+      const createOrderButton = document.getElementById("createOrderButton");
       const checkoutButton = document.getElementById("checkoutButton");
       const manualClaimButton = document.getElementById("manualClaimButton");
       const checkoutStatus = document.getElementById("checkoutStatus");
+      const orderStatus = document.getElementById("orderStatus");
       const checkoutCaption = document.getElementById("checkoutCaption");
+      const autoQrImage = document.getElementById("autoQrImage");
+      const autoPayLink = document.getElementById("autoPayLink");
+      const licenseBox = document.getElementById("licenseBox");
+      const copyLicenseButton = document.getElementById("copyLicenseButton");
+      const openWithLicenseButton = document.getElementById("openWithLicenseButton");
+      let pollTimer = 0;
 
       if (licenseProvider === "lemonsqueezy" && autoCheckoutUrl.startsWith("https://")) {
         checkoutButton.href = autoCheckoutUrl;
@@ -321,6 +389,91 @@
         canvas.hidden = true;
         checkoutStatus.textContent = "付款平台会自动收款，并把授权码发到买家邮箱。";
         checkoutCaption.textContent = "支持平台可用的支付宝、微信支付、银行卡或 PayPal。";
+      }
+
+      if (licenseProvider === "signed" && autoPaymentApiBase.startsWith("https://")) {
+        autoBuyForm.hidden = false;
+        checkoutButton.classList.remove("green");
+        checkoutButton.textContent = "备用收款码";
+        manualClaimButton.hidden = true;
+        checkoutStatus.textContent = "已开启支付宝官方自动收款。付款成功后会自动生成唯一授权码。";
+        checkoutCaption.textContent = "输入邮箱后生成本次订单专属付款码。";
+      }
+
+      createOrderButton.addEventListener("click", async () => {
+        const email = buyerEmail.value.trim();
+        if (!email) {
+          checkoutStatus.textContent = "先输入买家邮箱。";
+          return;
+        }
+
+        createOrderButton.disabled = true;
+        createOrderButton.textContent = "正在生成...";
+        orderStatus.textContent = "";
+        licenseBox.hidden = true;
+        autoPayLink.hidden = true;
+        copyLicenseButton.hidden = true;
+        openWithLicenseButton.hidden = true;
+        try {
+          const order = await requestJson(`${autoPaymentApiBase}/api/create-order`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+          });
+          if (order.qrImage) {
+            autoQrImage.src = order.qrImage;
+            autoQrImage.hidden = false;
+            canvas.hidden = true;
+          }
+          autoPayLink.href = order.qrCode;
+          autoPayLink.hidden = false;
+          orderStatus.textContent = `订单号：${order.orderId}。请用支付宝扫码付款 ${order.amount} 元。`;
+          startPolling(order.orderId);
+        } catch (error) {
+          checkoutStatus.textContent = error.message;
+        } finally {
+          createOrderButton.disabled = false;
+          createOrderButton.textContent = "生成专属付款码";
+        }
+      });
+
+      copyLicenseButton.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(licenseBox.textContent.trim());
+        copyLicenseButton.textContent = "已复制";
+        setTimeout(() => {
+          copyLicenseButton.textContent = "复制授权码";
+        }, 1200);
+      });
+
+      function startPolling(orderId) {
+        clearInterval(pollTimer);
+        pollTimer = setInterval(async () => {
+          try {
+            const order = await requestJson(`${autoPaymentApiBase}/api/order-status?order_id=${encodeURIComponent(orderId)}`);
+            if (order.licenseCode) {
+              clearInterval(pollTimer);
+              orderStatus.textContent = "已到账，唯一授权码已生成。";
+              licenseBox.textContent = order.licenseCode;
+              licenseBox.hidden = false;
+              copyLicenseButton.hidden = false;
+              openWithLicenseButton.href = `./index.html?license_key=${encodeURIComponent(order.licenseCode)}`;
+              openWithLicenseButton.hidden = false;
+            } else {
+              orderStatus.textContent = `订单号：${orderId}。等待支付宝到账通知...`;
+            }
+          } catch (error) {
+            orderStatus.textContent = error.message;
+          }
+        }, 3000);
+      }
+
+      async function requestJson(url, options) {
+        const response = await fetch(url, options);
+        const payload = await response.json().catch(() => null);
+        if (!response.ok) {
+          throw new Error(payload?.error || "请求失败。");
+        }
+        return payload;
       }
     </script>
   </body>

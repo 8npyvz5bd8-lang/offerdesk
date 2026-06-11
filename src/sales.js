@@ -39,11 +39,11 @@ notices.forEach((notice) => {
     return;
   }
   if (hasCheckout) {
-    notice.textContent = "付款后会收到专业版授权码。";
+    notice.textContent = "付款后会收到唯一专业版授权码。";
     return;
   }
   if (hasPaymentQr) {
-    notice.textContent = "扫码付款后联系卖家获取授权码。";
+    notice.textContent = "扫码付款后领取唯一授权码。";
     return;
   }
   notice.textContent = "还没有配置真实收款方式，暂时不能购买。";

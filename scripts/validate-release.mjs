@@ -25,6 +25,9 @@ const requiredFiles = [
   "scripts/prepare-release.mjs",
   "scripts/release-status.mjs",
   "scripts/configure-lemonsqueezy.mjs",
+  "scripts/alipay-payment-server.mjs",
+  "scripts/generate-license-keypair.mjs",
+  "scripts/issue-signed-license.mjs",
   "scripts/validate-auto-payment.mjs",
   "scripts/validate-acceptance.mjs",
   "scripts/check-static-assets.mjs",
@@ -38,6 +41,7 @@ const requiredFiles = [
   "launch/manual-upload-checklist.md",
   "launch/first-customers.md",
   "launch/payment-platform-guide.md",
+  "launch/alipay-auto-payment.md",
   "launch/post-purchase-email.md",
   "launch/offerdesk-screenshot.jpg",
   "launch/social-cover.jpg",
@@ -62,6 +66,8 @@ const configText = await readFile(configPath, "utf8");
 const checkoutUrl = readConfigValue(configText, "checkoutUrl");
 const autoCheckoutUrl = readConfigValue(configText, "autoCheckoutUrl");
 const paymentQrImage = readConfigValue(configText, "paymentQrImage");
+const licenseProvider = readConfigValue(configText, "licenseProvider");
+const licensePublicKey = readConfigObject(configText, "licensePublicKey");
 const licenseHash = readConfigValue(configText, "licenseHash");
 const supportEmail = readConfigValue(configText, "supportEmail");
 
@@ -72,9 +78,11 @@ check(
 );
 
 check(
-  "授权码哈希",
-  /^[a-f0-9]{64}$/.test(licenseHash),
-  "用 scripts/write-config.mjs 生成 licenseHash。"
+  "唯一授权配置",
+  isSignedLicenseProvider(licenseProvider)
+    ? isValidLicensePublicKey(licensePublicKey)
+    : /^[a-f0-9]{64}$/.test(licenseHash),
+  "用签名授权公钥，或用 scripts/write-config.mjs 生成 licenseHash。"
 );
 
 check(
@@ -140,6 +148,34 @@ function printReport() {
 function readConfigValue(source, key) {
   const match = source.match(new RegExp(`${key}:\\s*["']([^"']*)["']`));
   return match ? match[1].trim() : "";
+}
+
+function readConfigObject(source, key) {
+  const match = String(source || "").match(new RegExp(`${key}:\\s*(\\{[^;]*?\\})\\s*,?\\n`));
+  if (!match) {
+    return {};
+  }
+  try {
+    return JSON.parse(match[1]);
+  } catch {
+    return {};
+  }
+}
+
+function isSignedLicenseProvider(value) {
+  return String(value || "").trim().toLowerCase() === "signed";
+}
+
+function isValidLicensePublicKey(value) {
+  return Boolean(
+    value &&
+      value.kty === "EC" &&
+      value.crv === "P-256" &&
+      typeof value.x === "string" &&
+      value.x.length > 20 &&
+      typeof value.y === "string" &&
+      value.y.length > 20
+  );
 }
 
 function isRealCheckoutUrl(value) {

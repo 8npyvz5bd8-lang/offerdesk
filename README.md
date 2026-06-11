@@ -51,28 +51,28 @@ https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/sales.html
 https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
 ```
 
-授权码哈希、客服邮箱和付款后邮件已经配置。还缺一次真实付款验收，所以只能说“已上架、可收款”，不能说“已完成真实售卖闭环”。
+当前已改成“唯一签名授权码”。还缺支付宝商家自动收款服务地址和一次真实付款验收，所以只能说“已上架、可备用收款”，不能说“已完成全自动售卖闭环”。
 
-优先用脚本生成 `app-config.js`：
+生成授权公私钥：
 
 ```bash
-/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/write-config.mjs \
-  --payment-qr-image "./launch/payment-alipay.jpeg" \
-  --license-code "你发给买家的授权码" \
-  --support-email "你的客服邮箱"
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/generate-license-keypair.mjs
 ```
 
-脚本只会写入授权码哈希，不会把明文授权码保存进配置文件。
+私钥留在 `secrets/`，不要上传。公钥写入 `app-config.js` 的 `licensePublicKey`。
 
-生成后的 `app-config.js` 应该类似这样：
+人工补发唯一授权码：
 
-```js
-window.OFFERDESK_CONFIG = {
-  checkoutUrl: "",
-  paymentQrImage: "./launch/payment-alipay.jpeg",
-  licenseHash: "授权码的 SHA-256 哈希",
-  supportEmail: "你的客服邮箱"
-};
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/issue-signed-license.mjs \
+  --email "buyer@example.com" \
+  --order-id "OD-20260611190000-ABCD1234EF567890ABCD"
+```
+
+全自动收款说明：
+
+```text
+launch/alipay-auto-payment.md
 ```
 
 只想单独生成授权码哈希时，运行：
@@ -127,8 +127,8 @@ dist/offerdesk-release
 ## 推荐上架方式
 
 1. 当前已经发布到 GitHub Pages。
-2. 当前可以用支付宝收款码和付款页收款。
-3. 打开付款页完成一次真实付款。
+2. 当前可以用支付宝收款码和付款页备用收款。
+3. 开通支付宝商家接口后部署 `scripts/alipay-payment-server.mjs`。
 4. 确认收到付款通知。
 5. 把 `dist/post-purchase-email.txt` 的内容发给买家。
 6. 确认买家能用授权码去掉水印并保存 PDF。

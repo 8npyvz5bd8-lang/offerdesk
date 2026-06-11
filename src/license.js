@@ -14,6 +14,22 @@ export function isLemonSqueezyProvider(config) {
   return getLicenseProvider(config) === "lemonsqueezy";
 }
 
+export function isSignedLicenseProvider(config) {
+  return getLicenseProvider(config) === "signed";
+}
+
+export function isValidLicensePublicKey(value) {
+  return Boolean(
+    value &&
+      value.kty === "EC" &&
+      value.crv === "P-256" &&
+      typeof value.x === "string" &&
+      value.x.length > 20 &&
+      typeof value.y === "string" &&
+      value.y.length > 20
+  );
+}
+
 export function getDeliveryStatus(unlocked) {
   if (unlocked) {
     return {
@@ -27,6 +43,102 @@ export function getDeliveryStatus(unlocked) {
     level: "locked",
     title: "还不能正式交付",
     body: "免费版会显示水印。付款并输入授权码后，水印才会消失。"
+  };
+}
+
+export function createSignedLicensePayload({ email, orderId, name, issuedAt, licenseId }) {
+  const cleanEmail = String(email || "").trim().toLowerCase();
+  const cleanOrderId = String(orderId || "").trim();
+
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(cleanEmail)) {
+    throw new Error("买家邮箱格式不正确。");
+  }
+  if (!/^OD[-A-Z0-9]{8,}$/i.test(cleanOrderId)) {
+    throw new Error("订单号格式不正确。");
+  }
+
+  return {
+    v: 2,
+    product: "offerdesk-pro",
+    licenseId: licenseId || createLicenseId(),
+    orderId: cleanOrderId,
+    email: cleanEmail,
+    name: String(name || "").trim(),
+    issuedAt: issuedAt || new Date().toISOString()
+  };
+}
+
+export async function signLicensePayload(payload, privateJwk) {
+  if (!privateJwk?.d) {
+    throw new Error("缺少授权私钥。");
+  }
+
+  const payloadPart = objectToBase64Url(payload);
+  const signature = await getSubtle().sign(
+    { name: "ECDSA", hash: "SHA-256" },
+    await getSubtle().importKey(
+      "jwk",
+      privateJwk,
+      { name: "ECDSA", namedCurve: "P-256" },
+      false,
+      ["sign"]
+    ),
+    new TextEncoder().encode(payloadPart)
+  );
+
+  return `OD2.${payloadPart}.${bytesToBase64Url(new Uint8Array(signature))}`;
+}
+
+export function parseSignedLicenseCode(code) {
+  const parts = String(code || "").trim().split(".");
+  if (parts.length !== 3 || parts[0] !== "OD2") {
+    throw new Error("授权码格式不正确。");
+  }
+
+  return {
+    payloadPart: parts[1],
+    signaturePart: parts[2],
+    payload: base64UrlToObject(parts[1])
+  };
+}
+
+export async function verifySignedLicenseCode(code, publicJwk) {
+  if (!isValidLicensePublicKey(publicJwk)) {
+    throw new Error("还没有配置授权公钥，不能解锁。");
+  }
+
+  const parsed = parseSignedLicenseCode(code);
+  const valid = await getSubtle().verify(
+    { name: "ECDSA", hash: "SHA-256" },
+    await getSubtle().importKey(
+      "jwk",
+      publicJwk,
+      { name: "ECDSA", namedCurve: "P-256" },
+      false,
+      ["verify"]
+    ),
+    base64UrlToBytes(parsed.signaturePart),
+    new TextEncoder().encode(parsed.payloadPart)
+  );
+
+  if (!valid) {
+    throw new Error("授权码签名无效。");
+  }
+  if (parsed.payload?.product !== "offerdesk-pro" || parsed.payload?.v !== 2) {
+    throw new Error("授权码不属于 OfferDesk 专业版。");
+  }
+  if (!parsed.payload?.licenseId || !parsed.payload?.orderId || !parsed.payload?.email) {
+    throw new Error("授权码内容不完整。");
+  }
+
+  return {
+    provider: "signed",
+    key: String(code || "").trim(),
+    licenseId: parsed.payload.licenseId,
+    orderId: parsed.payload.orderId,
+    customerEmail: parsed.payload.email,
+    issuedAt: parsed.payload.issuedAt || "",
+    checkedAt: new Date().toISOString()
   };
 }
 
@@ -45,6 +157,50 @@ export async function hashLicenseCode(code) {
   return [...new Uint8Array(digest)]
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
+}
+
+function createLicenseId() {
+  const bytes = new Uint8Array(8);
+  globalThis.crypto.getRandomValues(bytes);
+  return `ODL-${Date.now().toString(36).toUpperCase()}-${bytesToBase64Url(bytes).toUpperCase()}`;
+}
+
+function objectToBase64Url(value) {
+  return bytesToBase64Url(new TextEncoder().encode(JSON.stringify(value)));
+}
+
+function base64UrlToObject(value) {
+  return JSON.parse(new TextDecoder().decode(base64UrlToBytes(value)));
+}
+
+function bytesToBase64Url(bytes) {
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(bytes).toString("base64url");
+  }
+
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/u, "");
+}
+
+function base64UrlToBytes(value) {
+  if (typeof Buffer !== "undefined") {
+    return new Uint8Array(Buffer.from(String(value || ""), "base64url"));
+  }
+
+  const normalized = String(value || "").replaceAll("-", "+").replaceAll("_", "/");
+  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+  const binary = atob(padded);
+  return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+}
+
+function getSubtle() {
+  if (!globalThis.crypto?.subtle) {
+    throw new Error("当前环境不支持授权签名校验。");
+  }
+  return globalThis.crypto.subtle;
 }
 
 export async function activateLemonSqueezyLicense({ licenseKey, instanceName, config }) {

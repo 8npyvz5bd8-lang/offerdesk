@@ -163,7 +163,7 @@
       <p class="top"><a href="./buy.html">返回成交页</a> · <a href="./index.html">打开软件</a></p>
       <section class="card">
         <h1>付款后提交信息</h1>
-        <p>付款后把下面信息发到客服邮箱。确认到账后，会回复专业版授权码。</p>
+        <p>备用收款码付款后，把下面信息发到客服邮箱。确认到账后，会回复唯一专业版授权码。</p>
         <form id="claimForm" class="grid">
           <label>
             付款时间
@@ -172,6 +172,10 @@
           <label>
             付款金额
             <input id="amount" type="text" value="29 元" />
+          </label>
+          <label>
+            订单号
+            <input id="orderId" type="text" placeholder="例如：OD-20260611190000-ABCD1234EF567890ABCD" />
           </label>
           <label>
             你的邮箱
@@ -209,6 +213,8 @@
     <script>
       const $ = (id) => document.getElementById(id);
       const supportEmail = "534403209@qq.com";
+      const params = new URLSearchParams(window.location.search);
+      $("orderId").value = params.get("order_id") || "";
 
       function buildBody() {
         return [
@@ -216,6 +222,7 @@
           "",
           `付款时间：${$("paidAt").value.trim()}`,
           `付款金额：${$("amount").value.trim() || "29 元"}`,
+          `订单号：${$("orderId").value.trim()}`,
           `我的邮箱：${$("buyerEmail").value.trim()}`,
           `支付宝昵称或备注：${$("payerName").value.trim()}`,
           "",

@@ -6,8 +6,8 @@
 
 - 验收日期：2026-06-11
 - 线上地址：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/
-- 收款平台：待接入 Lemon Squeezy
-- 收款方式：待接入自动 checkout
+- 收款平台：支付宝官方商家接口，待开通
+- 收款方式：支付宝扫码支付 notify_url，待部署
 - 成交页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html
 - 付款页：https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/pay.html
 - 客服邮箱：534403209@qq.com
@@ -43,4 +43,4 @@
 
 - 是否可以正式公开售卖：否
 - 发现的问题：还没有真实付款验收。
-- 下一步：接入 Lemon Squeezy 自动 checkout，完成一笔真实付款，确认自动邮件和授权码后再改为通过。
+- 下一步：开通支付宝当面付或扫码支付接口，部署自动收款服务，完成一笔真实付款后再改为通过。

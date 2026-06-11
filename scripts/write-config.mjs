@@ -9,6 +9,7 @@ export function createConfigText({
   licenseProvider,
   lemonSqueezyProductId,
   lemonSqueezyVariantId,
+  licensePublicKey,
   licenseCode,
   supportEmail
 }) {
@@ -18,23 +19,30 @@ export function createConfigText({
   const cleanLicenseProvider = String(licenseProvider || "local").trim().toLowerCase();
   const cleanLemonSqueezyProductId = String(lemonSqueezyProductId || "").trim();
   const cleanLemonSqueezyVariantId = String(lemonSqueezyVariantId || "").trim();
+  const cleanLicensePublicKey = normalizeLicensePublicKey(licensePublicKey);
   const cleanLicenseCode = String(licenseCode || "").trim();
   const cleanSupportEmail = String(supportEmail || "").trim();
 
   assertValidPaymentMethod(cleanCheckoutUrl, cleanAutoCheckoutUrl, cleanPaymentQrImage);
-  assertValidLicenseProvider(cleanLicenseProvider, cleanAutoCheckoutUrl, cleanLemonSqueezyProductId);
-  assertValidLicenseCode(cleanLicenseCode);
+  assertValidLicenseProvider(cleanLicenseProvider, cleanAutoCheckoutUrl, cleanLemonSqueezyProductId, cleanLicensePublicKey);
+  if (cleanLicenseProvider !== "signed") {
+    assertValidLicenseCode(cleanLicenseCode);
+  }
   assertValidSupportEmail(cleanSupportEmail);
 
-  const licenseHash = createHash("sha256").update(cleanLicenseCode).digest("hex");
+  const licenseHash = cleanLicenseProvider === "signed"
+    ? ""
+    : createHash("sha256").update(cleanLicenseCode).digest("hex");
 
 return `window.OFFERDESK_CONFIG = {
   checkoutUrl: ${JSON.stringify(cleanCheckoutUrl)},
   autoCheckoutUrl: ${JSON.stringify(cleanAutoCheckoutUrl)},
+  autoPaymentApiBase: "",
   paymentQrImage: ${JSON.stringify(cleanPaymentQrImage)},
   licenseProvider: ${JSON.stringify(cleanLicenseProvider)},
   lemonSqueezyProductId: ${JSON.stringify(cleanLemonSqueezyProductId)},
   lemonSqueezyVariantId: ${JSON.stringify(cleanLemonSqueezyVariantId)},
+  licensePublicKey: ${JSON.stringify(cleanLicensePublicKey)},
   licenseHash: ${JSON.stringify(licenseHash)},
   supportEmail: ${JSON.stringify(cleanSupportEmail)}
 };
@@ -66,6 +74,7 @@ export function parseArgs(args) {
     licenseProvider: values["license-provider"],
     lemonSqueezyProductId: values["lemonsqueezy-product-id"],
     lemonSqueezyVariantId: values["lemonsqueezy-variant-id"],
+    licensePublicKey: values["license-public-key"] ? JSON.parse(values["license-public-key"]) : undefined,
     licenseCode: values["license-code"],
     supportEmail: values["support-email"],
     out: values.out || "app-config.js"
@@ -110,15 +119,18 @@ function assertValidPaymentMethod(checkoutUrl, autoCheckoutUrl, paymentQrImage) 
   }
 }
 
-function assertValidLicenseProvider(provider, autoCheckoutUrl, lemonSqueezyProductId) {
-  if (!["local", "lemonsqueezy"].includes(provider)) {
-    throw new Error("licenseProvider 只能是 local 或 lemonsqueezy。");
+function assertValidLicenseProvider(provider, autoCheckoutUrl, lemonSqueezyProductId, licensePublicKey) {
+  if (!["local", "lemonsqueezy", "signed"].includes(provider)) {
+    throw new Error("licenseProvider 只能是 local、signed 或 lemonsqueezy。");
   }
   if (provider === "lemonsqueezy" && !autoCheckoutUrl) {
     throw new Error("Lemon Squeezy 自动发码必须配置 autoCheckoutUrl。");
   }
   if (provider === "lemonsqueezy" && !/^\d+$/.test(lemonSqueezyProductId)) {
     throw new Error("Lemon Squeezy 自动发码必须配置产品 ID。");
+  }
+  if (provider === "signed" && !isValidLicensePublicKey(licensePublicKey)) {
+    throw new Error("signed 授权必须配置 licensePublicKey。");
   }
 }
 
@@ -140,6 +152,28 @@ function assertValidSupportEmail(value) {
 function containsPlaceholder(value) {
   const lower = value.toLowerCase();
   return lower.includes("example") || lower.includes("your-") || value.includes("你的");
+}
+
+function normalizeLicensePublicKey(value) {
+  if (!value) {
+    return {};
+  }
+  if (typeof value === "string") {
+    return JSON.parse(value);
+  }
+  return value;
+}
+
+function isValidLicensePublicKey(value) {
+  return Boolean(
+    value &&
+      value.kty === "EC" &&
+      value.crv === "P-256" &&
+      typeof value.x === "string" &&
+      value.x.length > 20 &&
+      typeof value.y === "string" &&
+      value.y.length > 20
+  );
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {

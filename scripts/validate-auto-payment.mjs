@@ -5,19 +5,19 @@ const configText = await readFile(configPath, "utf8");
 
 const checks = [
   {
-    name: "自动收款平台",
-    pass: readConfigValue(configText, "licenseProvider") === "lemonsqueezy",
-    fix: "把 app-config.js 的 licenseProvider 改成 lemonsqueezy。"
+    name: "支付宝自动收款服务",
+    pass: isRealAutoCheckoutUrl(readConfigValue(configText, "autoPaymentApiBase")),
+    fix: "部署 scripts/alipay-payment-server.mjs，把服务地址写入 autoPaymentApiBase。"
   },
   {
-    name: "自动付款链接",
-    pass: isRealAutoCheckoutUrl(readConfigValue(configText, "autoCheckoutUrl")),
-    fix: "创建 Lemon Squeezy 商品后，把 checkout URL 写入 autoCheckoutUrl。"
+    name: "签名授权模式",
+    pass: readConfigValue(configText, "licenseProvider") === "signed",
+    fix: "把 app-config.js 的 licenseProvider 改成 signed。"
   },
   {
-    name: "产品 ID",
-    pass: /^\d+$/.test(readConfigValue(configText, "lemonSqueezyProductId")),
-    fix: "把 Lemon Squeezy 产品 ID 写入 lemonSqueezyProductId。"
+    name: "授权公钥",
+    pass: isValidLicensePublicKey(readConfigObject(configText, "licensePublicKey")),
+    fix: "生成授权公私钥，把公钥写入 licensePublicKey。"
   },
   {
     name: "客服邮箱",
@@ -36,7 +36,7 @@ function printReport(items) {
   const passed = items.filter((item) => item.pass).length;
   const failed = items.length - passed;
 
-  console.log("OfferDesk 全自动收款检查");
+  console.log("OfferDesk 支付宝全自动收款检查");
   console.log(`通过：${passed}`);
   console.log(`失败：${failed}`);
   console.log("");
@@ -54,6 +54,18 @@ function readConfigValue(source, key) {
   return match ? match[1].trim() : "";
 }
 
+function readConfigObject(source, key) {
+  const match = String(source || "").match(new RegExp(`${key}:\\s*(\\{[^;]*?\\})\\s*,?\\n`));
+  if (!match) {
+    return {};
+  }
+  try {
+    return JSON.parse(match[1]);
+  } catch {
+    return {};
+  }
+}
+
 function isRealAutoCheckoutUrl(value) {
   return /^https:\/\/.+/.test(value) &&
     !value.includes("example") &&
@@ -66,6 +78,18 @@ function isRealEmail(value) {
   return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value) &&
     !value.includes("example") &&
     !value.includes("你的");
+}
+
+function isValidLicensePublicKey(value) {
+  return Boolean(
+    value &&
+      value.kty === "EC" &&
+      value.crv === "P-256" &&
+      typeof value.x === "string" &&
+      value.x.length > 20 &&
+      typeof value.y === "string" &&
+      value.y.length > 20
+  );
 }
 
 function readArg(name) {

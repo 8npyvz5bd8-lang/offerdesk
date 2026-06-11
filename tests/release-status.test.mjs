@@ -9,6 +9,7 @@ const emptyConfig = `window.OFFERDESK_CONFIG = {
   paymentQrImage: "",
   licenseProvider: "local",
   lemonSqueezyProductId: "",
+  licensePublicKey: {},
   licenseHash: "",
   supportEmail: ""
 };`;
@@ -34,6 +35,7 @@ const qrOnlyStatus = buildReleaseStatus({
   paymentQrImage: "./launch/payment-alipay.jpeg",
   licenseProvider: "local",
   lemonSqueezyProductId: "",
+  licensePublicKey: {},
   licenseHash: "",
   supportEmail: ""
 };`,
@@ -46,8 +48,8 @@ const qrOnlyStatus = buildReleaseStatus({
 });
 
 assert.equal(qrOnlyStatus.canSell, false);
-assert.equal(qrOnlyStatus.stage, "待接入全自动收款");
-assert.ok(qrOnlyStatus.nextStep.includes("全自动收款发码"));
+assert.equal(qrOnlyStatus.stage, "待部署支付宝自动收款服务");
+assert.ok(qrOnlyStatus.nextStep.includes("支付宝自动收款发码"));
 
 const completeAcceptance = `# 真实发布验收记录
 
@@ -100,6 +102,7 @@ const completeStatus = buildReleaseStatus({
   paymentQrImage: "",
   licenseProvider: "lemonsqueezy",
   lemonSqueezyProductId: "123",
+  licensePublicKey: {},
   licenseHash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   supportEmail: "support@offerdesk.app"
 };`,
@@ -122,6 +125,7 @@ const autoWithoutLocalEmailStatus = buildReleaseStatus({
   paymentQrImage: "./launch/payment-alipay.jpeg",
   licenseProvider: "lemonsqueezy",
   lemonSqueezyProductId: "123",
+  licensePublicKey: {},
   licenseHash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   supportEmail: "support@offerdesk.app"
 };`,

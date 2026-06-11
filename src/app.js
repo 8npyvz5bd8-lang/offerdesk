@@ -12,8 +12,10 @@ import {
   getDeliveryStatus,
   hashLicenseCode,
   isLemonSqueezyProvider,
+  isSignedLicenseProvider,
   isValidLicenseHash,
   normalizeLicenseHash,
+  verifySignedLicenseCode,
   validateLemonSqueezyLicense
 } from "./license.js";
 import { getQuoteTemplate } from "./templates.js";
@@ -277,27 +279,36 @@ function showButtonStatus(button, text) {
 function openUnlockDialog() {
   const checkoutUrl = String(config.checkoutUrl || "").trim();
   const autoCheckoutUrl = String(config.autoCheckoutUrl || "").trim();
+  const autoPaymentApiBase = String(config.autoPaymentApiBase || "").trim();
   const paymentQrImage = String(config.paymentQrImage || "").trim();
   const preferredCheckoutUrl = autoCheckoutUrl || checkoutUrl;
   const hasCheckout = preferredCheckoutUrl.startsWith("http://") || preferredCheckoutUrl.startsWith("https://");
   const hasPaymentQr = paymentQrImage.length > 0;
   const autoLicense = isLemonSqueezyProvider(config) && autoCheckoutUrl.startsWith("https://");
+  const signedAutoLicense = isSignedLicenseProvider(config) && autoPaymentApiBase.startsWith("https://");
 
   elements.checkoutLink.href = hasCheckout ? preferredCheckoutUrl : hasPaymentQr ? paymentQrImage : "#";
-  elements.checkoutLink.textContent = autoLicense ? "自动付款并收授权码" : hasCheckout ? "去付款" : hasPaymentQr ? "查看收款码" : "去付款";
+  elements.checkoutLink.textContent = autoLicense || signedAutoLicense ? "付款并收授权码" : hasCheckout ? "去付款" : hasPaymentQr ? "查看收款码" : "去付款";
   elements.checkoutLink.classList.toggle("disabled", !hasCheckout && !hasPaymentQr);
-  elements.manualClaimLink.hidden = autoLicense;
+  elements.manualClaimLink.hidden = autoLicense || signedAutoLicense;
   elements.paymentQrBox.hidden = !hasPaymentQr;
   elements.paymentQrImage.src = hasPaymentQr ? paymentQrImage : "";
   elements.paymentNotice.textContent = autoLicense
     ? "付款平台会自动把授权码发到邮箱。收到后在这里输入即可解锁。"
+    : signedAutoLicense
+    ? "付款成功后页面会自动显示你的唯一授权码。收到后在这里输入即可解锁。"
     : hasCheckout || hasPaymentQr
-    ? "付款后输入你配置的授权码即可去掉水印。"
+    ? "付款后输入你的唯一授权码即可去掉水印。"
     : "还没有配置真实收款方式。现在不能收钱，请先配置 app-config.js。";
   elements.unlockDialog.showModal();
 }
 
 async function applyLicense() {
+  if (isSignedLicenseProvider(config)) {
+    await applySignedLicense();
+    return;
+  }
+
   if (isLemonSqueezyProvider(config)) {
     await applyLemonSqueezyLicense();
     return;
@@ -326,6 +337,25 @@ async function applyLicense() {
   localStorage.setItem(licenseKey, inputHash);
   elements.paymentNotice.textContent = "已解锁专业版。";
   renderPreview();
+}
+
+async function applySignedLicense() {
+  const inputCode = elements.licenseInput.value.trim();
+  if (!inputCode) {
+    elements.paymentNotice.textContent = "请输入付款后收到的唯一授权码。";
+    return;
+  }
+
+  elements.paymentNotice.textContent = "正在验证授权码...";
+  try {
+    const record = await verifySignedLicenseCode(inputCode, config.licensePublicKey);
+    localStorage.setItem(externalLicenseKey, JSON.stringify(record));
+    externalLicenseVerified = true;
+    elements.paymentNotice.textContent = "已验证并解锁专业版。";
+    renderPreview();
+  } catch (error) {
+    elements.paymentNotice.textContent = error.message;
+  }
 }
 
 async function applyLemonSqueezyLicense() {
@@ -358,6 +388,24 @@ function createLicenseInstanceName() {
 }
 
 async function validateStoredExternalLicense() {
+  if (isSignedLicenseProvider(config)) {
+    const record = readStoredExternalLicense();
+    if (!record?.key) {
+      return;
+    }
+
+    try {
+      await verifySignedLicenseCode(record.key, config.licensePublicKey);
+      externalLicenseVerified = true;
+      renderPreview();
+    } catch {
+      localStorage.removeItem(externalLicenseKey);
+      externalLicenseVerified = false;
+      renderPreview();
+    }
+    return;
+  }
+
   if (!isLemonSqueezyProvider(config)) {
     return;
   }
@@ -464,7 +512,7 @@ applyLicenseFromUrl();
 async function applyLicenseFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const licenseFromUrl = params.get("license_key");
-  if (!licenseFromUrl || !isLemonSqueezyProvider(config)) {
+  if (!licenseFromUrl || (!isLemonSqueezyProvider(config) && !isSignedLicenseProvider(config))) {
     return;
   }
 

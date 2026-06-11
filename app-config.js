@@ -1,10 +1,12 @@
 window.OFFERDESK_CONFIG = {
   checkoutUrl: "https://8npyvz5bd8-lang.github.io/graphics-debug/offerdesk/buy.html",
   autoCheckoutUrl: "",
+  autoPaymentApiBase: "",
   paymentQrImage: "./launch/payment-alipay.jpeg",
-  licenseProvider: "local",
+  licenseProvider: "signed",
   lemonSqueezyProductId: "",
   lemonSqueezyVariantId: "",
-  licenseHash: "cc0fe564b2fbcdf767690516c30fecef5018e53661c0e91546fd0be08560a462",
+  licensePublicKey: {"key_ops":["verify"],"ext":true,"kty":"EC","x":"BvBAK3Rw9Ek-QUaw8Pd7wF8Xcx_IP3f3tY9v4TTZp_U","y":"d62w26KOb7yoJmewNzNx7XYZxLPU36QDb8auBOCd8r0","crv":"P-256"},
+  licenseHash: "",
   supportEmail: "534403209@qq.com"
 };
