@@ -45,6 +45,7 @@ export function buildHealthPayload(env = process.env) {
     String(env.OFFERDESK_PUBLIC_BASE_URL || "").trim() &&
       String(env.OFFERDESK_LICENSE_PRIVATE_JWK || env.OFFERDESK_LICENSE_PRIVATE_KEY_FILE || "").trim()
   );
+  const orderStoreConfigured = Boolean(String(env.OFFERDESK_DATA_FILE || "").trim());
   const emailDeliveryConfigured = isEmailDeliveryConfigured(env);
 
   return {
@@ -52,8 +53,9 @@ export function buildHealthPayload(env = process.env) {
     service: "offerdesk-alipay-payment",
     alipayConfigured,
     offerdeskConfigured,
+    orderStoreConfigured,
     emailDeliveryConfigured,
-    ready: alipayConfigured && offerdeskConfigured
+    ready: alipayConfigured && offerdeskConfigured && orderStoreConfigured
   };
 }
 
@@ -379,6 +381,9 @@ function assertServerConfig(env) {
   }
   if (!String(env.OFFERDESK_LICENSE_PRIVATE_JWK || env.OFFERDESK_LICENSE_PRIVATE_KEY_FILE || "").trim()) {
     missing.push("OFFERDESK_LICENSE_PRIVATE_JWK 或 OFFERDESK_LICENSE_PRIVATE_KEY_FILE");
+  }
+  if (!String(env.OFFERDESK_DATA_FILE || "").trim()) {
+    missing.push("OFFERDESK_DATA_FILE");
   }
   if (missing.length > 0) {
     throw new Error(`缺少配置：${missing.join("、")}。`);

@@ -143,11 +143,9 @@ dist/offerdesk-release
 1. 当前已经发布到 GitHub Pages。
 2. 当前可以用支付宝收款码和付款页备用收款。
 3. 开通支付宝商家接口后部署 `scripts/alipay-payment-server.mjs`。
-4. 确认收到付款通知。
-5. 收到付款后运行 `scripts/fulfill-manual-order.mjs`。
-6. 把 `dist/manual-orders/` 里的回复邮件内容发给买家。
-7. 确认买家能用授权码去掉水印并保存 PDF。
-8. 填写 `launch/release-acceptance.md`。
+4. 部署时必须设置 `OFFERDESK_DATA_FILE=/data/orders.json`，并挂载 `/data` 持久磁盘。
+5. 自动服务通过后，用 `scripts/finalize-alipay-launch.mjs` 写入 `app-config.js`。
+6. 完成一笔真实付款验收后填写 `launch/release-acceptance.md`。
 
 正式发布时按这份手册执行：
 

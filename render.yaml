@@ -6,6 +6,8 @@ services:
     envVars:
       - key: OFFERDESK_AMOUNT
         value: "29.00"
+      - key: OFFERDESK_DATA_FILE
+        value: "/data/orders.json"
       - key: OFFERDESK_ALLOWED_ORIGIN
         value: "https://8npyvz5bd8-lang.github.io"
       - key: ALIPAY_APP_ID
@@ -26,3 +28,7 @@ services:
         value: "https://8npyvz5bd8-lang.github.io/offerdesk/"
       - key: OFFERDESK_SUPPORT_EMAIL
         value: "534403209@qq.com"
+    disk:
+      name: offerdesk-orders
+      mountPath: /data
+      sizeGB: 1

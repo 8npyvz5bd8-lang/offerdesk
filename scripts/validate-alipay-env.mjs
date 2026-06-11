@@ -16,6 +16,7 @@ export async function validateAlipayEnv(options = {}) {
     checkUrl("OFFERDESK_PUBLIC_BASE_URL", env.OFFERDESK_PUBLIC_BASE_URL, "填写公网支付服务地址。"),
     checkAllowedOrigin(env.OFFERDESK_ALLOWED_ORIGIN),
     checkAmount(env.OFFERDESK_AMOUNT),
+    checkDataFile(env.OFFERDESK_DATA_FILE),
     await checkLicensePrivateJwk(env),
     checkEmailDelivery(env)
   ];
@@ -119,6 +120,15 @@ function checkAmount(value) {
     name: "OFFERDESK_AMOUNT",
     pass: Number.isFinite(amount) && amount > 0,
     fix: "填写正数金额，例如 29.00。"
+  };
+}
+
+function checkDataFile(value) {
+  const text = String(value || "").trim();
+  return {
+    name: "OFFERDESK_DATA_FILE",
+    pass: isAbsolute(text) && /\.json$/u.test(text) && !containsPlaceholder(text),
+    fix: "填写持久订单文件，例如 Render 用 /data/orders.json，并确保 /data 是持久磁盘。"
   };
 }
 

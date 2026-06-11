@@ -40,6 +40,7 @@ assert.deepEqual(buildHealthPayload({}), {
   service: "offerdesk-alipay-payment",
   alipayConfigured: false,
   offerdeskConfigured: false,
+  orderStoreConfigured: false,
   emailDeliveryConfigured: false,
   ready: false
 });
@@ -49,6 +50,7 @@ assert.equal(buildHealthPayload({
   ALIPAY_PUBLIC_KEY: publicKey,
   OFFERDESK_PUBLIC_BASE_URL: "https://pay.offerdesk.com",
   OFFERDESK_LICENSE_PRIVATE_KEY_FILE: "secrets/offerdesk-license-private.jwk.json",
+  OFFERDESK_DATA_FILE: "/data/orders.json",
   RESEND_API_KEY: "re_test",
   OFFERDESK_EMAIL_FROM: "OfferDesk <support@offerdesk.com>"
 }).ready, true);

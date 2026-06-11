@@ -100,6 +100,7 @@ const result = await finalizeAlipayLaunch({
     OFFERDESK_PUBLIC_BASE_URL: "https://pay.offerdesk.com",
     OFFERDESK_ALLOWED_ORIGIN: "https://8npyvz5bd8-lang.github.io",
     OFFERDESK_AMOUNT: "29.00",
+    OFFERDESK_DATA_FILE: "/data/orders.json",
     OFFERDESK_LICENSE_PRIVATE_JWK: JSON.stringify(privateJwk)
   }
 });

@@ -21,6 +21,7 @@
 - 支付宝应用私钥：`ALIPAY_PRIVATE_KEY` 或 `ALIPAY_PRIVATE_KEY_FILE`
 - 支付宝公钥：`ALIPAY_PUBLIC_KEY` 或 `ALIPAY_PUBLIC_KEY_FILE`
 - 可公网访问的服务器地址，用作 `OFFERDESK_PUBLIC_BASE_URL`
+- 持久订单文件，用作 `OFFERDESK_DATA_FILE`，Render 部署用 `/data/orders.json`
 - 本项目生成的授权私钥：本地可用 `secrets/offerdesk-license-private.jwk.json`，线上部署用 `OFFERDESK_LICENSE_PRIVATE_JWK`
 
 环境变量模板见：
@@ -57,6 +58,7 @@ ALIPAY_PRIVATE_KEY_FILE="secrets/alipay-app-private.pem" \
 ALIPAY_PUBLIC_KEY_FILE="secrets/alipay-public.pem" \
 OFFERDESK_PUBLIC_BASE_URL="https://你的支付服务器域名" \
 OFFERDESK_LICENSE_PRIVATE_KEY_FILE="secrets/offerdesk-license-private.jwk.json" \
+OFFERDESK_DATA_FILE="/tmp/offerdesk-orders.json" \
 OFFERDESK_ALLOWED_ORIGIN="https://8npyvz5bd8-lang.github.io" \
 PORT=8787 \
 /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/alipay-payment-server.mjs
@@ -82,8 +84,11 @@ ALIPAY_APP_ID
 ALIPAY_PRIVATE_KEY
 ALIPAY_PUBLIC_KEY
 OFFERDESK_PUBLIC_BASE_URL
+OFFERDESK_DATA_FILE
 OFFERDESK_LICENSE_PRIVATE_JWK
 ```
+
+Render 蓝图已经把 `OFFERDESK_DATA_FILE` 设为 `/data/orders.json`，并把 `/data` 挂成持久磁盘。不要改回 `runtime/orders.json`，否则服务重启后可能丢订单。
 
 5. 部署完成后打开：
 
