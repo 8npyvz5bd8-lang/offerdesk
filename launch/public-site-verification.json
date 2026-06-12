@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-12T09:49:31.809Z",
+  "checkedAt": "2026-06-12T09:58:00.331Z",
   "baseUrl": "https://8npyvz5bd8-lang.github.io/offerdesk/",
   "files": [
     {
@@ -20,6 +20,36 @@
       "localHash": "052260a3c2773deb45bc2f060f7d5a167d2ba8259a0b000947e83470ff23487f",
       "remoteHash": "052260a3c2773deb45bc2f060f7d5a167d2ba8259a0b000947e83470ff23487f",
       "bytes": 16417,
+      "fix": ""
+    },
+    {
+      "file": "share.html",
+      "url": "https://8npyvz5bd8-lang.github.io/offerdesk/share.html",
+      "status": 200,
+      "ok": true,
+      "localHash": "e17f592a0a204ce0157617e304a391f976832aca5a6869c516a4414c39a4c35a",
+      "remoteHash": "e17f592a0a204ce0157617e304a391f976832aca5a6869c516a4414c39a4c35a",
+      "bytes": 7843,
+      "fix": ""
+    },
+    {
+      "file": "pipeline.html",
+      "url": "https://8npyvz5bd8-lang.github.io/offerdesk/pipeline.html",
+      "status": 200,
+      "ok": true,
+      "localHash": "3cc413a8140f27aba9ba8ca7698db595625d3475234f86513f48bc0aca402efe",
+      "remoteHash": "3cc413a8140f27aba9ba8ca7698db595625d3475234f86513f48bc0aca402efe",
+      "bytes": 14785,
+      "fix": ""
+    },
+    {
+      "file": "share-copy.txt",
+      "url": "https://8npyvz5bd8-lang.github.io/offerdesk/share-copy.txt",
+      "status": 200,
+      "ok": true,
+      "localHash": "c245ba64d0a49454a2253dca04cec8d4c0f97194a7eef94d9adb3d624becfddf",
+      "remoteHash": "c245ba64d0a49454a2253dca04cec8d4c0f97194a7eef94d9adb3d624becfddf",
+      "bytes": 1320,
       "fix": ""
     },
     {
