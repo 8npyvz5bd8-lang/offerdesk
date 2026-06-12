@@ -535,7 +535,11 @@
       }
 
       function getAttributionSource() {
-        return readAttributionSourceFromUrl() || localStorage.getItem(attributionSourceKey) || "";
+        return readAttributionSourceFromUrl() || localStorage.getItem(attributionSourceKey) || defaultAttributionSource();
+      }
+
+      function defaultAttributionSource() {
+        return "direct-buy";
       }
 
       function readAttributionSourceFromUrl() {

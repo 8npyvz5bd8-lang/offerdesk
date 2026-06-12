@@ -803,7 +803,7 @@
       if (incomingSource) {
         localStorage.setItem(attributionSourceKey, incomingSource);
       }
-      const attributionSource = incomingSource || localStorage.getItem(attributionSourceKey) || "";
+      const attributionSource = incomingSource || localStorage.getItem(attributionSourceKey) || "sales-page";
       if (attributionSource) {
         document.querySelectorAll('a[href="./index.html"], a[href="./buy.html"]').forEach((link) => {
           const target = new URL(link.getAttribute("href"), window.location.href);

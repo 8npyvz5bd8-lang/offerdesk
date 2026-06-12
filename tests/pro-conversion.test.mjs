@@ -34,6 +34,7 @@ assert.ok(buyHtml.includes("你刚才准备"));
 
 assert.ok(salesHtml.includes("offerdesk.attribution.source"));
 assert.ok(salesHtml.includes('sourceParams.get("utm_source")'));
+assert.ok(salesHtml.includes('|| "sales-page"'));
 assert.ok(salesHtml.includes('target.searchParams.set("source", attributionSource)'));
 
 assert.ok(stylesCss.includes(".disabled-link"));

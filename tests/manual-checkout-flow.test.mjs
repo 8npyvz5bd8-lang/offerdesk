@@ -50,6 +50,8 @@ assert.ok(buyHtml.includes("授权码已选中"));
 assert.ok(buyHtml.includes("offerdesk.attribution.source"));
 assert.ok(buyHtml.includes('body: JSON.stringify({ email, name: buyerName.value.trim(), source: getAttributionSource() })'));
 assert.ok(buyHtml.includes('params.set("source", source)'));
+assert.ok(buyHtml.includes("function defaultAttributionSource"));
+assert.ok(buyHtml.includes('return "direct-buy"'));
 assert.ok(buyHtml.includes('<link rel="stylesheet" href="./site.css" />'));
 assert.ok(buyHtml.includes('class="btn primary" id="checkoutButton"'));
 assert.ok(buyHtml.includes('checkoutButton.classList.remove("primary")'));
