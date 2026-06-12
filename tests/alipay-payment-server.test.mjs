@@ -171,7 +171,8 @@ const serverWithPayment = createPaymentServer({
       return textResponse(signedAlipayResponse("alipay_trade_query_response", {
         code: "10000",
         trade_status: "TRADE_SUCCESS",
-        trade_no: "202606112200000000"
+        trade_no: "202606112200000000",
+        total_amount: "29.00"
       }), 200);
     }
     throw new Error(`unexpected alipay method: ${paramsForCall.method}`);
@@ -263,6 +264,101 @@ await rm(signedErrorRoot, { recursive: true, force: true });
 assert.equal(signedErrorCreateResponse.status, 500);
 assert.match(signedErrorPayload.error, /商户参数错误/u);
 
+const mismatchRoot = await mkdtemp(join(tmpdir(), "offerdesk-alipay-mismatch-"));
+const mismatchServer = createPaymentServer({
+  ALIPAY_APP_ID: "2021000000000000",
+  ALIPAY_PRIVATE_KEY: privateKey,
+  ALIPAY_PUBLIC_KEY: publicKey,
+  ALIPAY_GATEWAY: "https://alipay.test/gateway.do",
+  OFFERDESK_PUBLIC_BASE_URL: "https://pay.offerdesk.com",
+  OFFERDESK_LICENSE_PRIVATE_JWK: JSON.stringify(privateJwk),
+  OFFERDESK_DATA_FILE: join(mismatchRoot, "orders.json"),
+  OFFERDESK_AMOUNT: "29.00"
+}, {
+  fetch: async (url, options) => {
+    const paramsForCall = Object.fromEntries(new URLSearchParams(options.body));
+    if (paramsForCall.method === "alipay.trade.precreate") {
+      return textResponse(signedAlipayResponse("alipay_trade_precreate_response", {
+        code: "10000",
+        qr_code: "https://qr.alipay.com/mismatch-order"
+      }), 200);
+    }
+    return textResponse(signedAlipayResponse("alipay_trade_query_response", {
+      code: "10000",
+      trade_status: "TRADE_SUCCESS",
+      trade_no: "202606112200000001",
+      total_amount: "1.00"
+    }), 200);
+  }
+});
+await new Promise((resolve) => mismatchServer.listen(0, "127.0.0.1", resolve));
+const { port: mismatchPort } = mismatchServer.address();
+const mismatchCreateResponse = await fetch(`http://127.0.0.1:${mismatchPort}/api/create-order`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email: "buyer@example.com", name: "买家" })
+});
+const mismatchCreated = await mismatchCreateResponse.json();
+const mismatchStatusResponse = await fetch(`http://127.0.0.1:${mismatchPort}/api/order-status?order_id=${encodeURIComponent(mismatchCreated.orderId)}`);
+const mismatchStatus = await mismatchStatusResponse.json();
+await new Promise((resolve) => mismatchServer.close(resolve));
+await rm(mismatchRoot, { recursive: true, force: true });
+assert.equal(mismatchStatusResponse.status, 500);
+assert.match(mismatchStatus.error, /金额不一致/u);
+
+const notifyRoot = await mkdtemp(join(tmpdir(), "offerdesk-alipay-notify-"));
+const notifyServer = createPaymentServer({
+  ALIPAY_APP_ID: "2021000000000000",
+  ALIPAY_PRIVATE_KEY: privateKey,
+  ALIPAY_PUBLIC_KEY: publicKey,
+  ALIPAY_GATEWAY: "https://alipay.test/gateway.do",
+  OFFERDESK_PUBLIC_BASE_URL: "https://pay.offerdesk.com",
+  OFFERDESK_LICENSE_PRIVATE_JWK: JSON.stringify(privateJwk),
+  OFFERDESK_DATA_FILE: join(notifyRoot, "orders.json"),
+  OFFERDESK_AMOUNT: "29.00"
+}, {
+  fetch: async () => textResponse(signedAlipayResponse("alipay_trade_precreate_response", {
+    code: "10000",
+    qr_code: "https://qr.alipay.com/notify-order"
+  }), 200)
+});
+await new Promise((resolve) => notifyServer.listen(0, "127.0.0.1", resolve));
+const { port: notifyPort } = notifyServer.address();
+const notifyCreateResponse = await fetch(`http://127.0.0.1:${notifyPort}/api/create-order`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email: "buyer@example.com", name: "买家" })
+});
+const notifyCreated = await notifyCreateResponse.json();
+const badNotify = await fetch(`http://127.0.0.1:${notifyPort}/api/alipay-notify`, {
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: signedNotifyBody({
+    out_trade_no: notifyCreated.orderId,
+    trade_status: "TRADE_SUCCESS",
+    trade_no: "202606112200000002",
+    total_amount: "1.00"
+  })
+});
+assert.equal(await badNotify.text(), "failure");
+const goodNotify = await fetch(`http://127.0.0.1:${notifyPort}/api/alipay-notify`, {
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: signedNotifyBody({
+    out_trade_no: notifyCreated.orderId,
+    trade_status: "TRADE_SUCCESS",
+    trade_no: "202606112200000003",
+    total_amount: "29.0"
+  })
+});
+const notifiedStatusResponse = await fetch(`http://127.0.0.1:${notifyPort}/api/order-status?order_id=${encodeURIComponent(notifyCreated.orderId)}`);
+const notifiedStatus = await notifiedStatusResponse.json();
+await new Promise((resolve) => notifyServer.close(resolve));
+await rm(notifyRoot, { recursive: true, force: true });
+assert.equal(await goodNotify.text(), "success");
+assert.equal(notifiedStatus.status, "TRADE_SUCCESS");
+assert.ok(notifiedStatus.licenseCode);
+
 function textResponse(body, status) {
   return {
     ok: status >= 200 && status < 300,
@@ -290,6 +386,15 @@ function signedErrorResponse(subMsg) {
     error_response: body,
     sign: signAlipayResponseBody(body, privateKey)
   }), 200);
+}
+
+function signedNotifyBody(params) {
+  const body = {
+    ...params,
+    sign_type: "RSA2"
+  };
+  body.sign = signAlipayParams(body, privateKey);
+  return new URLSearchParams(body);
 }
 
 console.log("alipay payment server tests passed");

@@ -165,6 +165,7 @@ export function createPaymentServer(env = process.env, controls = {}) {
         if (!successStatuses.has(order.status)) {
           const queried = await callAlipayQuery({ env, fetchImpl, orderId });
           if (successStatuses.has(queried.status)) {
+            assertPaidAmount(order, queried.amount, "支付宝查单");
             await markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo: queried.tradeNo });
           }
         }
@@ -185,7 +186,7 @@ export function createPaymentServer(env = process.env, controls = {}) {
         const orderId = String(params.out_trade_no || "");
         const store = await readStore(storeFile);
         const order = store.orders[orderId];
-        if (!order || String(params.total_amount || "") !== String(order.amount)) {
+        if (!order || !amountMatches(order.amount, params.total_amount)) {
           res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
           res.end("failure");
           return;
@@ -243,7 +244,8 @@ async function callAlipayQuery({ env, fetchImpl, orderId }) {
   }
   return {
     status: data?.trade_status || "",
-    tradeNo: data?.trade_no || ""
+    tradeNo: data?.trade_no || "",
+    amount: data?.total_amount || ""
   };
 }
 
@@ -442,6 +444,26 @@ function assertEmail(value) {
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) {
     throw new Error("买家邮箱格式不正确。");
   }
+}
+
+function assertPaidAmount(order, paidAmount, source) {
+  if (!amountMatches(order.amount, paidAmount)) {
+    throw new Error(`${source}金额不一致：订单 ${order.amount}，支付 ${String(paidAmount || "空")}。`);
+  }
+}
+
+function amountMatches(expected, actual) {
+  const expectedCents = amountToCents(expected);
+  const actualCents = amountToCents(actual);
+  return expectedCents !== null && actualCents !== null && expectedCents === actualCents;
+}
+
+function amountToCents(value) {
+  const match = String(value || "").trim().match(/^(\d+)(?:\.(\d{1,2}))?$/u);
+  if (!match) {
+    return null;
+  }
+  return `${match[1]}${(match[2] || "").padEnd(2, "0")}`.replace(/^0+(?=\d)/u, "");
 }
 
 function healthRequirement(name, pass, fix) {
