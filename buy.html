@@ -225,6 +225,23 @@
         font-size: 12px;
       }
 
+      .intent-box {
+        display: grid;
+        gap: 6px;
+        margin: 18px 0 0;
+        border: 1px solid #c6dfd2;
+        border-radius: 10px;
+        background: #f3fbf6;
+        padding: 14px;
+        color: #264232;
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .intent-box strong {
+        color: #0f8a55;
+      }
+
       [hidden] {
         display: none !important;
       }
@@ -260,6 +277,7 @@
         <article class="card">
           <p>给自由职业者、小团队和接单工作室</p>
           <h1>29 元解锁专业版，正式报价单去水印。</h1>
+          <div class="intent-box" id="checkoutIntent" hidden></div>
           <div class="facts">
             <span class="fact">一次性买断</span>
             <span class="fact">支付宝扫码</span>
@@ -405,6 +423,7 @@
       const manualClaimButton = document.getElementById("manualClaimButton");
       const copyManualOrderButton = document.getElementById("copyManualOrderButton");
       const manualOrderId = document.getElementById("manualOrderId");
+      const checkoutIntent = document.getElementById("checkoutIntent");
       const checkoutStatus = document.getElementById("checkoutStatus");
       const orderStatus = document.getElementById("orderStatus");
       const checkoutCaption = document.getElementById("checkoutCaption");
@@ -414,6 +433,7 @@
       const copyLicenseButton = document.getElementById("copyLicenseButton");
       const openWithLicenseButton = document.getElementById("openWithLicenseButton");
       let pollTimer = 0;
+      renderCheckoutIntent();
 
       if (paymentQrImage) {
         autoQrImage.src = paymentQrImage;
@@ -550,6 +570,32 @@
         ].join("");
         const random = Math.random().toString(36).slice(2, 10).toUpperCase();
         return `OD-MANUAL-${stamp}-${random}`;
+      }
+
+      function renderCheckoutIntent() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("from") !== "app") {
+          return;
+        }
+        const intent = params.get("intent") === "print" ? "导出 PDF" : params.get("intent") === "copy" ? "复制报价" : "正式交付";
+        const project = params.get("project") || "当前报价单";
+        const total = params.get("quote_total") || "";
+        const currency = params.get("currency") || "¥";
+        checkoutIntent.hidden = false;
+        checkoutIntent.innerHTML = [
+          `<strong>你刚才准备${escapeHtml(intent)}。</strong>`,
+          `<span>当前报价：${escapeHtml(project)}${total ? `，总价约 ${escapeHtml(currency)}${escapeHtml(total)}` : ""}。</span>`,
+          "<span>解锁专业版后可去掉免费水印，再正式发给客户。</span>"
+        ].join("");
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
       }
     </script>
   </body>

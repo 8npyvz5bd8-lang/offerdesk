@@ -293,7 +293,8 @@ function promptForProDelivery(action) {
     : "复制客户报价属于正式交付动作。29 元专业版去掉免费水印，适合直接发给客户。";
   openUnlockDialog({
     pitch,
-    trialPrint: action === "print"
+    trialPrint: action === "print",
+    action
   });
 }
 
@@ -318,7 +319,7 @@ function openUnlockDialog(options = {}) {
 
   elements.unlockPitch.textContent = options.pitch || defaultUnlockPitch;
   elements.trialPrintButton.hidden = options.trialPrint !== true;
-  elements.checkoutLink.href = hasCheckout ? preferredCheckoutUrl : hasPaymentQr ? paymentQrImage : "#";
+  elements.checkoutLink.href = hasCheckout ? withCheckoutContext(preferredCheckoutUrl, options) : hasPaymentQr ? paymentQrImage : "#";
   elements.checkoutLink.textContent = autoLicense || signedAutoLicense ? "付款并收授权码" : hasCheckout ? "去付款" : hasPaymentQr ? "查看收款码" : "去付款";
   elements.checkoutLink.classList.toggle("disabled-link", !hasCheckout && !hasPaymentQr);
   elements.checkoutLink.setAttribute("aria-disabled", String(!hasCheckout && !hasPaymentQr));
@@ -334,6 +335,31 @@ function openUnlockDialog(options = {}) {
     : "还没有配置真实收款方式。现在不能收钱，请先配置 app-config.js。";
   if (!elements.unlockDialog.open) {
     elements.unlockDialog.showModal();
+  }
+}
+
+function withCheckoutContext(url, options = {}) {
+  if (!isOfferDeskCheckoutUrl(url)) {
+    return url;
+  }
+
+  const target = new URL(url);
+  const result = calculateQuote(state);
+  const project = state.projectName || "项目报价";
+  target.searchParams.set("from", "app");
+  target.searchParams.set("intent", options.action || "unlock");
+  target.searchParams.set("project", project.slice(0, 60));
+  target.searchParams.set("quote_total", String(Math.round(result.total)));
+  target.searchParams.set("currency", state.currency || "¥");
+  return target.href;
+}
+
+function isOfferDeskCheckoutUrl(url) {
+  try {
+    const target = new URL(url);
+    return /\/offerdesk\/(?:buy|pay)\.html$/u.test(target.pathname) || /\/(?:buy|pay)\.html$/u.test(target.pathname);
+  } catch {
+    return false;
   }
 }
 
