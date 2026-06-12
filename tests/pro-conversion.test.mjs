@@ -18,10 +18,15 @@ assert.ok(appJs.includes('promptForProDelivery("copy")'));
 assert.ok(appJs.includes("disabled-link"));
 assert.ok(appJs.includes("trialPrintButton.addEventListener"));
 assert.ok(appJs.includes("function withCheckoutContext"));
+assert.ok(appJs.includes("function withManualClaimContext"));
+assert.ok(appJs.includes("function applyPaymentContext"));
+assert.ok(appJs.includes("function defaultAppSource"));
 assert.ok(appJs.includes('target.searchParams.set("from", "app")'));
 assert.ok(appJs.includes('target.searchParams.set("quote_total"'));
 assert.ok(appJs.includes("offerdesk.attribution.source"));
 assert.ok(appJs.includes('target.searchParams.set("source", source)'));
+assert.ok(appJs.includes('elements.manualClaimLink.href = withManualClaimContext("./after-pay.html", options)'));
+assert.ok(appJs.includes('return `app-${action || "unlock"}`'));
 
 assert.ok(buyHtml.includes('id="checkoutIntent"'));
 assert.ok(buyHtml.includes("function renderCheckoutIntent"));

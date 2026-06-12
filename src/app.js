@@ -325,6 +325,7 @@ function openUnlockDialog(options = {}) {
   elements.checkoutLink.textContent = autoLicense || signedAutoLicense ? "付款并收授权码" : hasCheckout ? "去付款" : hasPaymentQr ? "查看收款码" : "去付款";
   elements.checkoutLink.classList.toggle("disabled-link", !hasCheckout && !hasPaymentQr);
   elements.checkoutLink.setAttribute("aria-disabled", String(!hasCheckout && !hasPaymentQr));
+  elements.manualClaimLink.href = withManualClaimContext("./after-pay.html", options);
   elements.manualClaimLink.hidden = autoLicense || signedAutoLicense;
   elements.paymentQrBox.hidden = !hasPaymentQr;
   elements.paymentQrImage.src = hasPaymentQr ? paymentQrImage : "";
@@ -345,7 +346,18 @@ function withCheckoutContext(url, options = {}) {
     return url;
   }
 
-  const target = new URL(url);
+  const target = new URL(url, window.location.href);
+  applyPaymentContext(target, options);
+  return target.href;
+}
+
+function withManualClaimContext(url, options = {}) {
+  const target = new URL(url, window.location.href);
+  applyPaymentContext(target, options);
+  return target.href;
+}
+
+function applyPaymentContext(target, options = {}) {
   const result = calculateQuote(state);
   const project = state.projectName || "项目报价";
   target.searchParams.set("from", "app");
@@ -353,11 +365,15 @@ function withCheckoutContext(url, options = {}) {
   target.searchParams.set("project", project.slice(0, 60));
   target.searchParams.set("quote_total", String(Math.round(result.total)));
   target.searchParams.set("currency", state.currency || "¥");
-  const source = getAttributionSource();
+  const source = getAttributionSource() || defaultAppSource(options);
   if (source) {
     target.searchParams.set("source", source);
   }
-  return target.href;
+}
+
+function defaultAppSource(options = {}) {
+  const action = String(options.action || "unlock").trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-");
+  return `app-${action || "unlock"}`.slice(0, 80);
 }
 
 function captureAttributionSource() {

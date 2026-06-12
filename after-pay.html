@@ -129,6 +129,9 @@
       const incomingBuyerEmail = params.get("buyer_email") || params.get("email");
       const incomingPayerName = params.get("payer_name") || params.get("name");
       const incomingSource = readAttributionSourceFromUrl();
+      const incomingProject = params.get("project");
+      const incomingQuoteTotal = params.get("quote_total");
+      const incomingCurrency = params.get("currency");
       if (incomingOrderId) {
         setStoredOrderId(incomingOrderId);
       }
@@ -141,11 +144,21 @@
       if (incomingSource) {
         setStoredAttributionSource(incomingSource);
       }
+      if (incomingProject || incomingQuoteTotal || incomingCurrency) {
+        setStoredQuoteContext({
+          project: incomingProject,
+          quoteTotal: incomingQuoteTotal,
+          currency: incomingCurrency
+        });
+      } else {
+        clearStoredQuoteContext();
+      }
       $("orderId").value = incomingOrderId || getStoredOrderId();
       $("buyerEmail").value = incomingBuyerEmail || getStoredManualBuyerEmail();
       $("payerName").value = incomingPayerName || getStoredManualBuyerName();
 
       function buildBody() {
+        const quoteContext = getStoredQuoteContext();
         return [
           "我已支付 OfferDesk 专业版 29 元，请发送授权码。",
           "",
@@ -155,6 +168,8 @@
           `我的邮箱：${$("buyerEmail").value.trim()}`,
           `支付宝昵称或备注：${$("payerName").value.trim()}`,
           `来源：${getStoredAttributionSource() || "未记录"}`,
+          `报价项目：${quoteContext.project || "未记录"}`,
+          `报价总价：${formatQuoteTotal(quoteContext) || "未记录"}`,
           "",
           `其他说明：${$("note").value.trim()}`,
           "",
@@ -219,6 +234,36 @@
 
       function setStoredAttributionSource(value) {
         localStorage.setItem("offerdesk.attribution.source", String(value || "").trim().slice(0, 80));
+      }
+
+      function getStoredQuoteContext() {
+        try {
+          return JSON.parse(localStorage.getItem("offerdesk.payment.quote.context") || "{}");
+        } catch {
+          return {};
+        }
+      }
+
+      function setStoredQuoteContext(value) {
+        const current = getStoredQuoteContext();
+        const next = {
+          project: String(value.project || current.project || "").trim().slice(0, 60),
+          quoteTotal: String(value.quoteTotal || current.quoteTotal || "").trim().slice(0, 20),
+          currency: String(value.currency || current.currency || "¥").trim().slice(0, 8)
+        };
+        localStorage.setItem("offerdesk.payment.quote.context", JSON.stringify(next));
+      }
+
+      function clearStoredQuoteContext() {
+        localStorage.removeItem("offerdesk.payment.quote.context");
+      }
+
+      function formatQuoteTotal(context) {
+        const total = String(context.quoteTotal || "").trim();
+        if (!total) {
+          return "";
+        }
+        return `${String(context.currency || "¥").trim() || "¥"}${total}`;
       }
 
       function createManualOrderId() {

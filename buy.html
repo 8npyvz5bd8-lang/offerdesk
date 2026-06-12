@@ -487,6 +487,7 @@
         if (source) {
           params.set("source", source);
         }
+        addPaymentContextParams(params);
         manualClaimButton.href = `./after-pay.html?${params.toString()}`;
       }
 
@@ -505,6 +506,28 @@
         const params = new URLSearchParams(window.location.search);
         const source = params.get("source") || params.get("ref") || params.get("utm_source") || params.get("channel") || "";
         return source.trim().slice(0, 80);
+      }
+
+      function addPaymentContextParams(params) {
+        const context = readPaymentContextFromUrl();
+        if (context.project) {
+          params.set("project", context.project);
+        }
+        if (context.quoteTotal) {
+          params.set("quote_total", context.quoteTotal);
+        }
+        if (context.currency) {
+          params.set("currency", context.currency);
+        }
+      }
+
+      function readPaymentContextFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+          project: String(params.get("project") || "").trim().slice(0, 60),
+          quoteTotal: String(params.get("quote_total") || "").trim().slice(0, 20),
+          currency: String(params.get("currency") || "").trim().slice(0, 8)
+        };
       }
 
       function getStoredManualBuyerEmail() {
