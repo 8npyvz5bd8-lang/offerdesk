@@ -97,6 +97,8 @@
               <th>角色</th>
               <th>联系方式</th>
               <th>状态</th>
+              <th>订单号</th>
+              <th>来源</th>
               <th>金额</th>
               <th>邮箱</th>
               <th>付款时间</th>
@@ -126,6 +128,8 @@
         role: "",
         contact: "",
         status: "未联系",
+        orderId: "",
+        source: "",
         amount: "",
         email: "",
         paidAt: "",
@@ -241,6 +245,8 @@
         tr.appendChild(cell(input(index, "role", lead.role, "设计师")));
         tr.appendChild(cell(input(index, "contact", lead.contact, "微信/主页")));
         tr.appendChild(cell(select(index, "status", lead.status)));
+        tr.appendChild(cell(input(index, "orderId", lead.orderId, "OD-MANUAL-...")));
+        tr.appendChild(cell(input(index, "source", lead.source, "xianyu")));
         tr.appendChild(cell(input(index, "amount", lead.amount, "29")));
         tr.appendChild(cell(input(index, "email", lead.email, "买家邮箱")));
         tr.appendChild(cell(input(index, "paidAt", lead.paidAt, "2026-06-11 18:20")));
@@ -344,6 +350,8 @@
           "used_once",
           "payment_status",
           "paid_at",
+          "order_id",
+          "source",
           "amount",
           "buyer_email",
           "license_sent",
@@ -363,6 +371,8 @@
             statusIndex(lead.status) >= statusIndex("已试用") ? "yes" : "",
             lead.status,
             ["已付款", "已发授权"].includes(lead.status) ? lead.paidAt || today : "",
+            lead.orderId,
+            lead.source,
             lead.amount,
             lead.email,
             lead.status === "已发授权" ? "yes" : "",
@@ -384,6 +394,10 @@
           "scripts/fulfill-manual-order.mjs",
           "--email",
           lead.email || "买家邮箱",
+          "--order-id",
+          lead.orderId || "",
+          "--source",
+          lead.source || "",
           "--paid-at",
           lead.paidAt || localDateTime(),
           "--amount",
@@ -464,6 +478,8 @@
           role: "",
           contact: claim.email,
           status: "已付款",
+          orderId: claim.orderId,
+          source: claim.source || "",
           amount: claim.amount || "29",
           email: claim.email,
           paidAt: claim.paidAt || localDateTime(),

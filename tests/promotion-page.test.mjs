@@ -20,6 +20,9 @@ assert.ok(pipelineHtml.includes('class="btn primary"'));
 assert.ok(pipelineHtml.includes("copyReadinessCommand"));
 assert.ok(pipelineHtml.includes("scripts/outreach-readiness.mjs"));
 assert.ok(pipelineHtml.includes("launch/outreach-readiness.md"));
+assert.ok(pipelineHtml.includes("order_id"));
+assert.ok(pipelineHtml.includes("source"));
+assert.ok(pipelineHtml.includes("--source"));
 assert.ok(!pipelineHtml.includes("border-radius: 999px"));
 assert.ok(!pipelineHtml.includes('font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial'));
 

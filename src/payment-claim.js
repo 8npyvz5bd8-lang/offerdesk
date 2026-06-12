@@ -40,6 +40,8 @@ export function buildManualFulfillmentCommand(claim, options = {}) {
     claim.email || "买家邮箱",
     "--order-id",
     claim.orderId || "订单号",
+    "--source",
+    claim.source || "",
     "--paid-at",
     claim.paidAt || localDateTime(),
     "--amount",

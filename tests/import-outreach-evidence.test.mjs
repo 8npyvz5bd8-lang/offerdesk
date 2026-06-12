@@ -15,9 +15,9 @@ const promotionFile = join(tempRoot, "promotions.csv");
 
 await mkdir(tempRoot, { recursive: true });
 
-const salesText = `date,channel,person,role,contact,trial_sent,used_once,payment_status,paid_at,amount,buyer_email,license_sent,feedback,next_action
-2026-06-12,闲鱼,张三,设计师,https://www.goofish.com/personal?user=1,yes,,愿意付费,,29,,,想试用,继续跟进
-2026-06-12,小红书,李四,摄影师,https://www.xiaohongshu.com/user/profile/abc,yes,yes,,,,,,报价场景明确,发成交页
+const salesText = `date,channel,person,role,contact,trial_sent,used_once,payment_status,paid_at,order_id,source,amount,buyer_email,license_sent,feedback,next_action
+2026-06-12,闲鱼,张三,设计师,https://www.goofish.com/personal?user=1,yes,,愿意付费,,OD-MANUAL-1,xianyu,29,,,想试用,继续跟进
+2026-06-12,小红书,李四,摄影师,https://www.xiaohongshu.com/user/profile/abc,yes,yes,,,OD-MANUAL-2,xiaohongshu,,,,报价场景明确,发成交页
 `;
 
 const promotionText = `date,channel,url,title,status,note
@@ -70,9 +70,20 @@ const second = await importOutreachEvidence({
 assert.equal(second.importedSales, 0);
 assert.equal(second.importedPromotions, 0);
 
+const duplicateOrder = await importOutreachEvidence({
+  salesText: `date,channel,person,role,contact,trial_sent,used_once,payment_status,paid_at,order_id,source,amount,buyer_email,license_sent,feedback,next_action
+2026-06-12,朋友圈,不同名字,设计师,wechat-real,yes,yes,已付款,2026-06-12 20:00,OD-MANUAL-1,friend-circle,29,buyer@example.com,yes,重复订单,不用导入
+`,
+  tracker,
+  promotionLog
+});
+assert.equal(duplicateOrder.importedSales, 0);
+
 const trackerText = await readFile(tracker, "utf8");
 const promotionLogText = await readFile(promotionLog, "utf8");
 assert.equal(trackerText.match(/张三/gu).length, 1);
+assert.ok(trackerText.includes("order_id,source"));
+assert.ok(trackerText.includes("OD-MANUAL-1,xianyu"));
 assert.equal(promotionLogText.match(/goofish/gu).length, 1);
 
 await assert.rejects(

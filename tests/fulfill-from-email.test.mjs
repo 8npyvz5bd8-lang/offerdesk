@@ -117,6 +117,8 @@ assert.ok(trackerText.includes("qq-mail"));
 assert.ok(trackerText.includes("老陈设计"));
 assert.ok(trackerText.includes("支付宝备注"));
 assert.ok(trackerText.includes("来源：xiaohongshu"));
+assert.ok(trackerText.includes("OD-MANUAL-20260611203000-ABC12345"));
+assert.ok(trackerText.includes("xiaohongshu"));
 
 await rm(tempRoot, { recursive: true, force: true });
 

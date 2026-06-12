@@ -51,6 +51,8 @@ assert.ok(command.includes("--email"));
 assert.ok(command.includes("Buyer@Example.COM"));
 assert.ok(command.includes("--channel"));
 assert.ok(command.includes("manual-test"));
+assert.ok(command.includes("--source"));
+assert.ok(command.includes("xianyu"));
 assert.ok(!command.includes("\n+"));
 
 console.log("payment claim tests passed");

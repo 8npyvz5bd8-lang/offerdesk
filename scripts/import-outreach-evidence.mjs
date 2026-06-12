@@ -16,6 +16,8 @@ const salesHeader = [
   "used_once",
   "payment_status",
   "paid_at",
+  "order_id",
+  "source",
   "amount",
   "buyer_email",
   "license_sent",
@@ -178,6 +180,10 @@ function isPublishedStatus(value) {
 }
 
 function salesDedupeKey(row) {
+  const orderId = String(row.order_id || "").trim().toLowerCase();
+  if (orderId) {
+    return `order|${orderId}`;
+  }
   return [
     row.channel,
     row.person,

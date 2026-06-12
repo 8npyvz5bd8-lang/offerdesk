@@ -42,6 +42,8 @@ assert.deepEqual(
     "2026-06-11 18:20",
     "--amount",
     "29",
+    "--source",
+    "xianyu",
     "--channel",
     "xianyu",
     "--name",
@@ -69,6 +71,7 @@ assert.deepEqual(
     name: "买家",
     paidAt: "2026-06-11 18:20",
     amount: "29",
+    source: "xianyu",
     channel: "xianyu",
     role: "designer",
     contact: "buyer@example.com",
@@ -88,6 +91,7 @@ const result = await fulfillManualOrder({
   orderId: "OD-MANUAL-20260611102030-ABC123",
   paidAt: "2026-06-11 18:20",
   amount: "29",
+  source: "xianyu",
   channel: "xianyu",
   name: "买家",
   role: "designer",
@@ -115,6 +119,7 @@ assert.ok(licenseText.includes(result.licenseCode));
 assert.ok(trackerText.includes("xianyu"));
 assert.ok(trackerText.includes("buyer@example.com"));
 assert.ok(trackerText.includes("OD-MANUAL-20260611102030-ABC123"));
+assert.ok(trackerText.includes("order_id,source"));
 assert.ok(trackerText.includes("已发送授权码"));
 
 await assert.rejects(() => fulfillManualOrder({

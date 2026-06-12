@@ -17,6 +17,8 @@ const trackerHeader = [
   "used_once",
   "payment_status",
   "paid_at",
+  "order_id",
+  "source",
   "amount",
   "buyer_email",
   "license_sent",
@@ -28,6 +30,7 @@ export async function fulfillManualOrder(options) {
   const cleanEmail = normalizeEmail(options.email);
   const now = options.now ? new Date(options.now) : new Date();
   const orderId = String(options.orderId || createManualOrderId(now)).trim();
+  const source = String(options.source || "").trim();
   const amount = String(options.amount || "29").trim();
   const paidAt = String(options.paidAt || formatLocalDateTime(now)).trim();
   const appUrl = String(options.appUrl || "https://8npyvz5bd8-lang.github.io/offerdesk/").trim();
@@ -63,6 +66,8 @@ export async function fulfillManualOrder(options) {
     role: options.role || "",
     contact: options.contact || cleanEmail,
     paidAt,
+    orderId,
+    source,
     amount,
     buyerEmail: cleanEmail,
     note: [`订单号：${orderId}`, options.note || ""].filter(Boolean).join("；")
@@ -104,6 +109,7 @@ export function parseArgs(args) {
     name: values.name,
     paidAt: values["paid-at"],
     amount: values.amount,
+    source: values.source,
     channel: values.channel,
     role: values.role,
     contact: values.contact,
@@ -123,7 +129,7 @@ export function createManualOrderId(now = new Date(), suffix = randomBytes(8).to
   return `OD-MANUAL-${date}-${suffix}`;
 }
 
-export function buildTrackerRow({ date, channel, person, role, contact, paidAt, amount, buyerEmail, note }) {
+export function buildTrackerRow({ date, channel, person, role, contact, paidAt, orderId, source, amount, buyerEmail, note }) {
   return [
     date,
     channel,
@@ -134,6 +140,8 @@ export function buildTrackerRow({ date, channel, person, role, contact, paidAt, 
     "",
     "paid",
     paidAt,
+    orderId,
+    source,
     amount,
     buyerEmail,
     "yes",
