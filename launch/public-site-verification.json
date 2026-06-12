@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-12T13:28:18.752Z",
+  "checkedAt": "2026-06-12T13:32:32.443Z",
   "baseUrl": "https://8npyvz5bd8-lang.github.io/offerdesk/",
   "files": [
     {
@@ -27,9 +27,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
       "status": 200,
       "ok": true,
-      "localHash": "a73d36d8498753083438dc4338a6785f26dcfc7cc6b8662a4b555a435f70ea95",
-      "remoteHash": "a73d36d8498753083438dc4338a6785f26dcfc7cc6b8662a4b555a435f70ea95",
-      "bytes": 24158,
+      "localHash": "1469170e3236b9d7c93a0455bcae619a8c4ad0bd45b9bc86723458c6fb4c0b32",
+      "remoteHash": "1469170e3236b9d7c93a0455bcae619a8c4ad0bd45b9bc86723458c6fb4c0b32",
+      "bytes": 24996,
       "fix": ""
     },
     {
