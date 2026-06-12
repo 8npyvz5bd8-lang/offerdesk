@@ -33,6 +33,9 @@ assert.ok(pipelineHtml.includes("function selectCopyFallback"));
 assert.ok(pipelineHtml.includes('document.execCommand("copy")'));
 assert.ok(pipelineHtml.includes("element.select()"));
 assert.ok(pipelineHtml.includes("claimCommand);"));
+assert.ok(pipelineHtml.includes("金额 ¥${claim.amount || \"29\"}"));
+assert.ok(pipelineHtml.includes("来源 ${claim.source || \"未记录\"}"));
+assert.ok(pipelineHtml.includes("先在支付宝核对到账金额和付款备注，再运行发码命令。"));
 assert.ok(!pipelineHtml.includes("border-radius: 999px"));
 assert.ok(!pipelineHtml.includes('font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial'));
 

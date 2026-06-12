@@ -482,7 +482,13 @@
         try {
           const claim = parsePaymentClaimText(claimInput.value);
           claimCommand.value = buildManualFulfillmentCommand(claim, { openEmailAfter: true });
-          claimNotice.textContent = `已解析订单 ${claim.orderId}，邮箱 ${claim.email}。`;
+          claimNotice.textContent = [
+            `已解析订单 ${claim.orderId}`,
+            `邮箱 ${claim.email}`,
+            `金额 ¥${claim.amount || "29"}`,
+            `来源 ${claim.source || "未记录"}`,
+            "先在支付宝核对到账金额和付款备注，再运行发码命令。"
+          ].join("。");
           return claim;
         } catch (error) {
           claimCommand.value = "";
