@@ -5,7 +5,22 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const rootPath = fileURLToPath(new URL("../", import.meta.url));
 const defaultBaseUrl = "https://8npyvz5bd8-lang.github.io/offerdesk/";
-const defaultFiles = ["index.html", "sales.html", "buy.html", "share.html", "promotion.html", "pipeline.html", "share-copy.txt", "site.css", "styles.css", "app-config.js", "src/app.js", "src/payment-claim.js"];
+const defaultFiles = [
+  "index.html",
+  "sales.html",
+  "buy.html",
+  "pay.html",
+  "after-pay.html",
+  "share.html",
+  "promotion.html",
+  "pipeline.html",
+  "share-copy.txt",
+  "site.css",
+  "styles.css",
+  "app-config.js",
+  "src/app.js",
+  "src/payment-claim.js"
+];
 
 export async function verifyPublicSite(options = {}) {
   const baseUrl = normalizeBaseUrl(options.baseUrl || defaultBaseUrl);

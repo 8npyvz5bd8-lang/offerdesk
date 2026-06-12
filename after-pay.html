@@ -51,7 +51,7 @@
         color: #667065;
       }
 
-      .grid {
+      .claim-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 14px;
@@ -145,7 +145,7 @@
       }
 
       @media (max-width: 720px) {
-        .grid {
+        .claim-grid {
           grid-template-columns: 1fr;
         }
 
@@ -162,11 +162,23 @@
   </head>
   <body class="surface-page">
     <main class="wrap">
-      <p class="top"><a href="./buy.html">返回成交页</a> · <a href="./index.html">打开软件</a></p>
+      <header class="top">
+        <strong>OfferDesk 专业版</strong>
+        <nav class="actions" aria-label="页面链接">
+          <a class="btn" href="./buy.html">成交页</a>
+          <a class="btn" href="./sales.html">销售页</a>
+          <a class="btn primary" href="./index.html">打开软件</a>
+        </nav>
+      </header>
       <section class="card">
         <h1>付款后提交信息</h1>
         <p>备用收款码付款后，把下面信息发到客服邮箱。确认到账后，会回复唯一专业版授权码。</p>
-        <form id="claimForm" class="grid">
+        <div class="facts" style="margin-top: 16px">
+          <span class="fact">订单号自动带入</span>
+          <span class="fact">邮件标题带订单号</span>
+          <span class="fact">确认到账后发码</span>
+        </div>
+        <form id="claimForm" class="claim-grid">
           <label>
             付款时间
             <input id="paidAt" type="text" placeholder="例如：2026-06-11 16:30" />
@@ -187,22 +199,22 @@
             支付宝昵称或备注
             <input id="payerName" type="text" placeholder="方便核对到账" />
           </label>
-        <label class="wide">
-          其他说明
-          <textarea id="note" placeholder="可以写付款截图说明、订单备注或你希望绑定的使用者名称"></textarea>
-        </label>
-        <label class="wide">
-          要提交的内容
-          <textarea id="submitContent" class="submit-content" readonly></textarea>
-        </label>
-      </form>
-      <div class="actions">
-        <a class="btn primary" id="mailLink" href="mailto:534403209@qq.com">发送邮件领取授权码</a>
-        <button class="btn blue" id="copyButton" type="button">复制提交内容</button>
-        <button class="btn" id="copyEmailButton" type="button">复制客服邮箱</button>
-        <a class="btn" href="./index.html">打开 OfferDesk</a>
-      </div>
-      <p class="notice" id="notice"></p>
+          <label class="wide">
+            其他说明
+            <textarea id="note" placeholder="可以写付款截图说明、订单备注或你希望绑定的使用者名称"></textarea>
+          </label>
+          <label class="wide">
+            要提交的内容
+            <textarea id="submitContent" class="submit-content" readonly></textarea>
+          </label>
+        </form>
+        <div class="actions">
+          <a class="btn primary" id="mailLink" href="mailto:534403209@qq.com">发送邮件领取授权码</a>
+          <button class="btn blue" id="copyButton" type="button">复制提交内容</button>
+          <button class="btn" id="copyEmailButton" type="button">复制客服邮箱</button>
+          <a class="btn" href="./index.html">打开 OfferDesk</a>
+        </div>
+        <p class="notice" id="notice"></p>
         <ol class="steps">
           <li>先在成交页用支付宝支付 29 元。</li>
           <li>填写上面的付款信息。</li>
@@ -249,7 +261,11 @@
       }
 
       function updateMailLink() {
-        const subject = encodeURIComponent("OfferDesk 专业版授权码领取");
+        const orderForSubject = $("orderId").value.trim();
+        const subjectText = orderForSubject
+          ? `OfferDesk 专业版授权码领取 ${orderForSubject}`
+          : "OfferDesk 专业版授权码领取";
+        const subject = encodeURIComponent(subjectText);
         const bodyText = buildBody();
         const body = encodeURIComponent(bodyText);
         $("submitContent").value = bodyText;

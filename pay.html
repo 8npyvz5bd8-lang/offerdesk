@@ -136,25 +136,33 @@
   </head>
   <body class="surface-page">
     <main class="wrap">
+      <header class="top">
+        <strong>OfferDesk 专业版</strong>
+        <nav class="actions" aria-label="页面链接">
+          <a class="btn primary" href="./buy.html">成交页</a>
+          <a class="btn" href="./sales.html">销售页</a>
+          <a class="btn" href="./index.html">打开软件</a>
+        </nav>
+      </header>
       <section class="card">
         <div class="qr">
-          <img src="./launch/payment-alipay.jpeg" alt="支付宝收款码" />
           <canvas id="qr" width="260" height="260" aria-label="支付宝收款二维码" hidden></canvas>
-          <strong>支付宝扫码付款</strong>
+          <strong>旧付款入口</strong>
+          <p>付款入口已合并到成交页。先填写授权码邮箱，再打开支付宝付款。</p>
         </div>
         <div>
-          <p><a href="./buy.html">查看成交页</a> · <a href="./sales.html">返回销售页</a> · <a href="./index.html">打开软件</a></p>
-          <h1>购买 OfferDesk 专业版</h1>
+          <h1>先到成交页填写邮箱，再付款。</h1>
           <div class="price">29 元</div>
-          <p>专业版用于去掉免费水印，适合把报价单正式发给客户。</p>
+          <p>这样付款后提交信息时，订单号和邮箱会自动带上，确认到账后更容易发出唯一授权码。</p>
           <div class="actions">
-            <a class="btn primary" href="https://qr.alipay.com/fkx18699evozd44sg2kip49" target="_blank" rel="noreferrer">打开支付宝付款</a>
+            <a class="btn primary" href="./buy.html">去成交页填写邮箱并付款</a>
             <a class="btn blue" id="claimLink" href="./after-pay.html">付款后提交信息</a>
             <a class="btn" href="./index.html">打开软件</a>
           </div>
           <ol class="steps">
-            <li>扫码或点击按钮支付 29 元。</li>
-            <li>付款后点击“付款后提交信息”，填写付款时间、邮箱和支付宝昵称或备注。</li>
+            <li>先进入成交页，填写接收授权码的邮箱。</li>
+            <li>再用成交页里的支付宝入口支付 29 元。</li>
+            <li>付款后点击“付款后提交信息”，系统会自动带入订单号和邮箱。</li>
             <li>确认付款后，会通过邮箱发送专业版授权码。</li>
             <li>回到 OfferDesk 输入授权码，水印会消失。</li>
           </ol>

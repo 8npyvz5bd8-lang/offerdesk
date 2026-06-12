@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const buyHtml = await readFile(new URL("../buy.html", import.meta.url), "utf8");
+const payHtml = await readFile(new URL("../pay.html", import.meta.url), "utf8");
 const afterPayHtml = await readFile(new URL("../after-pay.html", import.meta.url), "utf8");
 
 assert.ok(buyHtml.includes("offerdesk.manual.order.id"));
@@ -29,5 +30,12 @@ assert.ok(afterPayHtml.includes("setStoredManualBuyerName(incomingPayerName)"));
 assert.ok(afterPayHtml.includes("offerdesk.manual.order.id"));
 assert.ok(afterPayHtml.includes("offerdesk.manual.buyer.email"));
 assert.ok(afterPayHtml.includes("offerdesk.manual.buyer.name"));
+assert.ok(afterPayHtml.includes("claim-grid"));
+assert.ok(afterPayHtml.includes("orderForSubject"));
+assert.ok(afterPayHtml.includes("OfferDesk 专业版授权码领取 ${orderForSubject}"));
+
+assert.ok(payHtml.includes("旧付款入口"));
+assert.ok(payHtml.includes("去成交页填写邮箱并付款"));
+assert.ok(!payHtml.includes("https://qr.alipay.com/"));
 
 console.log("manual checkout flow tests passed");
