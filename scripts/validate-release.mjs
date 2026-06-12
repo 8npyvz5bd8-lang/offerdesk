@@ -16,6 +16,7 @@ const requiredFiles = [
   "src/app.js",
   "src/legal.js",
   "src/license.js",
+  "src/payment-claim.js",
   "src/pricing.js",
   "src/sales.js",
   "src/templates.js",

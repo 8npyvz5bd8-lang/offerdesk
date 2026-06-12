@@ -166,6 +166,19 @@
         margin-top: 10px;
       }
 
+      .claim-tools {
+        display: grid;
+        gap: 10px;
+      }
+
+      .claim-tools h2 {
+        margin: 0;
+      }
+
+      .claim-command {
+        min-height: 120px;
+      }
+
       @media (max-width: 760px) {
         .top {
           align-items: flex-start;
@@ -214,6 +227,19 @@
         <p>状态到“已付款”后，点击这一行的“发码命令”，在本机终端运行，确认到账后把生成的邮件发给买家。</p>
       </section>
 
+      <section class="panel claim-tools">
+        <h2>付款邮件核对</h2>
+        <p>把买家从“付款后提交”页面发来的内容粘进来，先确认支付宝到账，再复制发码命令。</p>
+        <textarea class="copy-box" id="claimInput" placeholder="付款时间：2026-06-12 18:20&#10;付款金额：29 元&#10;订单号：OD-MANUAL-...&#10;我的邮箱：buyer@example.com&#10;支付宝昵称或备注：买家备注"></textarea>
+        <div class="actions">
+          <button class="btn green" type="button" id="addClaimLead">解析到跟进台</button>
+          <button class="btn" type="button" id="buildClaimCommand">生成发码命令</button>
+          <button class="btn" type="button" id="copyClaimCommand">复制发码命令</button>
+        </div>
+        <textarea class="copy-box claim-command" id="claimCommand" readonly></textarea>
+        <p class="notice" id="claimNotice"></p>
+      </section>
+
       <section class="panel table-wrap">
         <table>
           <thead>
@@ -242,7 +268,9 @@
       </section>
     </main>
 
-    <script>
+    <script type="module">
+      import { buildManualFulfillmentCommand, parsePaymentClaimText } from "./src/payment-claim.js";
+
       const storageKey = "offerdesk-first-sale-pipeline-v1";
       const emptyLead = () => ({
         channel: "",
@@ -261,6 +289,9 @@
       const rowsEl = document.getElementById("rows");
       const csvOutput = document.getElementById("csvOutput");
       const notice = document.getElementById("notice");
+      const claimInput = document.getElementById("claimInput");
+      const claimCommand = document.getElementById("claimCommand");
+      const claimNotice = document.getElementById("claimNotice");
 
       let leads = loadLeads();
       render();
@@ -289,6 +320,30 @@
         }
         saveLeads();
         render();
+      });
+
+      document.getElementById("addClaimLead").addEventListener("click", () => {
+        const claim = parseCurrentClaim();
+        if (!claim) {
+          return;
+        }
+        leads.unshift(claimToLead(claim));
+        saveLeads();
+        render();
+        claimNotice.textContent = "已把付款信息放进跟进台第一行。确认到账后再运行发码命令。";
+      });
+
+      document.getElementById("buildClaimCommand").addEventListener("click", () => {
+        parseCurrentClaim();
+      });
+
+      document.getElementById("copyClaimCommand").addEventListener("click", async () => {
+        const claim = parseCurrentClaim();
+        if (!claim) {
+          return;
+        }
+        await navigator.clipboard.writeText(claimCommand.value);
+        claimNotice.textContent = "发码命令已复制。确认支付宝到账后，在本机终端运行。";
       });
 
       function loadLeads() {
@@ -477,6 +532,34 @@
           lead.note || "支付宝收款码付款"
         ];
         return args.map(shellArg).join(" \\\n  ");
+      }
+
+      function parseCurrentClaim() {
+        try {
+          const claim = parsePaymentClaimText(claimInput.value);
+          claimCommand.value = buildManualFulfillmentCommand(claim);
+          claimNotice.textContent = `已解析订单 ${claim.orderId}，邮箱 ${claim.email}。`;
+          return claim;
+        } catch (error) {
+          claimCommand.value = "";
+          claimNotice.textContent = error.message;
+          return null;
+        }
+      }
+
+      function claimToLead(claim) {
+        return {
+          channel: "manual-alipay-email",
+          person: claim.name || claim.email,
+          role: "",
+          contact: claim.email,
+          status: "已付款",
+          amount: claim.amount || "29",
+          email: claim.email,
+          paidAt: claim.paidAt || localDateTime(),
+          nextAction: "确认到账后发授权码",
+          note: [`订单号：${claim.orderId}`, claim.note].filter(Boolean).join("；")
+        };
       }
 
       function localDateTime() {

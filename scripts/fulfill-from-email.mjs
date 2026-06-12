@@ -2,6 +2,9 @@ import { readFile } from "node:fs/promises";
 import { isAbsolute, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { fulfillManualOrder } from "./fulfill-manual-order.mjs";
+import { parsePaymentClaimText } from "../src/payment-claim.js";
+
+export { parsePaymentClaimText };
 
 const root = new URL("../", import.meta.url);
 const rootPath = fileURLToPath(root);
@@ -20,32 +23,6 @@ export async function fulfillFromEmail(options) {
     outDir: options.outDir,
     tracker: options.tracker
   });
-}
-
-export function parsePaymentClaimText(text) {
-  const source = String(text || "").replaceAll("\r\n", "\n");
-  const email = readField(source, ["我的邮箱", "你的邮箱", "买家邮箱"]) || findEmail(source);
-  const orderId = readField(source, ["订单号", "订单编号"]);
-  const amount = normalizeAmount(readField(source, ["付款金额", "金额"]));
-  const paidAt = readField(source, ["付款时间", "支付时间"]);
-  const name = readField(source, ["支付宝昵称或备注", "支付宝昵称", "付款备注"]);
-  const extraNote = readField(source, ["其他说明", "说明"]);
-
-  if (!email) {
-    throw new Error("邮件正文里没有买家邮箱。");
-  }
-  if (!orderId) {
-    throw new Error("邮件正文里没有订单号。");
-  }
-
-  return {
-    email,
-    orderId,
-    amount: amount || undefined,
-    paidAt: paidAt || undefined,
-    name: name || undefined,
-    note: buildNote({ name, extraNote })
-  };
 }
 
 export function parseArgs(args) {
@@ -93,47 +70,12 @@ async function readClaimText(options) {
   });
 }
 
-function readField(source, names) {
-  for (const name of names) {
-    const escaped = escapeRegExp(name);
-    const match = source.match(new RegExp(`^\\s*${escaped}\\s*[:：]\\s*(.*)$`, "im"));
-    if (match?.[1]) {
-      return match[1].trim();
-    }
-  }
-  return "";
-}
-
-function findEmail(source) {
-  return source.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/iu)?.[0] || "";
-}
-
-function normalizeAmount(value) {
-  const text = String(value || "").trim();
-  if (!text) {
-    return "";
-  }
-  const match = text.match(/\d+(?:\.\d+)?/u);
-  return match ? match[0] : text;
-}
-
-function buildNote({ name, extraNote }) {
-  return [
-    name ? `支付宝备注：${name}` : "",
-    extraNote ? `其他说明：${extraNote}` : ""
-  ].filter(Boolean).join("；");
-}
-
 function resolveInput(value) {
   const text = String(value || "").trim();
   if (!text) {
     throw new Error("缺少邮件正文文件。");
   }
   return isAbsolute(text) ? text : resolve(rootPath, text);
-}
-
-function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
