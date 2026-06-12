@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>29 元购买 OfferDesk 专业版</title>
     <meta name="description" content="购买 OfferDesk 专业版，去掉报价单水印，适合正式发给客户。" />
+    <link rel="icon" href="data:," />
     <style>
       * {
         box-sizing: border-box;
@@ -203,6 +204,27 @@
         font-size: 13px;
       }
 
+      .manual-order {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+        color: #667065;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .manual-order code {
+        border: 1px solid #d9ded7;
+        border-radius: 8px;
+        background: #f8faf7;
+        padding: 5px 8px;
+        color: #151916;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 12px;
+      }
+
       [hidden] {
         display: none !important;
       }
@@ -259,8 +281,10 @@
           <div class="actions" style="margin-top: 22px">
             <a class="btn green" id="checkoutButton" href="https://qr.alipay.com/fkx18699evozd44sg2kip49" target="_blank" rel="noreferrer">打开支付宝付款</a>
             <a class="btn blue" id="manualClaimButton" href="./after-pay.html">付款后提交信息</a>
+            <button class="btn" id="copyManualOrderButton" type="button">复制订单号</button>
             <a class="btn" href="./index.html">打开软件</a>
           </div>
+          <p class="manual-order" id="manualOrderLine">备用订单号：<code id="manualOrderId"></code></p>
           <div class="order-box">
             <p class="small" id="checkoutStatus">当前使用支付宝收款码。付款后提交信息，确认到账后会回复唯一授权码。</p>
             <p class="small" id="orderStatus"></p>
@@ -379,6 +403,8 @@
       const createOrderButton = document.getElementById("createOrderButton");
       const checkoutButton = document.getElementById("checkoutButton");
       const manualClaimButton = document.getElementById("manualClaimButton");
+      const copyManualOrderButton = document.getElementById("copyManualOrderButton");
+      const manualOrderId = document.getElementById("manualOrderId");
       const checkoutStatus = document.getElementById("checkoutStatus");
       const orderStatus = document.getElementById("orderStatus");
       const checkoutCaption = document.getElementById("checkoutCaption");
@@ -395,7 +421,9 @@
         canvas.hidden = true;
         checkoutCaption.textContent = "打开支付宝扫一扫付款";
       }
-      manualClaimButton.href = `./after-pay.html?order_id=${encodeURIComponent(createManualOrderId())}`;
+      const manualOrderValue = getManualOrderId();
+      manualOrderId.textContent = manualOrderValue;
+      manualClaimButton.href = `./after-pay.html?order_id=${encodeURIComponent(manualOrderValue)}`;
 
       if (licenseProvider === "lemonsqueezy" && autoCheckoutUrl.startsWith("https://")) {
         checkoutButton.href = autoCheckoutUrl;
@@ -460,6 +488,14 @@
         }, 1200);
       });
 
+      copyManualOrderButton.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(manualOrderId.textContent.trim());
+        copyManualOrderButton.textContent = "已复制";
+        setTimeout(() => {
+          copyManualOrderButton.textContent = "复制订单号";
+        }, 1200);
+      });
+
       function startPolling(orderId) {
         clearInterval(pollTimer);
         pollTimer = setInterval(async () => {
@@ -489,6 +525,17 @@
           throw new Error(payload?.error || "请求失败。");
         }
         return payload;
+      }
+
+      function getManualOrderId() {
+        const key = "offerdesk.manual.order.id";
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          return saved;
+        }
+        const created = createManualOrderId();
+        localStorage.setItem(key, created);
+        return created;
       }
 
       function createManualOrderId() {

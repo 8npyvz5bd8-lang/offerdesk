@@ -8,6 +8,7 @@
       name="description"
       content="支付 OfferDesk 专业版后提交付款信息，用于核对到账并领取授权码。"
     />
+    <link rel="icon" href="data:," />
     <style>
       * {
         box-sizing: border-box;
@@ -215,7 +216,11 @@
       const $ = (id) => document.getElementById(id);
       const supportEmail = "534403209@qq.com";
       const params = new URLSearchParams(window.location.search);
-      $("orderId").value = params.get("order_id") || getStoredOrderId();
+      const incomingOrderId = params.get("order_id");
+      if (incomingOrderId) {
+        setStoredOrderId(incomingOrderId);
+      }
+      $("orderId").value = incomingOrderId || getStoredOrderId();
 
       function buildBody() {
         return [
@@ -250,6 +255,13 @@
         const created = createManualOrderId();
         localStorage.setItem(key, created);
         return created;
+      }
+
+      function setStoredOrderId(value) {
+        const text = String(value || "").trim();
+        if (text) {
+          localStorage.setItem("offerdesk.manual.order.id", text);
+        }
       }
 
       function createManualOrderId() {
