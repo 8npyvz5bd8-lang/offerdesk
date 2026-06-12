@@ -36,6 +36,7 @@ assert.ok(salesHtml.includes("offerdesk.attribution.source"));
 assert.ok(salesHtml.includes('sourceParams.get("utm_source")'));
 assert.ok(salesHtml.includes('|| "sales-page"'));
 assert.ok(salesHtml.includes('target.searchParams.set("source", attributionSource)'));
+assert.ok(salesHtml.includes('class="button amber" href="./buy.html">立即购买 ¥29</a>'));
 
 assert.ok(stylesCss.includes(".disabled-link"));
 
