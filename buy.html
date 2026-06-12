@@ -71,6 +71,33 @@
         color: var(--site-green);
       }
 
+      .handoff-box {
+        display: grid;
+        gap: 8px;
+        margin-top: 16px;
+        border: 1px solid var(--site-line);
+        border-radius: var(--site-radius);
+        background: var(--site-paper);
+        padding: 14px;
+      }
+
+      .handoff-box strong {
+        font-size: 15px;
+      }
+
+      .handoff-box ol {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .handoff-box li {
+        margin-top: 4px;
+      }
+
+      .handoff-box p {
+        margin: 0;
+      }
+
       [hidden] {
         display: none !important;
       }
@@ -118,6 +145,15 @@
               买家名称或付款备注
               <input id="manualBuyerName" type="text" placeholder="可填支付宝昵称、公司名或备注" autocomplete="name" />
             </label>
+          </div>
+          <div class="handoff-box">
+            <strong>付款前先确认这 3 件事</strong>
+            <ol>
+              <li>先填写接收授权码邮箱，再打开支付宝付款。</li>
+              <li>付款后点击“付款后提交信息”，页面会自动带上订单号、邮箱和报价来源。</li>
+              <li>确认到账后回复唯一授权码；如果无法解锁，7 天内可处理或退款。</li>
+            </ol>
+            <p class="small">当前是人工核对收款码付款，不会假装秒发。</p>
           </div>
           <div class="actions" style="margin-top: 22px">
             <a class="btn primary" id="checkoutButton" href="https://qr.alipay.com/fkx18699evozd44sg2kip49" target="_blank" rel="noreferrer">打开支付宝付款</a>
