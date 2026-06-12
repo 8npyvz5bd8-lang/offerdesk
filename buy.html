@@ -377,7 +377,7 @@
             const order = await requestJson(`${autoPaymentApiBase}/api/order-status?order_id=${encodeURIComponent(orderId)}`);
             if (order.licenseCode) {
               clearInterval(pollTimer);
-              orderStatus.textContent = "已到账，唯一授权码已生成。";
+              orderStatus.textContent = deliveryStatusText(order);
               licenseBox.textContent = order.licenseCode;
               licenseBox.hidden = false;
               copyLicenseButton.hidden = false;
@@ -390,6 +390,17 @@
             orderStatus.textContent = error.message;
           }
         }, 3000);
+      }
+
+      function deliveryStatusText(order) {
+        if (order.emailDeliveryStatus === "failed") {
+          const detail = order.emailDeliveryError ? `原因：${order.emailDeliveryError}` : "系统会在后续查询时重试。";
+          return `已到账，唯一授权码已生成。授权邮件暂未发出，先复制页面上的授权码。${detail}`;
+        }
+        if (order.emailDeliveryStatus === "sent") {
+          return "已到账，唯一授权码已生成，并已发送到邮箱。";
+        }
+        return "已到账，唯一授权码已生成。";
       }
 
       async function requestJson(url, options) {

@@ -20,6 +20,10 @@ assert.ok(buyHtml.includes('manualClaimButton.addEventListener("click", requireM
 assert.ok(buyHtml.includes("manualBuyerEmail.checkValidity()"));
 assert.ok(buyHtml.includes("buyer_email"));
 assert.ok(buyHtml.includes("payer_name"));
+assert.ok(buyHtml.includes("function deliveryStatusText"));
+assert.ok(buyHtml.includes('order.emailDeliveryStatus === "failed"'));
+assert.ok(buyHtml.includes("授权邮件暂未发出，先复制页面上的授权码"));
+assert.ok(buyHtml.includes('order.emailDeliveryStatus === "sent"'));
 assert.ok(buyHtml.includes('<link rel="stylesheet" href="./site.css" />'));
 assert.ok(buyHtml.includes('class="btn primary" id="checkoutButton"'));
 assert.ok(buyHtml.includes('checkoutButton.classList.remove("primary")'));
