@@ -420,6 +420,63 @@ assert.equal(await goodNotify.text(), "success");
 assert.equal(notifiedStatus.status, "TRADE_SUCCESS");
 assert.ok(notifiedStatus.licenseCode);
 
+const retryEmailRoot = await mkdtemp(join(tmpdir(), "offerdesk-alipay-email-retry-"));
+let emailAttempts = 0;
+const retryEmailServer = createPaymentServer({
+  ALIPAY_APP_ID: "2021000000000000",
+  ALIPAY_PRIVATE_KEY: privateKey,
+  ALIPAY_PUBLIC_KEY: publicKey,
+  ALIPAY_GATEWAY: "https://alipay.test/gateway.do",
+  OFFERDESK_PUBLIC_BASE_URL: "https://pay.offerdesk.com",
+  OFFERDESK_LICENSE_PRIVATE_JWK: JSON.stringify(privateJwk),
+  OFFERDESK_DATA_FILE: join(retryEmailRoot, "orders.json"),
+  OFFERDESK_AMOUNT: "29.00",
+  RESEND_API_KEY: "re_test",
+  OFFERDESK_EMAIL_FROM: "OfferDesk <support@offerdesk.app>"
+}, {
+  fetch: async (url, options) => {
+    if (url === "https://api.resend.com/emails") {
+      emailAttempts += 1;
+      return textResponse("{}", emailAttempts === 1 ? 500 : 200);
+    }
+    const paramsForCall = Object.fromEntries(new URLSearchParams(options.body));
+    const bizContentForCall = JSON.parse(paramsForCall.biz_content);
+    if (paramsForCall.method === "alipay.trade.precreate") {
+      return textResponse(signedAlipayResponse("alipay_trade_precreate_response", {
+        code: "10000",
+        qr_code: "https://qr.alipay.com/retry-email"
+      }), 200);
+    }
+    return textResponse(signedAlipayResponse("alipay_trade_query_response", {
+      code: "10000",
+      out_trade_no: bizContentForCall.out_trade_no,
+      trade_status: "TRADE_SUCCESS",
+      trade_no: "202606112200000005",
+      total_amount: "29.00"
+    }), 200);
+  }
+});
+await new Promise((resolve) => retryEmailServer.listen(0, "127.0.0.1", resolve));
+const { port: retryEmailPort } = retryEmailServer.address();
+const retryEmailCreateResponse = await fetch(`http://127.0.0.1:${retryEmailPort}/api/create-order`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email: "buyer@example.com", name: "买家" })
+});
+const retryEmailCreated = await retryEmailCreateResponse.json();
+const firstRetryStatusResponse = await fetch(`http://127.0.0.1:${retryEmailPort}/api/order-status?order_id=${encodeURIComponent(retryEmailCreated.orderId)}`);
+const firstRetryStatus = await firstRetryStatusResponse.json();
+const secondRetryStatusResponse = await fetch(`http://127.0.0.1:${retryEmailPort}/api/order-status?order_id=${encodeURIComponent(retryEmailCreated.orderId)}`);
+const secondRetryStatus = await secondRetryStatusResponse.json();
+await new Promise((resolve) => retryEmailServer.close(resolve));
+await rm(retryEmailRoot, { recursive: true, force: true });
+assert.equal(firstRetryStatus.emailDeliveryStatus, "failed");
+assert.match(firstRetryStatus.emailDeliveryError, /HTTP 500/u);
+assert.equal(secondRetryStatus.emailDeliveryStatus, "sent");
+assert.equal(secondRetryStatus.emailDeliveryError, "");
+assert.equal(secondRetryStatus.licenseCode, firstRetryStatus.licenseCode);
+assert.equal(emailAttempts, 2);
+
 function textResponse(body, status) {
   return {
     ok: status >= 200 && status < 300,

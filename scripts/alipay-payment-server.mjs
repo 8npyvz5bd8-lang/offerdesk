@@ -169,6 +169,8 @@ export function createPaymentServer(env = process.env, controls = {}) {
             assertPaidAmount(order, queried.amount, "支付宝查单");
             await markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo: queried.tradeNo });
           }
+        } else if (isEmailDeliveryConfigured(env) && order.emailDeliveryStatus !== "sent") {
+          await markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo: order.alipayTradeNo });
         }
 
         sendJson(res, 200, publicOrder(order), allowedOrigin);
@@ -305,7 +307,7 @@ async function markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl
   order.status = "TRADE_SUCCESS";
   order.alipayTradeNo = alipayTradeNo || order.alipayTradeNo || "";
   order.paidAt = order.paidAt || new Date().toISOString();
-  if (isEmailDeliveryConfigured(env) && order.emailDeliveryStatus !== "sent" && order.emailDeliveryStatus !== "failed") {
+  if (isEmailDeliveryConfigured(env) && order.emailDeliveryStatus !== "sent") {
     try {
       await sendDeliveryEmail({ env, fetchImpl, order });
       order.emailDeliveryStatus = "sent";
@@ -327,7 +329,8 @@ function publicOrder(order) {
     status: order.status,
     paidAt: order.paidAt || "",
     licenseCode: successStatuses.has(order.status) ? order.licenseCode : "",
-    emailDeliveryStatus: order.emailDeliveryStatus || ""
+    emailDeliveryStatus: order.emailDeliveryStatus || "",
+    emailDeliveryError: order.emailDeliveryError || ""
   };
 }
 
