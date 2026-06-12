@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-12T14:00:03.320Z",
+  "checkedAt": "2026-06-12T14:19:47.324Z",
   "baseUrl": "https://8npyvz5bd8-lang.github.io/offerdesk/",
   "files": [
     {
@@ -77,9 +77,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/pipeline.html",
       "status": 200,
       "ok": true,
-      "localHash": "994ea251f8d37fa9488bb361b5f97926bab46e08cafb851f5ce736e6bd0aad9a",
-      "remoteHash": "994ea251f8d37fa9488bb361b5f97926bab46e08cafb851f5ce736e6bd0aad9a",
-      "bytes": 18908,
+      "localHash": "5e3f4216b96a046e354abc23908159810d45c0cda9b9d2dc94c378a36e556bc8",
+      "remoteHash": "5e3f4216b96a046e354abc23908159810d45c0cda9b9d2dc94c378a36e556bc8",
+      "bytes": 19085,
       "fix": ""
     },
     {
