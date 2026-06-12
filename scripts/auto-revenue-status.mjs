@@ -88,11 +88,11 @@ export async function buildAutoRevenueStatus(options = {}) {
     step(22, "更新正式发布包", releaseHasSiteCss && uploadZipExists, "dist/offerdesk-release 和 dist/offerdesk-release.zip 已生成。", "运行 node scripts/build-upload-zip.mjs。"),
     step(23, "发布到长期公网地址", publicSite.ready, publicSite.ready ? `线上校验通过：${publicSite.passed}/${publicSite.total} 个文件与本地一致。` : publicSite.evidence, "运行 node scripts/verify-public-site.mjs --write launch/public-site-verification.json。", "blocked"),
     step(24, "检查线上页面", publicSite.ready, publicSite.ready ? `${publicSite.total} 个线上关键文件已和本地一致。` : publicSite.evidence, "用线上校验脚本和浏览器截图检查页面。", "blocked"),
-    step(25, "准备首批获客名单", outreach.prospects >= 10, `${outreach.prospects}/10 个真实潜在买家记录。`, "整理 10 个真实接单人，不编造。", "needs_manual"),
-    step(26, "发布推广内容", outreach.publishedChannels >= 3, `${outreach.publishedChannels}/3 个推广渠道有真实发布证据。`, "用 share.html 文案发布到真实渠道，并记录到 promotion-log.csv。", "needs_manual"),
+    step(25, "准备首批获客名单", outreach.prospects >= 10, `${outreach.prospects}/10 个真实潜在买家记录。`, "查看 launch/outreach-readiness.md，整理 10 个真实接单人，不编造。", "needs_manual"),
+    step(26, "发布推广内容", outreach.publishedChannels >= 3, `${outreach.publishedChannels}/3 个推广渠道有真实发布证据。`, "查看 launch/outreach-readiness.md，用 share.html 文案发布到真实渠道，并记录到 promotion-log.csv。", "needs_manual"),
     step(27, "跟进每个潜在买家", await exists("pipeline.html"), "pipeline.html 已存在，可记录线索。", "把真实联系人状态录入跟进台。"),
     step(28, "处理第一笔自动订单", false, "尚无第一笔自动订单证据。", "订单成功后检查订单 JSON、授权码和邮件状态。", "blocked"),
-    step(29, "记录收入和问题", outreach.paid > 0 && outreach.revenue > 0, outreach.paid > 0 ? `sales-tracker.csv 中有 ${outreach.paid} 笔付款，收入 ¥${outreach.revenue.toFixed(2)}。` : "sales-tracker.csv 中没有真实付款记录。", "有真实付款后记录到 sales-tracker.csv。", "needs_manual"),
+    step(29, "记录收入和问题", outreach.paid > 0 && outreach.revenue > 0, outreach.paid > 0 ? `sales-tracker.csv 中有 ${outreach.paid} 笔付款，收入 ¥${outreach.revenue.toFixed(2)}。` : "sales-tracker.csv 中没有真实付款记录。", "有真实付款后记录到 sales-tracker.csv，并重新生成 launch/outreach-readiness.md。", "needs_manual"),
     step(30, "做 7 天复盘", false, "尚未达到 7 天真实数据复盘。", "满 7 天后按试用、付费、反馈复盘。", "needs_manual")
   ];
 

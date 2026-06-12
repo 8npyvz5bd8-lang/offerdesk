@@ -154,6 +154,14 @@ pbpaste | /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/depende
 
 跟进台和推广记录台现在可以直接下载 CSV，再导入到本地证据文件。
 
+先看当前缺口清单：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/outreach-readiness.mjs --write launch/outreach-readiness.md --no-fail
+```
+
+生成结果见 `launch/outreach-readiness.md`。它只按真实 CSV 统计，不会帮你编客户、编发布链接或编收入。
+
 潜在买家导入：
 
 ```bash

@@ -1,6 +1,6 @@
 # OfferDesk 自动赚钱执行状态
 
-生成时间：2026-06-12 19:07:41
+生成时间：2026-06-12 19:12:00
 
 文档步骤数：30
 已完成：15
@@ -162,13 +162,13 @@
 
 状态：需人工
 证据：0/10 个真实潜在买家记录。
-下一步：整理 10 个真实接单人，不编造。
+下一步：查看 launch/outreach-readiness.md，整理 10 个真实接单人，不编造。
 
 ### 26. 发布推广内容
 
 状态：需人工
 证据：0/3 个推广渠道有真实发布证据。
-下一步：用 share.html 文案发布到真实渠道，并记录到 promotion-log.csv。
+下一步：查看 launch/outreach-readiness.md，用 share.html 文案发布到真实渠道，并记录到 promotion-log.csv。
 
 ### 27. 跟进每个潜在买家
 
@@ -186,7 +186,7 @@
 
 状态：需人工
 证据：sales-tracker.csv 中没有真实付款记录。
-下一步：有真实付款后记录到 sales-tracker.csv。
+下一步：有真实付款后记录到 sales-tracker.csv，并重新生成 launch/outreach-readiness.md。
 
 ### 30. 做 7 天复盘
 
