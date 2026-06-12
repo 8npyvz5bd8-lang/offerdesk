@@ -33,13 +33,14 @@ export function parsePaymentClaimText(text) {
 
 export function buildManualFulfillmentCommand(claim, options = {}) {
   const nodePath = options.nodePath || defaultNodePath;
+  const orderId = claim.orderId || "订单号";
   const args = [
     nodePath,
     "scripts/fulfill-manual-order.mjs",
     "--email",
     claim.email || "买家邮箱",
     "--order-id",
-    claim.orderId || "订单号",
+    orderId,
     "--source",
     claim.source || "",
     "--paid-at",
@@ -55,7 +56,11 @@ export function buildManualFulfillmentCommand(claim, options = {}) {
     "--note",
     claim.note || "支付宝收款码付款"
   ];
-  return args.map(shellArg).join(" \\\n  ");
+  const command = args.map(shellArg).join(" \\\n  ");
+  if (!options.openEmailAfter || !claim.orderId) {
+    return command;
+  }
+  return `${command} && \\\n  open ${shellArg(defaultManualEmailOut(claim.orderId))}`;
 }
 
 function readField(source, names) {
@@ -106,6 +111,11 @@ function shellArg(value) {
     return text;
   }
   return `'${text.replaceAll("'", "'\\''")}'`;
+}
+
+function defaultManualEmailOut(orderId) {
+  const safeOrderId = String(orderId || "").trim().replace(/[^A-Za-z0-9_-]/g, "-");
+  return `dist/manual-orders/${safeOrderId}-email.txt`;
 }
 
 function escapeRegExp(value) {

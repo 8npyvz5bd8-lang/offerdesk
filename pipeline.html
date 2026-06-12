@@ -297,7 +297,7 @@
         button.type = "button";
         button.textContent = "发码命令";
         button.addEventListener("click", async () => {
-          const command = buildFulfillmentCommand(leads[index]);
+          const command = buildFulfillmentCommand(leads[index], { openEmailAfter: true });
           csvOutput.value = command;
           await copyText(
             command,
@@ -387,15 +387,16 @@
         return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
       }
 
-      function buildFulfillmentCommand(lead) {
+      function buildFulfillmentCommand(lead, options = {}) {
         const node = "/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node";
+        const orderId = lead.orderId || "";
         const args = [
           node,
           "scripts/fulfill-manual-order.mjs",
           "--email",
           lead.email || "买家邮箱",
           "--order-id",
-          lead.orderId || "",
+          orderId,
           "--source",
           lead.source || "",
           "--paid-at",
@@ -413,7 +414,11 @@
           "--note",
           lead.note || "支付宝收款码付款"
         ];
-        return args.map(shellArg).join(" \\\n  ");
+        const command = args.map(shellArg).join(" \\\n  ");
+        if (!options.openEmailAfter || !orderId) {
+          return command;
+        }
+        return `${command} && \\\n  open ${shellArg(defaultManualEmailOut(orderId))}`;
       }
 
       function buildSalesImportCommand() {
@@ -461,7 +466,7 @@
       function parseCurrentClaim() {
         try {
           const claim = parsePaymentClaimText(claimInput.value);
-          claimCommand.value = buildManualFulfillmentCommand(claim);
+          claimCommand.value = buildManualFulfillmentCommand(claim, { openEmailAfter: true });
           claimNotice.textContent = `已解析订单 ${claim.orderId}，邮箱 ${claim.email}。`;
           return claim;
         } catch (error) {
@@ -504,6 +509,11 @@
           return text;
         }
         return `'${text.replaceAll("'", "'\\''")}'`;
+      }
+
+      function defaultManualEmailOut(orderId) {
+        const safeOrderId = String(orderId || "").trim().replace(/[^A-Za-z0-9_-]/g, "-");
+        return `dist/manual-orders/${safeOrderId}-email.txt`;
       }
     </script>
   </body>

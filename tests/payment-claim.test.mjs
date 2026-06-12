@@ -55,4 +55,14 @@ assert.ok(command.includes("--source"));
 assert.ok(command.includes("xianyu"));
 assert.ok(!command.includes("\n+"));
 
+const openEmailCommand = buildManualFulfillmentCommand(claim, {
+  nodePath: "node",
+  channel: "manual-test",
+  openEmailAfter: true
+});
+
+assert.ok(openEmailCommand.includes("&&"));
+assert.ok(openEmailCommand.includes("open"));
+assert.ok(openEmailCommand.includes("dist/manual-orders/OD-MANUAL-20260612182000-ABC12345-email.txt"));
+
 console.log("payment claim tests passed");
