@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-12T12:36:38.156Z",
+  "checkedAt": "2026-06-12T12:48:16.399Z",
   "baseUrl": "https://8npyvz5bd8-lang.github.io/offerdesk/",
   "files": [
     {
@@ -17,9 +17,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/sales.html",
       "status": 200,
       "ok": true,
-      "localHash": "c09f2658ee0d57b4f093603b6ed01a76b1c70134649b0bdb07e73c357a7da02e",
-      "remoteHash": "c09f2658ee0d57b4f093603b6ed01a76b1c70134649b0bdb07e73c357a7da02e",
-      "bytes": 20117,
+      "localHash": "6a8001713c0597e2d22e56756748938b6c9b743283f1616dc0bfb0192273c664",
+      "remoteHash": "6a8001713c0597e2d22e56756748938b6c9b743283f1616dc0bfb0192273c664",
+      "bytes": 21047,
       "fix": ""
     },
     {
@@ -27,9 +27,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
       "status": 200,
       "ok": true,
-      "localHash": "eb6c75aec04eb899ac4cc2c4dee02a7c5b0e469ff7da57d925d4ccd132a7a49e",
-      "remoteHash": "eb6c75aec04eb899ac4cc2c4dee02a7c5b0e469ff7da57d925d4ccd132a7a49e",
-      "bytes": 20804,
+      "localHash": "4d0aaa4082992db88f38b6b3c007ea2c9f636360dec8156a0edf7c28cbdabac5",
+      "remoteHash": "4d0aaa4082992db88f38b6b3c007ea2c9f636360dec8156a0edf7c28cbdabac5",
+      "bytes": 21699,
       "fix": ""
     },
     {
@@ -47,9 +47,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/after-pay.html",
       "status": 200,
       "ok": true,
-      "localHash": "3a496ad8e68bea6e1eac0b0659a8db39f9da0fbe0fe093464ea42d507781a9db",
-      "remoteHash": "3a496ad8e68bea6e1eac0b0659a8db39f9da0fbe0fe093464ea42d507781a9db",
-      "bytes": 7594,
+      "localHash": "50a1ef7a3a969c960af09f22cbe9f26a8a7bab88c73770dbeb357d172ad2d329",
+      "remoteHash": "50a1ef7a3a969c960af09f22cbe9f26a8a7bab88c73770dbeb357d172ad2d329",
+      "bytes": 8318,
       "fix": ""
     },
     {
@@ -57,9 +57,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/share.html",
       "status": 200,
       "ok": true,
-      "localHash": "238a184a327ff85666c59b48f06539ad824cfabe4ce0cac3626f733747de9b3a",
-      "remoteHash": "238a184a327ff85666c59b48f06539ad824cfabe4ce0cac3626f733747de9b3a",
-      "bytes": 5772,
+      "localHash": "8c27b08edc19673963b5a16329b57cf74c5a0a4c3d863ebed15fd9eb8ac44715",
+      "remoteHash": "8c27b08edc19673963b5a16329b57cf74c5a0a4c3d863ebed15fd9eb8ac44715",
+      "bytes": 5887,
       "fix": ""
     },
     {
@@ -127,9 +127,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/src/app.js",
       "status": 200,
       "ok": true,
-      "localHash": "4423c97a2f3eaf921238976037c3736911328b42f18cb339947a8f167d6e54fd",
-      "remoteHash": "4423c97a2f3eaf921238976037c3736911328b42f18cb339947a8f167d6e54fd",
-      "bytes": 19832,
+      "localHash": "d1243f4a3a86877f13ddc3dfb7ff584490d3a737444db7e122687009ea7bb011",
+      "remoteHash": "d1243f4a3a86877f13ddc3dfb7ff584490d3a737444db7e122687009ea7bb011",
+      "bytes": 20588,
       "fix": ""
     },
     {
@@ -137,9 +137,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/src/payment-claim.js",
       "status": 200,
       "ok": true,
-      "localHash": "670a494b7e87437adb31d8a1be520581664355e66a097a4178a1a254b4b9e472",
-      "remoteHash": "670a494b7e87437adb31d8a1be520581664355e66a097a4178a1a254b4b9e472",
-      "bytes": 2838,
+      "localHash": "9027fb0e8b598b08c446771c8cc084b5dad82683f1267510993de8039b749a4f",
+      "remoteHash": "9027fb0e8b598b08c446771c8cc084b5dad82683f1267510993de8039b749a4f",
+      "bytes": 3093,
       "fix": ""
     }
   ],
