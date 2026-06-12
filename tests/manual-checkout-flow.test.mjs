@@ -7,11 +7,27 @@ const afterPayHtml = await readFile(new URL("../after-pay.html", import.meta.url
 assert.ok(buyHtml.includes("offerdesk.manual.order.id"));
 assert.ok(buyHtml.includes("copyManualOrderButton"));
 assert.ok(buyHtml.includes("manualOrderId"));
+assert.ok(buyHtml.includes("manualBuyerForm"));
+assert.ok(buyHtml.includes("manualBuyerEmail"));
+assert.ok(buyHtml.includes("manualBuyerName"));
+assert.ok(buyHtml.includes("offerdesk.manual.buyer.email"));
+assert.ok(buyHtml.includes("offerdesk.manual.buyer.name"));
 assert.ok(buyHtml.includes("getManualOrderId()"));
-assert.ok(buyHtml.includes("after-pay.html?order_id="));
+assert.ok(buyHtml.includes("updateManualClaimLink()"));
+assert.ok(buyHtml.includes("requireManualBuyerEmail"));
+assert.ok(buyHtml.includes('manualClaimButton.addEventListener("click", requireManualBuyerEmail)'));
+assert.ok(buyHtml.includes("manualBuyerEmail.checkValidity()"));
+assert.ok(buyHtml.includes("buyer_email"));
+assert.ok(buyHtml.includes("payer_name"));
 
 assert.ok(afterPayHtml.includes("incomingOrderId"));
+assert.ok(afterPayHtml.includes("incomingBuyerEmail"));
+assert.ok(afterPayHtml.includes("incomingPayerName"));
 assert.ok(afterPayHtml.includes("setStoredOrderId(incomingOrderId)"));
+assert.ok(afterPayHtml.includes("setStoredManualBuyerEmail(incomingBuyerEmail)"));
+assert.ok(afterPayHtml.includes("setStoredManualBuyerName(incomingPayerName)"));
 assert.ok(afterPayHtml.includes("offerdesk.manual.order.id"));
+assert.ok(afterPayHtml.includes("offerdesk.manual.buyer.email"));
+assert.ok(afterPayHtml.includes("offerdesk.manual.buyer.name"));
 
 console.log("manual checkout flow tests passed");

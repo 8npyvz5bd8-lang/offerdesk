@@ -217,10 +217,20 @@
       const supportEmail = "534403209@qq.com";
       const params = new URLSearchParams(window.location.search);
       const incomingOrderId = params.get("order_id");
+      const incomingBuyerEmail = params.get("buyer_email") || params.get("email");
+      const incomingPayerName = params.get("payer_name") || params.get("name");
       if (incomingOrderId) {
         setStoredOrderId(incomingOrderId);
       }
+      if (incomingBuyerEmail) {
+        setStoredManualBuyerEmail(incomingBuyerEmail);
+      }
+      if (incomingPayerName) {
+        setStoredManualBuyerName(incomingPayerName);
+      }
       $("orderId").value = incomingOrderId || getStoredOrderId();
+      $("buyerEmail").value = incomingBuyerEmail || getStoredManualBuyerEmail();
+      $("payerName").value = incomingPayerName || getStoredManualBuyerName();
 
       function buildBody() {
         return [
@@ -262,6 +272,22 @@
         if (text) {
           localStorage.setItem("offerdesk.manual.order.id", text);
         }
+      }
+
+      function getStoredManualBuyerEmail() {
+        return localStorage.getItem("offerdesk.manual.buyer.email") || "";
+      }
+
+      function setStoredManualBuyerEmail(value) {
+        localStorage.setItem("offerdesk.manual.buyer.email", String(value || "").trim());
+      }
+
+      function getStoredManualBuyerName() {
+        return localStorage.getItem("offerdesk.manual.buyer.name") || "";
+      }
+
+      function setStoredManualBuyerName(value) {
+        localStorage.setItem("offerdesk.manual.buyer.name", String(value || "").trim());
       }
 
       function createManualOrderId() {

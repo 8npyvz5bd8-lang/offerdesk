@@ -296,6 +296,16 @@
             </label>
             <button class="btn green" id="createOrderButton" type="button">生成专属付款码</button>
           </div>
+          <div class="buy-form" id="manualBuyerForm">
+            <label>
+              接收授权码邮箱
+              <input id="manualBuyerEmail" type="email" placeholder="付款前先填，授权码发到这里" autocomplete="email" />
+            </label>
+            <label>
+              买家名称或付款备注
+              <input id="manualBuyerName" type="text" placeholder="可填支付宝昵称、公司名或备注" autocomplete="name" />
+            </label>
+          </div>
           <div class="actions" style="margin-top: 22px">
             <a class="btn green" id="checkoutButton" href="https://qr.alipay.com/fkx18699evozd44sg2kip49" target="_blank" rel="noreferrer">打开支付宝付款</a>
             <a class="btn blue" id="manualClaimButton" href="./after-pay.html">付款后提交信息</a>
@@ -418,6 +428,9 @@
       const autoBuyForm = document.getElementById("autoBuyForm");
       const buyerName = document.getElementById("buyerName");
       const buyerEmail = document.getElementById("buyerEmail");
+      const manualBuyerForm = document.getElementById("manualBuyerForm");
+      const manualBuyerEmail = document.getElementById("manualBuyerEmail");
+      const manualBuyerName = document.getElementById("manualBuyerName");
       const createOrderButton = document.getElementById("createOrderButton");
       const checkoutButton = document.getElementById("checkoutButton");
       const manualClaimButton = document.getElementById("manualClaimButton");
@@ -443,12 +456,15 @@
       }
       const manualOrderValue = getManualOrderId();
       manualOrderId.textContent = manualOrderValue;
-      manualClaimButton.href = `./after-pay.html?order_id=${encodeURIComponent(manualOrderValue)}`;
+      manualBuyerEmail.value = getStoredManualBuyerEmail();
+      manualBuyerName.value = getStoredManualBuyerName();
+      updateManualClaimLink();
 
       if (licenseProvider === "lemonsqueezy" && autoCheckoutUrl.startsWith("https://")) {
         checkoutButton.href = autoCheckoutUrl;
         checkoutButton.textContent = "打开自动付款页";
         manualClaimButton.hidden = true;
+        manualBuyerForm.hidden = true;
         canvas.hidden = true;
         checkoutStatus.textContent = "付款平台会自动收款，并把授权码发到买家邮箱。";
         checkoutCaption.textContent = "支持平台可用的支付宝、微信支付、银行卡或 PayPal。";
@@ -459,8 +475,33 @@
         checkoutButton.classList.remove("green");
         checkoutButton.textContent = "备用收款码";
         manualClaimButton.hidden = true;
+        manualBuyerForm.hidden = true;
         checkoutStatus.textContent = "已开启支付宝官方自动收款。付款成功后会自动生成唯一授权码。";
         checkoutCaption.textContent = "输入邮箱后生成本次订单专属付款码。";
+      }
+
+      manualBuyerEmail.addEventListener("input", () => {
+        setStoredManualBuyerEmail(manualBuyerEmail.value);
+        updateManualClaimLink();
+      });
+
+      manualBuyerName.addEventListener("input", () => {
+        setStoredManualBuyerName(manualBuyerName.value);
+        updateManualClaimLink();
+      });
+
+      checkoutButton.addEventListener("click", requireManualBuyerEmail);
+      manualClaimButton.addEventListener("click", requireManualBuyerEmail);
+
+      function requireManualBuyerEmail(event) {
+        if (manualBuyerForm.hidden || manualClaimButton.hidden) {
+          return;
+        }
+        if (!manualBuyerEmail.value.trim() || !manualBuyerEmail.checkValidity()) {
+          event.preventDefault();
+          checkoutStatus.textContent = "先填写正确的授权码邮箱，付款后系统会自动带到提交页。";
+          manualBuyerEmail.focus();
+        }
       }
 
       createOrderButton.addEventListener("click", async () => {
@@ -556,6 +597,35 @@
         const created = createManualOrderId();
         localStorage.setItem(key, created);
         return created;
+      }
+
+      function updateManualClaimLink() {
+        const params = new URLSearchParams({ order_id: manualOrderValue });
+        const email = manualBuyerEmail.value.trim();
+        const name = manualBuyerName.value.trim();
+        if (email) {
+          params.set("buyer_email", email);
+        }
+        if (name) {
+          params.set("payer_name", name);
+        }
+        manualClaimButton.href = `./after-pay.html?${params.toString()}`;
+      }
+
+      function getStoredManualBuyerEmail() {
+        return localStorage.getItem("offerdesk.manual.buyer.email") || "";
+      }
+
+      function setStoredManualBuyerEmail(value) {
+        localStorage.setItem("offerdesk.manual.buyer.email", String(value || "").trim());
+      }
+
+      function getStoredManualBuyerName() {
+        return localStorage.getItem("offerdesk.manual.buyer.name") || "";
+      }
+
+      function setStoredManualBuyerName(value) {
+        localStorage.setItem("offerdesk.manual.buyer.name", String(value || "").trim());
       }
 
       function createManualOrderId() {
