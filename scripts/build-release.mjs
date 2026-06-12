@@ -31,6 +31,7 @@ run(process.execPath, ["tests/prepare-release.test.mjs"]);
 run(process.execPath, ["tests/release-status.test.mjs"]);
 run(process.execPath, ["tests/release-report.test.mjs"]);
 run(process.execPath, ["tests/static-assets.test.mjs"]);
+run(process.execPath, ["tests/share-page.test.mjs"]);
 run(process.execPath, ["tests/promotion-page.test.mjs"]);
 run(process.execPath, ["tests/verify-public-site.test.mjs"]);
 run(process.execPath, ["tests/validate-outreach.test.mjs"]);
