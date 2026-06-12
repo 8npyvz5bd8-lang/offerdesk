@@ -238,14 +238,52 @@
       document.querySelectorAll("input, textarea").forEach((el) => el.addEventListener("input", updateMailLink));
       $("copyButton").addEventListener("click", async () => {
         updateMailLink();
-        await navigator.clipboard.writeText($("submitContent").value);
-        $("notice").textContent = "提交内容已复制，可以粘贴到邮件或聊天里发送。";
+        const copied = await copyTextOrSelect($("submitContent").value, $("submitContent"));
+        $("notice").textContent = copied
+          ? "提交内容已复制，可以粘贴到邮件或聊天里发送。"
+          : "浏览器没有允许复制，提交内容已选中，请按复制键。";
       });
       $("copyEmailButton").addEventListener("click", async () => {
-        await navigator.clipboard.writeText(supportEmail);
-        $("notice").textContent = "客服邮箱已复制。";
+        const copied = await copyTextOrSelect(supportEmail);
+        $("notice").textContent = copied ? "客服邮箱已复制。" : `浏览器没有允许复制，请手动复制：${supportEmail}`;
       });
       updateMailLink();
+
+      async function copyTextOrSelect(text, fallbackElement) {
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+            return true;
+          }
+        } catch {
+          // Fall through to visible selection below.
+        }
+
+        selectCopyFallback(text, fallbackElement);
+        try {
+          return document.execCommand("copy");
+        } catch {
+          return false;
+        }
+      }
+
+      function selectCopyFallback(text, fallbackElement) {
+        if (fallbackElement && typeof fallbackElement.select === "function") {
+          fallbackElement.focus();
+          fallbackElement.select();
+          return;
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        setTimeout(() => textarea.remove(), 0);
+      }
     </script>
   </body>
 </html>

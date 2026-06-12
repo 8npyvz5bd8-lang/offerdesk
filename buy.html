@@ -364,16 +364,22 @@
       });
 
       copyLicenseButton.addEventListener("click", async () => {
-        await navigator.clipboard.writeText(licenseBox.textContent.trim());
-        copyLicenseButton.textContent = "已复制";
+        const copied = await copyTextOrSelect(licenseBox.textContent.trim(), licenseBox);
+        copyLicenseButton.textContent = copied ? "已复制" : "已选中";
+        if (!copied) {
+          orderStatus.textContent = "浏览器没有允许复制，授权码已选中，请按复制键。";
+        }
         setTimeout(() => {
           copyLicenseButton.textContent = "复制授权码";
         }, 1200);
       });
 
       copyManualOrderButton.addEventListener("click", async () => {
-        await navigator.clipboard.writeText(manualOrderId.textContent.trim());
-        copyManualOrderButton.textContent = "已复制";
+        const copied = await copyTextOrSelect(manualOrderId.textContent.trim(), manualOrderId);
+        copyManualOrderButton.textContent = copied ? "已复制" : "已选中";
+        if (!copied) {
+          checkoutStatus.textContent = "浏览器没有允许复制，订单号已选中，请按复制键。";
+        }
         setTimeout(() => {
           copyManualOrderButton.textContent = "复制订单号";
         }, 1200);
@@ -555,6 +561,50 @@
           .replaceAll(">", "&gt;")
           .replaceAll('"', "&quot;")
           .replaceAll("'", "&#039;");
+      }
+
+      async function copyTextOrSelect(text, fallbackElement) {
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+            return true;
+          }
+        } catch {
+          // Fall through to visible selection below.
+        }
+
+        selectCopyFallback(text, fallbackElement);
+        try {
+          return document.execCommand("copy");
+        } catch {
+          return false;
+        }
+      }
+
+      function selectCopyFallback(text, fallbackElement) {
+        if (fallbackElement && typeof fallbackElement.select === "function") {
+          fallbackElement.focus();
+          fallbackElement.select();
+          return;
+        }
+        if (fallbackElement) {
+          const range = document.createRange();
+          range.selectNodeContents(fallbackElement);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          return;
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        setTimeout(() => textarea.remove(), 0);
       }
     </script>
   </body>
