@@ -35,6 +35,18 @@
       .claim-command {
         min-height: 120px;
       }
+
+      .row-actions {
+        display: grid;
+        gap: 8px;
+        min-width: 112px;
+      }
+
+      .row-actions .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 8px 10px;
+      }
     </style>
   </head>
   <body class="surface-page">
@@ -252,7 +264,7 @@
         tr.appendChild(cell(input(index, "paidAt", lead.paidAt, "2026-06-11 18:20")));
         tr.appendChild(cell(input(index, "nextAction", lead.nextAction, "继续跟进/发成交页")));
         tr.appendChild(cell(textarea(index, "note", lead.note, "反馈/付款备注")));
-        tr.appendChild(cell(actionButton(index)));
+        tr.appendChild(cell(actionButtons(index)));
         return tr;
       }
 
@@ -291,7 +303,29 @@
         return el;
       }
 
-      function actionButton(index) {
+      function actionButtons(index) {
+        const group = document.createElement("div");
+        group.className = "row-actions";
+        group.appendChild(copyMessageButton(index, "试用私信", buildTrialMessage, "试用私信已复制。"));
+        group.appendChild(copyMessageButton(index, "成交私信", buildCloseMessage, "成交私信已复制。"));
+        group.appendChild(fulfillmentButton(index));
+        return group;
+      }
+
+      function copyMessageButton(index, label, builder, successText) {
+        const button = document.createElement("button");
+        button.className = "btn";
+        button.type = "button";
+        button.textContent = label;
+        button.addEventListener("click", async () => {
+          const message = builder(leads[index]);
+          csvOutput.value = message;
+          await copyText(message, notice, successText, "私信已显示，浏览器没有允许复制，请手动复制。");
+        });
+        return button;
+      }
+
+      function fulfillmentButton(index) {
         const button = document.createElement("button");
         button.className = "btn primary";
         button.type = "button";
@@ -309,6 +343,66 @@
           );
         });
         return button;
+      }
+
+      function buildTrialMessage(lead) {
+        const person = String(lead.person || "").trim();
+        const role = String(lead.role || "").trim();
+        const greeting = person ? `${person}你好，` : "你好，";
+        const roleLine = role ? `我看你像是在做${role}相关接单，所以想请你试一下。` : "想请你试一下。";
+        return [
+          `${greeting}我做了一个给自由职业者和小团队用的报价单工具。`,
+          roleLine,
+          "",
+          "它能自动算成本、利润率、首付款，并生成可以发给客户的报价单。",
+          "免费版可以直接试用。如果真的帮你省时间，再考虑买 29 元专业版去水印。",
+          "",
+          `销售页：${buildTrackedUrl("sales.html", lead, "direct-message")}`,
+          `试用工具：${buildTrackedUrl("index.html", lead, "direct-message")}`,
+          "",
+          "不合适也没关系，直接告诉我哪里没用。"
+        ].join("\n");
+      }
+
+      function buildCloseMessage(lead) {
+        return [
+          "如果这个工具能帮你正式给客户发报价单，可以买 29 元专业版去掉水印。",
+          "",
+          `成交页：${buildTrackedUrl("buy.html", lead, "follow-up")}`,
+          "",
+          "付款前先填邮箱，付款备注建议填订单号。确认到账后，我会发唯一授权码。"
+        ].join("\n");
+      }
+
+      function buildTrackedUrl(page, lead, fallbackSource) {
+        const url = new URL(page, "https://8npyvz5bd8-lang.github.io/offerdesk/");
+        url.searchParams.set("source", leadSource(lead, fallbackSource));
+        return url.href;
+      }
+
+      function leadSource(lead, fallbackSource) {
+        const saved = String(lead.source || "").trim();
+        if (saved) {
+          return saved.slice(0, 80);
+        }
+        const mapped = channelToSource(lead.channel);
+        return mapped || fallbackSource;
+      }
+
+      function channelToSource(channel) {
+        const text = String(channel || "").trim().toLowerCase();
+        const known = new Map([
+          ["闲鱼", "xianyu"],
+          ["小红书", "xiaohongshu"],
+          ["朋友圈", "friend-circle"],
+          ["群聊", "group-chat"],
+          ["私信", "direct-message"]
+        ]);
+        if (known.has(text)) {
+          return known.get(text);
+        }
+        const slug = text.replace(/[^a-z0-9]+/gu, "-").replace(/^-|-$/gu, "");
+        return slug || "";
       }
 
       function updateLead(index, key, value) {
