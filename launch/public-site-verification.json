@@ -1,7 +1,17 @@
 {
-  "checkedAt": "2026-06-12T10:32:20.330Z",
+  "checkedAt": "2026-06-12T10:37:52.001Z",
   "baseUrl": "https://8npyvz5bd8-lang.github.io/offerdesk/",
   "files": [
+    {
+      "file": "index.html",
+      "url": "https://8npyvz5bd8-lang.github.io/offerdesk/index.html",
+      "status": 200,
+      "ok": true,
+      "localHash": "d6e0227318a968f624189cedd13cff34b9fcd9d05f953c90d64152b7a081fedd",
+      "remoteHash": "d6e0227318a968f624189cedd13cff34b9fcd9d05f953c90d64152b7a081fedd",
+      "bytes": 8878,
+      "fix": ""
+    },
     {
       "file": "sales.html",
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/sales.html",
@@ -73,6 +83,16 @@
       "fix": ""
     },
     {
+      "file": "styles.css",
+      "url": "https://8npyvz5bd8-lang.github.io/offerdesk/styles.css",
+      "status": 200,
+      "ok": true,
+      "localHash": "cf3ed86c4561d55314fb8eff71bacbd701e5e5d6f9395b6ea91e2748184aeb89",
+      "remoteHash": "cf3ed86c4561d55314fb8eff71bacbd701e5e5d6f9395b6ea91e2748184aeb89",
+      "bytes": 17844,
+      "fix": ""
+    },
+    {
       "file": "app-config.js",
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/app-config.js",
       "status": 200,
@@ -80,6 +100,16 @@
       "localHash": "ceedeeecfc384ac9ffd91fd785be2f4abbc89c41e2d05c3de36de8bf56f73000",
       "remoteHash": "ceedeeecfc384ac9ffd91fd785be2f4abbc89c41e2d05c3de36de8bf56f73000",
       "bytes": 522,
+      "fix": ""
+    },
+    {
+      "file": "src/app.js",
+      "url": "https://8npyvz5bd8-lang.github.io/offerdesk/src/app.js",
+      "status": 200,
+      "ok": true,
+      "localHash": "232dacea16dc6ab4be9ecce89bd0198fe540b263aceed187ad3f9d2a90be0a8b",
+      "remoteHash": "232dacea16dc6ab4be9ecce89bd0198fe540b263aceed187ad3f9d2a90be0a8b",
+      "bytes": 18998,
       "fix": ""
     },
     {
