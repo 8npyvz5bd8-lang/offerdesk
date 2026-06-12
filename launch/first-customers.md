@@ -126,6 +126,9 @@ https://8npyvz5bd8-lang.github.io/offerdesk/share-copy.txt
 一键复制推广页：
 https://8npyvz5bd8-lang.github.io/offerdesk/share.html
 
+推广记录台：
+https://8npyvz5bd8-lang.github.io/offerdesk/promotion.html
+
 首单跟进台：
 https://8npyvz5bd8-lang.github.io/offerdesk/pipeline.html
 

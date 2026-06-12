@@ -13,6 +13,7 @@ const publicPages = [
   "pay.html",
   "after-pay.html",
   "share.html",
+  "promotion.html",
   "pipeline.html",
   "privacy.html",
   "terms.html",

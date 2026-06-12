@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>OfferDesk 推广记录台</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./site.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      .mini-copy {
+        max-width: 760px;
+        margin-top: 8px;
+      }
+
+      .toolbar,
+      .links,
+      .stats {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .stats {
+        margin-top: 14px;
+      }
+
+      .stat strong {
+        display: block;
+        color: var(--site-green);
+        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 30px;
+        line-height: 1;
+      }
+
+      table {
+        width: 100%;
+        min-width: 920px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--site-line);
+        padding: 10px 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--site-muted);
+        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--site-line);
+        border-radius: var(--site-radius);
+        background: #fffdf8;
+        padding: 9px;
+        color: var(--site-ink);
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      .copy-box {
+        width: 100%;
+        min-height: 180px;
+        margin-top: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 13px;
+      }
+
+      .notice {
+        min-height: 24px;
+        margin-top: 10px;
+        color: var(--site-green);
+        font-weight: 900;
+      }
+
+      @media (max-width: 760px) {
+        .links .btn,
+        .toolbar .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body class="surface-page">
+    <main class="wrap">
+      <header class="top">
+        <div>
+          <strong>OfferDesk</strong>
+          <h1>推广记录台</h1>
+          <p class="mini-copy">只记录已经真实发布的链接。导出的 CSV 粘到 `launch/promotion-log.csv` 后，运行获客证据检查。</p>
+        </div>
+        <nav class="links" aria-label="常用链接">
+          <a class="btn" href="./share.html">复制文案</a>
+          <a class="btn" href="./pipeline.html">跟进台</a>
+          <a class="btn" href="./sales.html">销售页</a>
+          <a class="btn primary" href="./buy.html">成交页</a>
+        </nav>
+      </header>
+
+      <section class="stats" aria-label="推广进度">
+        <div class="stat"><strong id="stat-posted">0</strong><span>已发布</span></div>
+        <div class="stat"><strong id="stat-channel">0</strong><span>渠道数</span></div>
+        <div class="stat"><strong id="stat-draft">0</strong><span>待发布</span></div>
+      </section>
+
+      <section class="panel">
+        <div class="toolbar">
+          <button class="btn primary" type="button" id="addRow">新增一行</button>
+          <button class="btn" type="button" id="seedRows">补齐 3 个渠道</button>
+          <button class="btn" type="button" id="exportCsv">生成 CSV</button>
+          <button class="btn" type="button" id="copyCsv">复制 CSV</button>
+          <button class="btn danger" type="button" id="clearBlank">清空空白行</button>
+        </div>
+      </section>
+
+      <section class="panel table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>日期</th>
+              <th>渠道</th>
+              <th>发布链接</th>
+              <th>标题</th>
+              <th>状态</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>导出 CSV</h2>
+        <textarea class="copy-box" id="csvOutput" readonly></textarea>
+        <p class="notice" id="notice"></p>
+      </section>
+    </main>
+
+    <script>
+      const storageKey = "offerdesk-promotion-log-v1";
+      const statusOptions = ["待发布", "已发布", "已下架", "无效"];
+      const seedChannels = ["闲鱼", "小红书", "朋友圈"];
+      const rowsEl = document.getElementById("rows");
+      const csvOutput = document.getElementById("csvOutput");
+      const notice = document.getElementById("notice");
+
+      const emptyPromotion = (channel = "") => ({
+        date: localDate(),
+        channel,
+        url: "",
+        title: "",
+        status: channel ? "待发布" : "",
+        note: ""
+      });
+
+      let promotions = loadPromotions();
+      render();
+
+      document.getElementById("addRow").addEventListener("click", () => {
+        promotions.push(emptyPromotion());
+        savePromotions();
+        render();
+      });
+
+      document.getElementById("seedRows").addEventListener("click", () => {
+        for (const channel of seedChannels) {
+          if (!promotions.some((item) => item.channel === channel)) {
+            promotions.push(emptyPromotion(channel));
+          }
+        }
+        savePromotions();
+        render();
+      });
+
+      document.getElementById("exportCsv").addEventListener("click", () => {
+        csvOutput.value = toCsv(promotions);
+        notice.textContent = "已生成 CSV，可以粘到 launch/promotion-log.csv。";
+      });
+
+      document.getElementById("copyCsv").addEventListener("click", async () => {
+        csvOutput.value = toCsv(promotions);
+        await navigator.clipboard.writeText(csvOutput.value);
+        notice.textContent = "CSV 已复制。";
+      });
+
+      document.getElementById("clearBlank").addEventListener("click", () => {
+        promotions = promotions.filter((item) => Object.values(item).some((value) => String(value).trim()));
+        savePromotions();
+        render();
+      });
+
+      function loadPromotions() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+          const normalized = Array.isArray(saved) ? saved.map((item) => ({ ...emptyPromotion(), ...item })) : [];
+          if (normalized.length === 0) {
+            return seedChannels.map((channel) => emptyPromotion(channel));
+          }
+          return normalized;
+        } catch {
+          return seedChannels.map((channel) => emptyPromotion(channel));
+        }
+      }
+
+      function savePromotions() {
+        localStorage.setItem(storageKey, JSON.stringify(promotions));
+      }
+
+      function render() {
+        rowsEl.innerHTML = "";
+        promotions.forEach((item, index) => rowsEl.appendChild(renderRow(item, index)));
+        csvOutput.value = toCsv(promotions);
+        updateStats();
+      }
+
+      function renderRow(item, index) {
+        const tr = document.createElement("tr");
+        tr.appendChild(cell(input(index, "date", item.date, "2026-06-12")));
+        tr.appendChild(cell(input(index, "channel", item.channel, "闲鱼")));
+        tr.appendChild(cell(input(index, "url", item.url, "https://...")));
+        tr.appendChild(cell(input(index, "title", item.title, "报价工具")));
+        tr.appendChild(cell(select(index, "status", item.status)));
+        tr.appendChild(cell(input(index, "note", item.note, "发布账号/反馈")));
+        return tr;
+      }
+
+      function cell(child) {
+        const td = document.createElement("td");
+        td.appendChild(child);
+        return td;
+      }
+
+      function input(index, key, value, placeholder) {
+        const el = document.createElement("input");
+        el.value = value;
+        el.placeholder = placeholder;
+        el.addEventListener("input", () => updatePromotion(index, key, el.value));
+        return el;
+      }
+
+      function select(index, key, value) {
+        const el = document.createElement("select");
+        for (const option of statusOptions) {
+          const item = document.createElement("option");
+          item.value = option;
+          item.textContent = option;
+          item.selected = option === value;
+          el.appendChild(item);
+        }
+        el.addEventListener("change", () => updatePromotion(index, key, el.value));
+        return el;
+      }
+
+      function updatePromotion(index, key, value) {
+        promotions[index][key] = value;
+        savePromotions();
+        csvOutput.value = toCsv(promotions);
+        updateStats();
+        notice.textContent = "已保存到本机浏览器。";
+      }
+
+      function updateStats() {
+        const posted = promotions.filter((item) => item.status === "已发布" && item.url.trim()).length;
+        const channels = new Set(promotions.filter((item) => item.status === "已发布" && item.url.trim()).map((item) => item.channel.trim()).filter(Boolean));
+        const drafts = promotions.filter((item) => item.status === "待发布").length;
+        document.getElementById("stat-posted").textContent = posted;
+        document.getElementById("stat-channel").textContent = channels.size;
+        document.getElementById("stat-draft").textContent = drafts;
+      }
+
+      function toCsv(items) {
+        const header = ["date", "channel", "url", "title", "status", "note"];
+        const rows = items
+          .filter((item) => Object.values(item).some((value) => String(value).trim()))
+          .map((item) => [item.date, item.channel, item.url, item.title, item.status, item.note]);
+        return [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\n");
+      }
+
+      function csvCell(value) {
+        const text = String(value ?? "");
+        return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+      }
+
+      function localDate() {
+        const now = new Date();
+        return [
+          now.getFullYear(),
+          String(now.getMonth() + 1).padStart(2, "0"),
+          String(now.getDate()).padStart(2, "0")
+        ].join("-");
+      }
+    </script>
+  </body>
+</html>

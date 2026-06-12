@@ -60,6 +60,9 @@ https://8npyvz5bd8-lang.github.io/offerdesk/sales.html
 扫码付款后提交邮箱和付款信息。确认到账后会收到唯一授权码，回到工具里输入即可去水印。
 
 发布后记录：
+推广记录台：
+https://8npyvz5bd8-lang.github.io/offerdesk/promotion.html
+
 把真实发布链接写入 launch/promotion-log.csv。
 把真实联系对象写入 launch/sales-tracker.csv。
 检查命令：

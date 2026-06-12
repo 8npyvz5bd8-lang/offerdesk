@@ -6,6 +6,7 @@ const requiredFiles = [
   "index.html",
   "sales.html",
   "share.html",
+  "promotion.html",
   "pipeline.html",
   "buy.html",
   "pay.html",
