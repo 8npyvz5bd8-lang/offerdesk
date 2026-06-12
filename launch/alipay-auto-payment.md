@@ -83,6 +83,8 @@ curl https://你的支付服务器域名/api/health
 
 返回里的 `ready` 必须是 `true`。
 
+如果 `ready=false`，看返回里的 `missingRequirements` 和 `nextActions`。它会直接列出还缺的 Render 环境变量和处理方法。
+
 ## Render 部署方式
 
 1. 把代码推到 GitHub。
@@ -108,6 +110,8 @@ https://你的支付服务器域名/api/health
 ```
 
 确认 `ready` 是 `true`。
+
+如果不是 `true`，不要接入前端。先看 `missingRequirements`，把缺失项补完后重新部署。
 
 部署完成后，直接跑最终收尾命令：
 

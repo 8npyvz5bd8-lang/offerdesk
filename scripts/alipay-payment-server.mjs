@@ -36,17 +36,24 @@ export function createOrderId(now = new Date()) {
 }
 
 export async function buildHealthPayload(env = process.env) {
-  const alipayConfigured = Boolean(
-    String(env.ALIPAY_APP_ID || "").trim() &&
-      await hasUsableAlipayPrivateKey(env) &&
-      await hasUsableAlipayPublicKey(env)
-  );
-  const offerdeskConfigured = Boolean(
-    String(env.OFFERDESK_PUBLIC_BASE_URL || "").trim() &&
-      await hasUsableLicensePrivateJwk(env)
-  );
+  const alipayAppIdConfigured = Boolean(String(env.ALIPAY_APP_ID || "").trim());
+  const alipayPrivateKeyConfigured = await hasUsableAlipayPrivateKey(env);
+  const alipayPublicKeyConfigured = await hasUsableAlipayPublicKey(env);
+  const publicBaseUrlConfigured = isUsablePublicHttps(env.OFFERDESK_PUBLIC_BASE_URL);
+  const licensePrivateKeyConfigured = await hasUsableLicensePrivateJwk(env);
   const orderStoreConfigured = Boolean(String(env.OFFERDESK_DATA_FILE || "").trim());
   const emailDeliveryConfigured = isEmailDeliveryConfigured(env);
+  const requirements = [
+    healthRequirement("ALIPAY_APP_ID", alipayAppIdConfigured, "在 Render 填写支付宝开放平台应用 ID。"),
+    healthRequirement("ALIPAY_PRIVATE_KEY 或 ALIPAY_PRIVATE_KEY_FILE", alipayPrivateKeyConfigured, "在 Render 填写支付宝应用私钥，或填可读取的私钥文件路径。"),
+    healthRequirement("ALIPAY_PUBLIC_KEY 或 ALIPAY_PUBLIC_KEY_FILE", alipayPublicKeyConfigured, "在 Render 填写支付宝公钥，或填可读取的公钥文件路径。"),
+    healthRequirement("OFFERDESK_PUBLIC_BASE_URL", publicBaseUrlConfigured, "在 Render 填写当前支付服务的公网 https 地址。"),
+    healthRequirement("OFFERDESK_LICENSE_PRIVATE_JWK 或 OFFERDESK_LICENSE_PRIVATE_KEY_FILE", licensePrivateKeyConfigured, "在 Render 填写 OfferDesk 授权私钥 JWK，或填可读取的 JWK 文件路径。"),
+    healthRequirement("OFFERDESK_DATA_FILE", orderStoreConfigured, "在 Render 保持 OFFERDESK_DATA_FILE=/data/orders.json，并挂载 /data 持久磁盘。")
+  ];
+  const missing = requirements.filter((item) => !item.pass);
+  const alipayConfigured = alipayAppIdConfigured && alipayPrivateKeyConfigured && alipayPublicKeyConfigured;
+  const offerdeskConfigured = publicBaseUrlConfigured && licensePrivateKeyConfigured;
 
   return {
     ok: true,
@@ -55,7 +62,10 @@ export async function buildHealthPayload(env = process.env) {
     offerdeskConfigured,
     orderStoreConfigured,
     emailDeliveryConfigured,
-    ready: alipayConfigured && offerdeskConfigured && orderStoreConfigured
+    ready: missing.length === 0,
+    missingRequirements: missing.map((item) => item.name),
+    nextActions: missing.map((item) => item.fix),
+    requirements
   };
 }
 
@@ -369,10 +379,12 @@ function sendJson(res, status, payload, allowedOrigin) {
 
 function assertServerConfig(env) {
   const required = [
-    "ALIPAY_APP_ID",
-    "OFFERDESK_PUBLIC_BASE_URL"
+    "ALIPAY_APP_ID"
   ];
   const missing = required.filter((key) => !String(env[key] || "").trim());
+  if (!isUsablePublicHttps(env.OFFERDESK_PUBLIC_BASE_URL)) {
+    missing.push("OFFERDESK_PUBLIC_BASE_URL=https://公网支付服务地址");
+  }
   if (!String(env.ALIPAY_PRIVATE_KEY || env.ALIPAY_PRIVATE_KEY_FILE || "").trim()) {
     missing.push("ALIPAY_PRIVATE_KEY 或 ALIPAY_PRIVATE_KEY_FILE");
   }
@@ -394,6 +406,10 @@ function assertEmail(value) {
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) {
     throw new Error("买家邮箱格式不正确。");
   }
+}
+
+function healthRequirement(name, pass, fix) {
+  return { name, pass, fix };
 }
 
 async function readAlipayPrivateKey(env) {
@@ -472,6 +488,16 @@ function toPem(value, label) {
   }
   const body = clean.replace(/\s+/gu, "").match(/.{1,64}/gu)?.join("\n") || "";
   return `-----BEGIN ${label}-----\n${body}\n-----END ${label}-----`;
+}
+
+function isUsablePublicHttps(value) {
+  const text = String(value || "").trim();
+  return /^https:\/\/.+/u.test(text) && !containsPlaceholder(text);
+}
+
+function containsPlaceholder(value) {
+  const text = String(value || "").toLowerCase();
+  return text.includes("example") || text.includes("your-") || text.includes("你的") || text.includes(".test") || text.includes(".invalid");
 }
 
 function formatAlipayTime(date) {

@@ -41,15 +41,24 @@ const signed = { ...params, sign: signAlipayParams(params, privateKey) };
 assert.equal(verifyAlipayParams(signed, publicKey), true);
 assert.equal(verifyAlipayParams({ ...signed, app_id: "changed" }, publicKey), false);
 assert.match(createOrderId(new Date("2026-06-11T19:00:00+08:00")), /^OD-\d{14}-[A-F0-9]{24}$/);
-assert.deepEqual(await buildHealthPayload({}), {
-  ok: true,
-  service: "offerdesk-alipay-payment",
-  alipayConfigured: false,
-  offerdeskConfigured: false,
-  orderStoreConfigured: false,
-  emailDeliveryConfigured: false,
-  ready: false
-});
+const emptyHealth = await buildHealthPayload({});
+assert.equal(emptyHealth.ok, true);
+assert.equal(emptyHealth.service, "offerdesk-alipay-payment");
+assert.equal(emptyHealth.alipayConfigured, false);
+assert.equal(emptyHealth.offerdeskConfigured, false);
+assert.equal(emptyHealth.orderStoreConfigured, false);
+assert.equal(emptyHealth.emailDeliveryConfigured, false);
+assert.equal(emptyHealth.ready, false);
+assert.deepEqual(emptyHealth.missingRequirements, [
+  "ALIPAY_APP_ID",
+  "ALIPAY_PRIVATE_KEY 或 ALIPAY_PRIVATE_KEY_FILE",
+  "ALIPAY_PUBLIC_KEY 或 ALIPAY_PUBLIC_KEY_FILE",
+  "OFFERDESK_PUBLIC_BASE_URL",
+  "OFFERDESK_LICENSE_PRIVATE_JWK 或 OFFERDESK_LICENSE_PRIVATE_KEY_FILE",
+  "OFFERDESK_DATA_FILE"
+]);
+assert.equal(emptyHealth.requirements.length, 6);
+assert.ok(emptyHealth.nextActions.join("\n").includes("支付宝开放平台应用 ID"));
 assert.equal((await buildHealthPayload({
   ALIPAY_APP_ID: "2021000000000000",
   ALIPAY_PRIVATE_KEY: privateKey,
@@ -60,6 +69,14 @@ assert.equal((await buildHealthPayload({
   RESEND_API_KEY: "re_test",
   OFFERDESK_EMAIL_FROM: "OfferDesk <support@offerdesk.com>"
 })).ready, true);
+assert.equal((await buildHealthPayload({
+  ALIPAY_APP_ID: "2021000000000000",
+  ALIPAY_PRIVATE_KEY: privateKey,
+  ALIPAY_PUBLIC_KEY: publicKey,
+  OFFERDESK_PUBLIC_BASE_URL: "http://pay.offerdesk.com",
+  OFFERDESK_LICENSE_PRIVATE_JWK: JSON.stringify(privateJwk),
+  OFFERDESK_DATA_FILE: "/data/orders.json"
+})).missingRequirements.includes("OFFERDESK_PUBLIC_BASE_URL"), true);
 assert.equal((await buildHealthPayload({
   ALIPAY_APP_ID: "2021000000000000",
   ALIPAY_PRIVATE_KEY_FILE: "/tmp/offerdesk-missing-private.pem",

@@ -35,7 +35,10 @@ export async function checkAlipayServiceHealth(apiBase, fetchImpl = fetch) {
     throw new Error("支付宝服务类型不正确。");
   }
   if (health.ready !== true) {
-    throw new Error("支付宝服务未就绪：ready 不是 true。");
+    const missing = Array.isArray(health.missingRequirements) && health.missingRequirements.length > 0
+      ? `缺少 ${health.missingRequirements.join("、")}`
+      : "ready 不是 true";
+    throw new Error(`支付宝服务未就绪：${missing}。`);
   }
   return health;
 }

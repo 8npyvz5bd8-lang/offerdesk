@@ -85,9 +85,13 @@ await assert.rejects(() => checkAlipayServiceHealth("https://pay.offerdesk.com",
   ok: true,
   status: 200,
   async json() {
-    return { service: "offerdesk-alipay-payment", ready: false };
+    return {
+      service: "offerdesk-alipay-payment",
+      ready: false,
+      missingRequirements: ["ALIPAY_APP_ID", "OFFERDESK_PUBLIC_BASE_URL"]
+    };
   }
-})), /未就绪/);
+})), /ALIPAY_APP_ID.*OFFERDESK_PUBLIC_BASE_URL/u);
 
 await assert.rejects(() => checkAlipayServiceHealth("https://pay.offerdesk.com", async () => ({
   ok: true,
