@@ -75,6 +75,8 @@ assert.ok(afterPayHtml.includes("clearStoredQuoteContext()"));
 assert.ok(afterPayHtml.includes("报价项目：${quoteContext.project || \"未记录\"}"));
 assert.ok(afterPayHtml.includes("报价总价：${formatQuoteTotal(quoteContext) || \"未记录\"}"));
 assert.ok(afterPayHtml.includes("function formatQuoteTotal"));
+assert.ok(afterPayHtml.includes('function formatLocalDateTime'));
+assert.ok(afterPayHtml.includes('$("paidAt").value = formatLocalDateTime(new Date())'));
 assert.ok(afterPayHtml.includes("offerdesk.manual.order.id"));
 assert.ok(afterPayHtml.includes("offerdesk.manual.buyer.email"));
 assert.ok(afterPayHtml.includes("offerdesk.manual.buyer.name"));
