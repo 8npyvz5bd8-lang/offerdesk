@@ -46,6 +46,11 @@ assert.ok(!afterPayHtml.includes('font-family: -apple-system, BlinkMacSystemFont
 
 assert.ok(payHtml.includes("旧付款入口"));
 assert.ok(payHtml.includes("去成交页填写邮箱并付款"));
+assert.ok(payHtml.includes('<link rel="stylesheet" href="./site.css" />'));
+assert.ok(payHtml.includes('class="card old-pay-card"'));
+assert.ok(payHtml.includes('class="btn primary" href="./buy.html"'));
 assert.ok(!payHtml.includes("https://qr.alipay.com/"));
+assert.ok(!payHtml.includes("border-radius: 999px"));
+assert.ok(!payHtml.includes('font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial'));
 
 console.log("manual checkout flow tests passed");
