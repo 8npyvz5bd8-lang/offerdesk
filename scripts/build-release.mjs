@@ -11,6 +11,7 @@ run(process.execPath, ["tests/alipay-payment-server.test.mjs"]);
 run(process.execPath, ["tests/templates.test.mjs"]);
 run(process.execPath, ["tests/config-writer.test.mjs"]);
 run(process.execPath, ["tests/connect-alipay-service.test.mjs"]);
+run(process.execPath, ["tests/create-alipay-env-draft.test.mjs"]);
 run(process.execPath, ["tests/validate-alipay-env.test.mjs"]);
 run(process.execPath, ["tests/validate-alipay-service.test.mjs"]);
 run(process.execPath, ["tests/finalize-alipay-launch.test.mjs"]);
@@ -26,6 +27,7 @@ run(process.execPath, ["tests/prepare-release.test.mjs"]);
 run(process.execPath, ["tests/release-status.test.mjs"]);
 run(process.execPath, ["tests/release-report.test.mjs"]);
 run(process.execPath, ["tests/static-assets.test.mjs"]);
+run(process.execPath, ["tests/auto-revenue-status.test.mjs"]);
 run(process.execPath, ["scripts/validate-release.mjs"]);
 
 await rm(outDir, { recursive: true, force: true });

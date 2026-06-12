@@ -19,6 +19,7 @@ const requiredFiles = [
   "src/sales.js",
   "src/templates.js",
   "app-config.js",
+  ".dockerignore",
   "Dockerfile",
   "render.yaml",
   "launch/payment-alipay.jpeg",

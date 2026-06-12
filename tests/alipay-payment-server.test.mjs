@@ -17,6 +17,12 @@ const { privateKey, publicKey } = generateKeyPairSync("rsa", {
   privateKeyEncoding: { type: "pkcs8", format: "pem" },
   publicKeyEncoding: { type: "spki", format: "pem" }
 });
+const licensePair = await crypto.subtle.generateKey(
+  { name: "ECDSA", namedCurve: "P-256" },
+  true,
+  ["sign", "verify"]
+);
+const privateJwk = await crypto.subtle.exportKey("jwk", licensePair.privateKey);
 
 const params = {
   method: "alipay.trade.precreate",
@@ -35,7 +41,7 @@ const signed = { ...params, sign: signAlipayParams(params, privateKey) };
 assert.equal(verifyAlipayParams(signed, publicKey), true);
 assert.equal(verifyAlipayParams({ ...signed, app_id: "changed" }, publicKey), false);
 assert.match(createOrderId(new Date("2026-06-11T19:00:00+08:00")), /^OD-\d{14}-[A-F0-9]{24}$/);
-assert.deepEqual(buildHealthPayload({}), {
+assert.deepEqual(await buildHealthPayload({}), {
   ok: true,
   service: "offerdesk-alipay-payment",
   alipayConfigured: false,
@@ -44,20 +50,28 @@ assert.deepEqual(buildHealthPayload({}), {
   emailDeliveryConfigured: false,
   ready: false
 });
-assert.equal(buildHealthPayload({
+assert.equal((await buildHealthPayload({
   ALIPAY_APP_ID: "2021000000000000",
   ALIPAY_PRIVATE_KEY: privateKey,
   ALIPAY_PUBLIC_KEY: publicKey,
   OFFERDESK_PUBLIC_BASE_URL: "https://pay.offerdesk.com",
-  OFFERDESK_LICENSE_PRIVATE_KEY_FILE: "secrets/offerdesk-license-private.jwk.json",
+  OFFERDESK_LICENSE_PRIVATE_JWK: JSON.stringify(privateJwk),
   OFFERDESK_DATA_FILE: "/data/orders.json",
   RESEND_API_KEY: "re_test",
   OFFERDESK_EMAIL_FROM: "OfferDesk <support@offerdesk.com>"
-}).ready, true);
-assert.equal(buildHealthPayload({
+})).ready, true);
+assert.equal((await buildHealthPayload({
+  ALIPAY_APP_ID: "2021000000000000",
+  ALIPAY_PRIVATE_KEY_FILE: "/tmp/offerdesk-missing-private.pem",
+  ALIPAY_PUBLIC_KEY: publicKey,
+  OFFERDESK_PUBLIC_BASE_URL: "https://pay.offerdesk.com",
+  OFFERDESK_LICENSE_PRIVATE_JWK: JSON.stringify(privateJwk),
+  OFFERDESK_DATA_FILE: "/data/orders.json"
+})).ready, false);
+assert.equal((await buildHealthPayload({
   RESEND_API_KEY: "re_test",
   OFFERDESK_EMAIL_FROM: "OfferDesk <support@offerdesk.com>"
-}).emailDeliveryConfigured, true);
+})).emailDeliveryConfigured, true);
 
 const server = createPaymentServer({});
 await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
@@ -69,12 +83,6 @@ assert.equal(healthResponse.status, 200);
 assert.equal(health.service, "offerdesk-alipay-payment");
 assert.equal(health.ready, false);
 
-const licensePair = await crypto.subtle.generateKey(
-  { name: "ECDSA", namedCurve: "P-256" },
-  true,
-  ["sign", "verify"]
-);
-const privateJwk = await crypto.subtle.exportKey("jwk", licensePair.privateKey);
 const tempRoot = await mkdtemp(join(tmpdir(), "offerdesk-alipay-service-"));
 const storeFile = join(tempRoot, "orders.json");
 const emails = [];

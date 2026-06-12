@@ -1,4 +1,4 @@
-import { createSign, createVerify, randomBytes } from "node:crypto";
+import { createPrivateKey, createPublicKey, createSign, createVerify, randomBytes } from "node:crypto";
 import { createServer } from "node:http";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
@@ -35,15 +35,15 @@ export function createOrderId(now = new Date()) {
   return `OD-${stamp}-${randomBytes(12).toString("hex").toUpperCase()}`;
 }
 
-export function buildHealthPayload(env = process.env) {
+export async function buildHealthPayload(env = process.env) {
   const alipayConfigured = Boolean(
     String(env.ALIPAY_APP_ID || "").trim() &&
-      String(env.ALIPAY_PRIVATE_KEY || env.ALIPAY_PRIVATE_KEY_FILE || "").trim() &&
-      String(env.ALIPAY_PUBLIC_KEY || env.ALIPAY_PUBLIC_KEY_FILE || "").trim()
+      await hasUsableAlipayPrivateKey(env) &&
+      await hasUsableAlipayPublicKey(env)
   );
   const offerdeskConfigured = Boolean(
     String(env.OFFERDESK_PUBLIC_BASE_URL || "").trim() &&
-      String(env.OFFERDESK_LICENSE_PRIVATE_JWK || env.OFFERDESK_LICENSE_PRIVATE_KEY_FILE || "").trim()
+      await hasUsableLicensePrivateJwk(env)
   );
   const orderStoreConfigured = Boolean(String(env.OFFERDESK_DATA_FILE || "").trim());
   const emailDeliveryConfigured = isEmailDeliveryConfigured(env);
@@ -74,7 +74,7 @@ export function createPaymentServer(env = process.env, controls = {}) {
 
       const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
       if (req.method === "GET" && (url.pathname === "/health" || url.pathname === "/api/health")) {
-        sendJson(res, 200, buildHealthPayload(env), allowedOrigin);
+        sendJson(res, 200, await buildHealthPayload(env), allowedOrigin);
         return;
       }
 
@@ -397,11 +397,11 @@ function assertEmail(value) {
 }
 
 async function readAlipayPrivateKey(env) {
-  return env.ALIPAY_PRIVATE_KEY || readFile(env.ALIPAY_PRIVATE_KEY_FILE, "utf8");
+  return env.ALIPAY_PRIVATE_KEY || await readFile(env.ALIPAY_PRIVATE_KEY_FILE, "utf8");
 }
 
 async function readAlipayPublicKey(env) {
-  return env.ALIPAY_PUBLIC_KEY || readFile(env.ALIPAY_PUBLIC_KEY_FILE, "utf8");
+  return env.ALIPAY_PUBLIC_KEY || await readFile(env.ALIPAY_PUBLIC_KEY_FILE, "utf8");
 }
 
 async function readOfferDeskLicensePrivateJwk(env) {
@@ -417,6 +417,52 @@ function toPrivatePem(value) {
 
 function toPublicPem(value) {
   return toPem(value, "PUBLIC KEY");
+}
+
+async function hasUsableAlipayPrivateKey(env) {
+  if (!String(env.ALIPAY_PRIVATE_KEY || env.ALIPAY_PRIVATE_KEY_FILE || "").trim()) {
+    return false;
+  }
+  try {
+    createPrivateKey(toPrivatePem(await readAlipayPrivateKey(env)));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function hasUsableAlipayPublicKey(env) {
+  if (!String(env.ALIPAY_PUBLIC_KEY || env.ALIPAY_PUBLIC_KEY_FILE || "").trim()) {
+    return false;
+  }
+  try {
+    createPublicKey(toPublicPem(await readAlipayPublicKey(env)));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function hasUsableLicensePrivateJwk(env) {
+  if (!String(env.OFFERDESK_LICENSE_PRIVATE_JWK || env.OFFERDESK_LICENSE_PRIVATE_KEY_FILE || "").trim()) {
+    return false;
+  }
+  try {
+    const jwk = await readOfferDeskLicensePrivateJwk(env);
+    return Boolean(
+      jwk &&
+        jwk.kty === "EC" &&
+        jwk.crv === "P-256" &&
+        typeof jwk.d === "string" &&
+        jwk.d.length > 20 &&
+        typeof jwk.x === "string" &&
+        jwk.x.length > 20 &&
+        typeof jwk.y === "string" &&
+        jwk.y.length > 20
+    );
+  } catch {
+    return false;
+  }
 }
 
 function toPem(value, label) {
