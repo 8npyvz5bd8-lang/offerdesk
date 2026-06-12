@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-12T10:14:57.256Z",
+  "checkedAt": "2026-06-12T10:23:22.120Z",
   "baseUrl": "https://8npyvz5bd8-lang.github.io/offerdesk/",
   "files": [
     {
@@ -47,9 +47,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/pipeline.html",
       "status": 200,
       "ok": true,
-      "localHash": "1645d6763dd41a8b85c63e3be598a1948e84b13915b548d621f2b8e2cd8c6719",
-      "remoteHash": "1645d6763dd41a8b85c63e3be598a1948e84b13915b548d621f2b8e2cd8c6719",
-      "bytes": 14843,
+      "localHash": "033144f69d9caae54596b2a2649617c0a31687faa603edf99df66e46c59567a2",
+      "remoteHash": "033144f69d9caae54596b2a2649617c0a31687faa603edf99df66e46c59567a2",
+      "bytes": 17784,
       "fix": ""
     },
     {
@@ -80,6 +80,16 @@
       "localHash": "ceedeeecfc384ac9ffd91fd785be2f4abbc89c41e2d05c3de36de8bf56f73000",
       "remoteHash": "ceedeeecfc384ac9ffd91fd785be2f4abbc89c41e2d05c3de36de8bf56f73000",
       "bytes": 522,
+      "fix": ""
+    },
+    {
+      "file": "src/payment-claim.js",
+      "url": "https://8npyvz5bd8-lang.github.io/offerdesk/src/payment-claim.js",
+      "status": 200,
+      "ok": true,
+      "localHash": "670a494b7e87437adb31d8a1be520581664355e66a097a4178a1a254b4b9e472",
+      "remoteHash": "670a494b7e87437adb31d8a1be520581664355e66a097a4178a1a254b4b9e472",
+      "bytes": 2838,
       "fix": ""
     }
   ],
