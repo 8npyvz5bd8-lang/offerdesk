@@ -368,11 +368,26 @@
 
       async function copyText(text, successText, failureText) {
         try {
-          await navigator.clipboard.writeText(text);
-          notice.textContent = successText;
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+            notice.textContent = successText;
+            return;
+          }
+        } catch {
+          // Fall through to visible selection below.
+        }
+        selectCopyFallback(csvOutput);
+        try {
+          const copied = document.execCommand("copy");
+          notice.textContent = copied ? successText : failureText;
         } catch {
           notice.textContent = failureText;
         }
+      }
+
+      function selectCopyFallback(element) {
+        element.focus();
+        element.select();
       }
 
       function shellArg(value) {

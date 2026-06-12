@@ -12,6 +12,9 @@ assert.ok(html.includes("./pipeline.html"));
 assert.ok(html.includes("copyReadinessCommand"));
 assert.ok(html.includes("scripts/outreach-readiness.mjs"));
 assert.ok(html.includes("launch/outreach-readiness.md"));
+assert.ok(html.includes("function selectCopyFallback"));
+assert.ok(html.includes('document.execCommand("copy")'));
+assert.ok(html.includes("element.select()"));
 
 assert.ok(pipelineHtml.includes("offerdesk-first-sale-pipeline-v1"));
 assert.ok(pipelineHtml.includes('<link rel="stylesheet" href="./site.css" />'));
@@ -26,6 +29,10 @@ assert.ok(pipelineHtml.includes("--source"));
 assert.ok(pipelineHtml.includes("openEmailAfter: true"));
 assert.ok(pipelineHtml.includes("defaultManualEmailOut(orderId)"));
 assert.ok(pipelineHtml.includes("dist/manual-orders/${safeOrderId}-email.txt"));
+assert.ok(pipelineHtml.includes("function selectCopyFallback"));
+assert.ok(pipelineHtml.includes('document.execCommand("copy")'));
+assert.ok(pipelineHtml.includes("element.select()"));
+assert.ok(pipelineHtml.includes("claimCommand);"));
 assert.ok(!pipelineHtml.includes("border-radius: 999px"));
 assert.ok(!pipelineHtml.includes('font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial'));
 

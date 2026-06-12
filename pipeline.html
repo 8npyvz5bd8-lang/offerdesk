@@ -211,7 +211,7 @@
         if (!claim) {
           return;
         }
-        await copyText(claimCommand.value, claimNotice, "发码命令已复制。确认支付宝到账后，在本机终端运行。", "发码命令已显示，浏览器没有允许复制，请手动复制。");
+        await copyText(claimCommand.value, claimNotice, "发码命令已复制。确认支付宝到账后，在本机终端运行。", "发码命令已显示，浏览器没有允许复制，请手动复制。", claimCommand);
       });
 
       function loadLeads() {
@@ -454,13 +454,28 @@
         URL.revokeObjectURL(url);
       }
 
-      async function copyText(text, targetNotice, successText, failureText) {
+      async function copyText(text, targetNotice, successText, failureText, fallbackElement = csvOutput) {
         try {
-          await navigator.clipboard.writeText(text);
-          targetNotice.textContent = successText;
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+            targetNotice.textContent = successText;
+            return;
+          }
+        } catch {
+          // Fall through to visible selection below.
+        }
+        selectCopyFallback(fallbackElement);
+        try {
+          const copied = document.execCommand("copy");
+          targetNotice.textContent = copied ? successText : failureText;
         } catch {
           targetNotice.textContent = failureText;
         }
+      }
+
+      function selectCopyFallback(element) {
+        element.focus();
+        element.select();
       }
 
       function parseCurrentClaim() {
