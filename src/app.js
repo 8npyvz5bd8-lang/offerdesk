@@ -51,8 +51,10 @@ const elements = {
   templateSelect: document.querySelector("#templateSelect"),
   unlockButton: document.querySelector("#unlockButton"),
   unlockDialog: document.querySelector("#unlockDialog"),
+  unlockPitch: document.querySelector("#unlockPitch"),
   checkoutLink: document.querySelector("#checkoutLink"),
   manualClaimLink: document.querySelector("#manualClaimLink"),
+  trialPrintButton: document.querySelector("#trialPrintButton"),
   paymentQrBox: document.querySelector("#paymentQrBox"),
   paymentQrImage: document.querySelector("#paymentQrImage"),
   licenseInput: document.querySelector("#licenseInput"),
@@ -85,6 +87,7 @@ const elements = {
 
 let state = loadQuote();
 let externalLicenseVerified = false;
+const defaultUnlockPitch = "专业版去掉免费水印，适合正式发给客户。付款成功后会收到唯一授权码。";
 
 function loadQuote() {
   try {
@@ -268,6 +271,32 @@ async function copyQuoteText() {
   }
 }
 
+async function handleCopyQuoteText() {
+  if (!isProUnlocked()) {
+    promptForProDelivery("copy");
+    return;
+  }
+  await copyQuoteText();
+}
+
+function handlePrintQuote() {
+  if (!isProUnlocked()) {
+    promptForProDelivery("print");
+    return;
+  }
+  window.print();
+}
+
+function promptForProDelivery(action) {
+  const pitch = action === "print"
+    ? "免费版导出 PDF 会带 OfferDesk Free 水印。29 元专业版去掉水印，适合正式发给客户。"
+    : "复制客户报价属于正式交付动作。29 元专业版去掉免费水印，适合直接发给客户。";
+  openUnlockDialog({
+    pitch,
+    trialPrint: action === "print"
+  });
+}
+
 function showButtonStatus(button, text) {
   const originalText = button.textContent;
   button.textContent = text;
@@ -276,7 +305,7 @@ function showButtonStatus(button, text) {
   }, 1200);
 }
 
-function openUnlockDialog() {
+function openUnlockDialog(options = {}) {
   const checkoutUrl = String(config.checkoutUrl || "").trim();
   const autoCheckoutUrl = String(config.autoCheckoutUrl || "").trim();
   const autoPaymentApiBase = String(config.autoPaymentApiBase || "").trim();
@@ -287,9 +316,12 @@ function openUnlockDialog() {
   const autoLicense = isLemonSqueezyProvider(config) && autoCheckoutUrl.startsWith("https://");
   const signedAutoLicense = isSignedLicenseProvider(config) && autoPaymentApiBase.startsWith("https://");
 
+  elements.unlockPitch.textContent = options.pitch || defaultUnlockPitch;
+  elements.trialPrintButton.hidden = options.trialPrint !== true;
   elements.checkoutLink.href = hasCheckout ? preferredCheckoutUrl : hasPaymentQr ? paymentQrImage : "#";
   elements.checkoutLink.textContent = autoLicense || signedAutoLicense ? "付款并收授权码" : hasCheckout ? "去付款" : hasPaymentQr ? "查看收款码" : "去付款";
-  elements.checkoutLink.classList.toggle("disabled", !hasCheckout && !hasPaymentQr);
+  elements.checkoutLink.classList.toggle("disabled-link", !hasCheckout && !hasPaymentQr);
+  elements.checkoutLink.setAttribute("aria-disabled", String(!hasCheckout && !hasPaymentQr));
   elements.manualClaimLink.hidden = autoLicense || signedAutoLicense;
   elements.paymentQrBox.hidden = !hasPaymentQr;
   elements.paymentQrImage.src = hasPaymentQr ? paymentQrImage : "";
@@ -300,7 +332,9 @@ function openUnlockDialog() {
     : hasCheckout || hasPaymentQr
     ? "付款后输入你的唯一授权码即可去掉水印。"
     : "还没有配置真实收款方式。现在不能收钱，请先配置 app-config.js。";
-  elements.unlockDialog.showModal();
+  if (!elements.unlockDialog.open) {
+    elements.unlockDialog.showModal();
+  }
 }
 
 async function applyLicense() {
@@ -458,8 +492,8 @@ function escapeHtml(value) {
 
 elements.form.addEventListener("input", update);
 elements.addItemButton.addEventListener("click", addItem);
-elements.printButton.addEventListener("click", () => window.print());
-elements.copyButton.addEventListener("click", copyQuoteText);
+elements.printButton.addEventListener("click", handlePrintQuote);
+elements.copyButton.addEventListener("click", handleCopyQuoteText);
 elements.importButton.addEventListener("click", () => elements.importFile.click());
 elements.importFile.addEventListener("change", importQuote);
 elements.templateSelect.addEventListener("change", (event) => {
@@ -475,6 +509,10 @@ elements.saveButton.addEventListener("click", () => {
 });
 elements.exportButton.addEventListener("click", exportQuote);
 elements.unlockButton.addEventListener("click", openUnlockDialog);
+elements.trialPrintButton.addEventListener("click", () => {
+  elements.unlockDialog.close();
+  window.print();
+});
 elements.applyLicenseButton.addEventListener("click", applyLicense);
 elements.checkoutLink.addEventListener("click", (event) => {
   const checkoutUrl = String(config.checkoutUrl || "").trim();
