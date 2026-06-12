@@ -1,6 +1,6 @@
 import { createPrivateKey, createPublicKey, createSign, createVerify, randomBytes } from "node:crypto";
 import { createServer } from "node:http";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { pathToFileURL } from "node:url";
 import { createDeliveryEmailText } from "./create-delivery-email.mjs";
@@ -376,16 +376,37 @@ async function renderQrImage(qrCode) {
 }
 
 async function readStore(file) {
+  let text;
   try {
-    return JSON.parse(await readFile(file, "utf8"));
-  } catch {
-    return { orders: {} };
+    text = await readFile(file, "utf8");
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return { orders: {} };
+    }
+    throw new Error(`订单文件读取失败：${error.message}`);
+  }
+
+  try {
+    const store = JSON.parse(text);
+    if (!store || typeof store !== "object" || !store.orders || typeof store.orders !== "object") {
+      throw new Error("缺少 orders 字段");
+    }
+    return store;
+  } catch (error) {
+    throw new Error(`订单文件损坏：${error.message}`);
   }
 }
 
 async function writeStore(file, store) {
   await mkdir(dirname(file), { recursive: true });
-  await writeFile(file, `${JSON.stringify(store, null, 2)}\n`, "utf8");
+  const tempFile = `${file}.${process.pid}.${Date.now()}.${randomBytes(6).toString("hex")}.tmp`;
+  try {
+    await writeFile(tempFile, `${JSON.stringify(store, null, 2)}\n`, "utf8");
+    await rename(tempFile, file);
+  } catch (error) {
+    await rm(tempFile, { force: true });
+    throw new Error(`订单文件写入失败：${error.message}`);
+  }
 }
 
 async function readJsonBody(req) {

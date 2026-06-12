@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { generateKeyPairSync } from "node:crypto";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -134,6 +134,26 @@ await new Promise((resolve) => server.close(resolve));
 assert.equal(healthResponse.status, 200);
 assert.equal(health.service, "offerdesk-alipay-payment");
 assert.equal(health.ready, false);
+
+const corruptRoot = await mkdtemp(join(tmpdir(), "offerdesk-alipay-corrupt-store-"));
+const corruptStoreFile = join(corruptRoot, "orders.json");
+await writeFile(corruptStoreFile, "{ bad json", "utf8");
+const corruptServer = createPaymentServer({
+  ALIPAY_APP_ID: "2021000000000000",
+  ALIPAY_PRIVATE_KEY: privateKey,
+  ALIPAY_PUBLIC_KEY: publicKey,
+  OFFERDESK_PUBLIC_BASE_URL: "https://pay.offerdesk.com",
+  OFFERDESK_LICENSE_PRIVATE_JWK: JSON.stringify(privateJwk),
+  OFFERDESK_DATA_FILE: corruptStoreFile
+});
+await new Promise((resolve) => corruptServer.listen(0, "127.0.0.1", resolve));
+const { port: corruptPort } = corruptServer.address();
+const corruptResponse = await fetch(`http://127.0.0.1:${corruptPort}/api/order-status?order_id=OD-20260612000000-AAAAAAAAAAAAAAAAAAAAAAAA`);
+const corruptPayload = await corruptResponse.json();
+await new Promise((resolve) => corruptServer.close(resolve));
+await rm(corruptRoot, { recursive: true, force: true });
+assert.equal(corruptResponse.status, 500);
+assert.match(corruptPayload.error, /订单文件损坏/u);
 
 const tempRoot = await mkdtemp(join(tmpdir(), "offerdesk-alipay-service-"));
 const storeFile = join(tempRoot, "orders.json");

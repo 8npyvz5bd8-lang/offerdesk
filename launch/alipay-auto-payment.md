@@ -103,6 +103,8 @@ OFFERDESK_LICENSE_PRIVATE_JWK
 
 Render 蓝图已经把 `OFFERDESK_DATA_FILE` 设为 `/data/orders.json`，并把 `/data` 挂成持久磁盘。不要改回 `runtime/orders.json`，否则服务重启后可能丢订单。
 
+订单文件如果损坏，服务会直接报错，不会把它当成空订单继续运行。先修复或恢复订单文件，再继续收款。
+
 5. 部署完成后打开：
 
 ```text
