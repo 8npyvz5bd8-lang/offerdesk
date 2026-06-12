@@ -30,6 +30,29 @@ export function verifyAlipayParams(params, publicKey) {
     .verify(toPublicPem(publicKey), params.sign, "base64");
 }
 
+export function signAlipayResponseBody(responseBody, privateKey) {
+  return createSign("RSA-SHA256").update(JSON.stringify(responseBody), "utf8").sign(toPrivatePem(privateKey), "base64");
+}
+
+export function verifyAlipayResponse(payload, responseKey, publicKey) {
+  if (!payload?.[responseKey] || !payload.sign) {
+    return false;
+  }
+  return createVerify("RSA-SHA256")
+    .update(JSON.stringify(payload[responseKey]), "utf8")
+    .verify(toPublicPem(publicKey), payload.sign, "base64");
+}
+
+export function verifyAlipayResponseText(responseText, responseKey, sign, publicKey) {
+  const bodyText = extractAlipayResponseBodyText(responseText, responseKey);
+  if (!bodyText || !sign) {
+    return false;
+  }
+  return createVerify("RSA-SHA256")
+    .update(bodyText, "utf8")
+    .verify(toPublicPem(publicKey), sign, "base64");
+}
+
 export function createOrderId(now = new Date()) {
   const stamp = now.toISOString().replace(/\D/g, "").slice(0, 14);
   return `OD-${stamp}-${randomBytes(12).toString("hex").toUpperCase()}`;
@@ -198,6 +221,9 @@ async function callAlipayPrecreate({ env, fetchImpl, orderId, amount, notifyUrl 
     }
   });
   const data = payload.alipay_trade_precreate_response;
+  if (payload.error_response) {
+    throw new Error(alipayErrorMessage(payload.error_response, "支付宝预下单失败。"));
+  }
   if (data?.code !== "10000" || !data?.qr_code) {
     throw new Error(data?.sub_msg || data?.msg || "支付宝预下单失败。");
   }
@@ -212,6 +238,9 @@ async function callAlipayQuery({ env, fetchImpl, orderId }) {
     bizContent: { out_trade_no: orderId }
   });
   const data = payload.alipay_trade_query_response;
+  if (payload.error_response) {
+    throw new Error(alipayErrorMessage(payload.error_response, "支付宝查单失败。"));
+  }
   return {
     status: data?.trade_status || "",
     tradeNo: data?.trade_no || ""
@@ -243,11 +272,18 @@ async function callAlipay({ env, fetchImpl, method, bizContent, notifyUrl = "" }
     throw new Error(`支付宝接口请求失败：${response.status}`);
   }
 
+  let payload;
   try {
-    return JSON.parse(text);
+    payload = JSON.parse(text);
   } catch {
     throw new Error("支付宝接口返回不是 JSON。");
   }
+  const responseKey = alipayResponseKey(method);
+  const signedResponseKey = payload[responseKey] ? responseKey : "error_response";
+  if (!verifyAlipayResponseText(text, signedResponseKey, payload.sign, await readAlipayPublicKey(env))) {
+    throw new Error("支付宝接口返回签名无效。");
+  }
+  return payload;
 }
 
 async function markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo }) {
@@ -498,6 +534,63 @@ function isUsablePublicHttps(value) {
 function containsPlaceholder(value) {
   const text = String(value || "").toLowerCase();
   return text.includes("example") || text.includes("your-") || text.includes("你的") || text.includes(".test") || text.includes(".invalid");
+}
+
+function alipayResponseKey(method) {
+  return `${String(method || "").replace(/\./gu, "_")}_response`;
+}
+
+function alipayErrorMessage(errorResponse, fallback) {
+  return errorResponse?.sub_msg || errorResponse?.msg || fallback;
+}
+
+function extractAlipayResponseBodyText(text, responseKey) {
+  const source = String(text || "");
+  const match = new RegExp(`"${escapeRegExp(responseKey)}"\\s*:\\s*`, "u").exec(source);
+  if (!match) {
+    return "";
+  }
+  let index = match.index + match[0].length;
+  while (/\s/u.test(source[index] || "")) {
+    index += 1;
+  }
+  if (source[index] !== "{") {
+    return "";
+  }
+
+  const start = index;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (; index < source.length; index += 1) {
+    const char = source[index];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === "\"") {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (char === "\"") {
+      inString = true;
+    } else if (char === "{") {
+      depth += 1;
+    } else if (char === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        return source.slice(start, index + 1);
+      }
+    }
+  }
+  return "";
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
 function formatAlipayTime(date) {
