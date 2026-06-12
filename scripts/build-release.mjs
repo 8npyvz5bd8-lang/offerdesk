@@ -34,6 +34,7 @@ run(process.execPath, ["tests/static-assets.test.mjs"]);
 run(process.execPath, ["tests/share-page.test.mjs"]);
 run(process.execPath, ["tests/promotion-page.test.mjs"]);
 run(process.execPath, ["tests/verify-public-site.test.mjs"]);
+run(process.execPath, ["tests/verify-git-remote.test.mjs"]);
 run(process.execPath, ["tests/validate-outreach.test.mjs"]);
 run(process.execPath, ["tests/import-outreach-evidence.test.mjs"]);
 run(process.execPath, ["tests/outreach-readiness.test.mjs"]);

@@ -17,6 +17,12 @@
 /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/release-status.mjs
 ```
 
+再确认本地默认推送目标是 OfferDesk 正式仓库：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/verify-git-remote.mjs
+```
+
 如果四项都已经准备好，可以直接运行：
 
 ```bash
