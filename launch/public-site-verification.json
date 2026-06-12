@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-12T13:37:31.773Z",
+  "checkedAt": "2026-06-12T13:43:27.778Z",
   "baseUrl": "https://8npyvz5bd8-lang.github.io/offerdesk/",
   "files": [
     {
@@ -17,9 +17,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/sales.html",
       "status": 200,
       "ok": true,
-      "localHash": "6a8001713c0597e2d22e56756748938b6c9b743283f1616dc0bfb0192273c664",
-      "remoteHash": "6a8001713c0597e2d22e56756748938b6c9b743283f1616dc0bfb0192273c664",
-      "bytes": 21047,
+      "localHash": "4cd0b0ffac517de81ab84fa62a4124dd32459c7ef35bbe155fa208de03749170",
+      "remoteHash": "4cd0b0ffac517de81ab84fa62a4124dd32459c7ef35bbe155fa208de03749170",
+      "bytes": 21057,
       "fix": ""
     },
     {
@@ -27,9 +27,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
       "status": 200,
       "ok": true,
-      "localHash": "1469170e3236b9d7c93a0455bcae619a8c4ad0bd45b9bc86723458c6fb4c0b32",
-      "remoteHash": "1469170e3236b9d7c93a0455bcae619a8c4ad0bd45b9bc86723458c6fb4c0b32",
-      "bytes": 24996,
+      "localHash": "838e9bbe1a24f85e8e89492e812485e4ad2ad27aeaac01495aeab03678d0e182",
+      "remoteHash": "838e9bbe1a24f85e8e89492e812485e4ad2ad27aeaac01495aeab03678d0e182",
+      "bytes": 25102,
       "fix": ""
     },
     {
