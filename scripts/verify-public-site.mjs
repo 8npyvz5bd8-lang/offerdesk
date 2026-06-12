@@ -27,11 +27,13 @@ export async function verifyPublicSite(options = {}) {
   const root = options.rootPath || rootPath;
   const fetchImpl = options.fetchImpl || fetch;
   const files = options.files || defaultFiles;
+  const retryAttempts = options.retryAttempts === undefined ? 2 : parseNonNegativeInteger(options.retryAttempts, "retryAttempts");
+  const retryDelayMs = options.retryDelayMs === undefined ? 600 : parseNonNegativeInteger(options.retryDelayMs, "retryDelayMs");
   const checkedAt = new Date().toISOString();
   const checks = [];
 
   for (const file of files) {
-    checks.push(await verifyFile({ baseUrl, file, root, fetchImpl }));
+    checks.push(await verifyFile({ baseUrl, file, root, fetchImpl, retryAttempts, retryDelayMs }));
   }
 
   return {
@@ -86,46 +88,73 @@ export function parseArgs(args) {
     index += 1;
   }
 
-  return {
+  const parsed = {
     baseUrl: values["base-url"],
     write: values.write,
     files: values.files.length > 0 ? values.files : undefined,
     noFail: values.noFail === true
   };
+  if (values["retry-attempts"] !== undefined) {
+    parsed.retryAttempts = parseNonNegativeInteger(values["retry-attempts"], "--retry-attempts");
+  }
+  if (values["retry-delay-ms"] !== undefined) {
+    parsed.retryDelayMs = parseNonNegativeInteger(values["retry-delay-ms"], "--retry-delay-ms");
+  }
+  return parsed;
 }
 
-async function verifyFile({ baseUrl, file, root, fetchImpl }) {
+function parseNonNegativeInteger(value, label) {
+  const number = Number(value);
+  if (!Number.isInteger(number) || number < 0) {
+    throw new Error(`${label} 必须是非负整数。`);
+  }
+  return number;
+}
+
+async function verifyFile({ baseUrl, file, root, fetchImpl, retryAttempts, retryDelayMs }) {
   const localText = await readFile(resolve(root, file), "utf8");
   const localHash = sha256(localText);
   const url = new URL(file, baseUrl).href;
+  let lastResult;
 
-  try {
-    const response = await fetchImpl(url, { headers: { Accept: "text/plain,*/*" } });
-    const remoteText = await response.text();
-    const remoteHash = sha256(remoteText);
-    const ok = response.ok && remoteHash === localHash;
-    return {
-      file,
-      url,
-      status: response.status,
-      ok,
-      localHash,
-      remoteHash,
-      bytes: remoteText.length,
-      fix: ok ? "" : failureFix(response.status, localHash, remoteHash)
-    };
-  } catch (error) {
-    return {
-      file,
-      url,
-      status: 0,
-      ok: false,
-      localHash,
-      remoteHash: "",
-      bytes: 0,
-      fix: `线上请求失败：${error.message}`
-    };
+  for (let attempt = 0; attempt <= retryAttempts; attempt += 1) {
+    try {
+      const response = await fetchImpl(url, { headers: { Accept: "text/plain,*/*" } });
+      const remoteText = await response.text();
+      const remoteHash = sha256(remoteText);
+      const ok = response.ok && remoteHash === localHash;
+      lastResult = {
+        file,
+        url,
+        status: response.status,
+        ok,
+        localHash,
+        remoteHash,
+        bytes: remoteText.length,
+        fix: ok ? "" : failureFix(response.status, localHash, remoteHash)
+      };
+    } catch (error) {
+      lastResult = {
+        file,
+        url,
+        status: 0,
+        ok: false,
+        localHash,
+        remoteHash: "",
+        bytes: 0,
+        fix: `线上请求失败：${error.message}`
+      };
+    }
+
+    if (lastResult.ok || attempt === retryAttempts) {
+      return lastResult;
+    }
+    await sleep(retryDelayMs);
   }
+}
+
+function sleep(ms) {
+  return new Promise((resolveSleep) => setTimeout(resolveSleep, Math.max(0, ms)));
 }
 
 function failureFix(status, localHash, remoteHash) {
