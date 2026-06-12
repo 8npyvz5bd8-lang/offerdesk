@@ -4,6 +4,12 @@ import { readFile } from "node:fs/promises";
 const shareHtml = await readFile(new URL("../share.html", import.meta.url), "utf8");
 
 assert.ok(shareHtml.includes("OfferDesk 首单推广复制页"));
+assert.ok(shareHtml.includes("30 分钟首单包"));
+assert.ok(shareHtml.includes("copy-fast-pack"));
+assert.ok(shareHtml.includes("复制 30 分钟首单包"));
+assert.ok(shareHtml.includes("./buy.html?source=fast-pack"));
+assert.ok(shareHtml.includes("document.execCommand(\"copy\")"));
+assert.ok(shareHtml.includes("内容已选中，请按复制键"));
 assert.ok(shareHtml.includes("copy-xianyu"));
 assert.ok(shareHtml.includes("copy-xhs"));
 assert.ok(shareHtml.includes("copy-public"));

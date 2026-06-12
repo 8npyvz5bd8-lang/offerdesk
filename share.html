@@ -17,6 +17,10 @@
         min-height: 220px;
       }
 
+      .fast-pack textarea {
+        min-height: 360px;
+      }
+
       .plan {
         margin: 0;
         padding-left: 22px;
@@ -55,6 +59,46 @@
           <a class="btn blue" href="./after-pay.html">付款后提交</a>
         </nav>
       </header>
+
+      <section class="card fast-pack">
+        <h2>30 分钟首单包</h2>
+        <p>先发闲鱼，再发朋友圈或群聊，然后私信 10 个真实接单人。有人回复有用，就直接发成交页。</p>
+        <textarea id="copy-fast-pack" readonly>1. 先发闲鱼商品
+标题：
+自由职业接单报价单工具 自动算利润率 可生成客户报价单
+
+详情：
+这是给自由职业者、小团队和接单工作室用的报价单工具。
+适合设计、开发、摄影、咨询、运营等服务报价。
+输入项目、单价和内部成本后，可以自动算总价、利润率、首付款，并生成可发给客户的报价单。
+免费版可试用，专业版 29 元去水印。
+
+试用链接：
+https://8npyvz5bd8-lang.github.io/offerdesk/sales.html?source=xianyu
+
+2. 再发朋友圈或群聊
+我做了一个报价单工具，给自由职业者、小团队和接单工作室用。
+它能算成本、利润率、首付款，还能生成可以发给客户的报价单。免费版能试用，29 元专业版去水印。
+试用链接：
+https://8npyvz5bd8-lang.github.io/offerdesk/sales.html?source=friend-circle
+
+3. 私信 10 个真实接单人
+你好，我看到你有接单/工作室相关内容。
+我做了一个报价单工具，能自动算利润率和首付款，也能生成给客户看的报价单。
+想请你试用 5 分钟。如果它真的帮你省时间，再考虑买专业版。不合适也没关系，我主要想听真实反馈。
+试用链接：
+https://8npyvz5bd8-lang.github.io/offerdesk/sales.html?source=direct-message
+
+4. 有人说有用时发这个
+如果这个工具能帮你正式给客户发报价单，可以买 29 元专业版去掉水印。
+成交页：
+https://8npyvz5bd8-lang.github.io/offerdesk/buy.html?source=follow-up</textarea>
+        <div class="actions">
+          <button class="btn primary" type="button" data-copy="copy-fast-pack">复制 30 分钟首单包</button>
+          <a class="btn" href="./pipeline.html">打开跟进台</a>
+          <a class="btn blue" href="./buy.html?source=fast-pack">打开成交页</a>
+        </div>
+      </section>
 
       <section class="card">
         <h2>今天照这个顺序做</h2>
@@ -205,8 +249,15 @@ https://8npyvz5bd8-lang.github.io/offerdesk/
       document.querySelectorAll("[data-copy]").forEach((button) => {
         button.addEventListener("click", async () => {
           const target = document.getElementById(button.dataset.copy);
-          await navigator.clipboard.writeText(target.value);
-          notice.textContent = "已复制：" + button.textContent;
+          try {
+            await navigator.clipboard.writeText(target.value);
+            notice.textContent = "已复制：" + button.textContent;
+          } catch {
+            target.focus();
+            target.select();
+            const copied = document.execCommand("copy");
+            notice.textContent = copied ? "已复制：" + button.textContent : "浏览器没有允许复制，内容已选中，请按复制键。";
+          }
         });
       });
     </script>
