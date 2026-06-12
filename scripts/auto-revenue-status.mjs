@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFile, stat, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { buildReleaseStatus } from "./release-status.mjs";
@@ -20,6 +21,13 @@ const publicPages = [
 export async function buildAutoRevenueStatus(options = {}) {
   const planText = await readText("launch/auto-revenue-20-step-plan.md");
   const configText = await readText("app-config.js");
+  const publicSiteFile = options.publicSiteFile === undefined ? "launch/public-site-verification.json" : options.publicSiteFile;
+  const publicSite = publicSiteFile ? await inspectPublicSiteVerification(publicSiteFile) : {
+    ready: false,
+    passed: 0,
+    total: 0,
+    evidence: "当前没有线上校验报告。"
+  };
   const acceptanceText = await readText("launch/release-acceptance.md");
   const buyText = await readText("buy.html");
   const indexText = await readText("index.html");
@@ -52,6 +60,7 @@ export async function buildAutoRevenueStatus(options = {}) {
   const paymentQrImage = readConfigValue(configText, "paymentQrImage");
   const acceptancePass = validateAcceptanceText(acceptanceText).every((item) => item.pass);
   const trackerText = await readText("launch/sales-tracker.csv");
+  const hasPaidTrackerEvidence = hasPaidTrackerRow(trackerText);
 
   const steps = [
     step(1, "固定当前视觉标准", await exists("site.css"), "site.css 已存在。", "补 site.css，并把 sales 风格抽成公共样式。"),
@@ -74,15 +83,15 @@ export async function buildAutoRevenueStatus(options = {}) {
     step(18, "验证自动购买页", buyText.includes("buyerName") && buyText.includes("buyerEmail"), "购买页已有买家名称和邮箱字段。", "自动服务接入后，用浏览器生成专属付款码。"),
     step(19, "做一笔真实小额付款", false, "GPT 不能替用户真实付款。", "服务上线后请用真实支付宝完成一笔付款。", "needs_manual"),
     step(20, "验证授权码自动解锁", false, "尚未发现真实付款生成的授权码证据。", "付款后用 index.html?license_key=... 验证水印消失。", "blocked"),
-    step(21, "填写真实发布验收", acceptancePass, "launch/release-acceptance.md 已通过验收。", "完成真实付款后填写 release-acceptance.md。", "blocked"),
+    step(21, "填写真实发布验收", acceptancePass, acceptancePass ? "launch/release-acceptance.md 已通过验收。" : "launch/release-acceptance.md 仍显示真实付款或自动收款未完成。", "完成真实付款后填写 release-acceptance.md。", "blocked"),
     step(22, "更新正式发布包", releaseHasSiteCss && uploadZipExists, "dist/offerdesk-release 和 dist/offerdesk-release.zip 已生成。", "运行 node scripts/build-upload-zip.mjs。"),
-    step(23, "发布到长期公网地址", false, "当前脚本不能证明 GitHub Pages 已更新到最新提交。", "补 GitHub 推送凭据或上传发布包到静态托管。", "blocked"),
-    step(24, "检查线上页面", false, "当前脚本没有线上最新版本证据。", "用 curl 和浏览器截图检查线上 sales、buy、site.css。", "blocked"),
+    step(23, "发布到长期公网地址", publicSite.ready, publicSite.ready ? `线上校验通过：${publicSite.passed}/${publicSite.total} 个文件与本地一致。` : publicSite.evidence, "运行 node scripts/verify-public-site.mjs --write launch/public-site-verification.json。", "blocked"),
+    step(24, "检查线上页面", publicSite.ready, publicSite.ready ? `线上 sales、buy、site.css、app-config.js 已和本地一致。` : publicSite.evidence, "用线上校验脚本和浏览器截图检查页面。", "blocked"),
     step(25, "准备首批获客名单", false, "仓库内没有真实 10 人名单证据。", "整理 10 个真实接单人，不编造。", "needs_manual"),
     step(26, "发布推广内容", false, "仓库内没有已发布推广内容证据。", "用 share.html 文案发布到真实渠道。", "needs_manual"),
     step(27, "跟进每个潜在买家", await exists("pipeline.html"), "pipeline.html 已存在，可记录线索。", "把真实联系人状态录入跟进台。"),
     step(28, "处理第一笔自动订单", false, "尚无第一笔自动订单证据。", "订单成功后检查订单 JSON、授权码和邮件状态。", "blocked"),
-    step(29, "记录收入和问题", hasPaidTrackerRow(trackerText), "sales-tracker.csv 中已有付款记录。", "有真实付款后记录到 sales-tracker.csv。", "needs_manual"),
+    step(29, "记录收入和问题", hasPaidTrackerEvidence, hasPaidTrackerEvidence ? "sales-tracker.csv 中已有付款记录。" : "sales-tracker.csv 中没有真实付款记录。", "有真实付款后记录到 sales-tracker.csv。", "needs_manual"),
     step(30, "做 7 天复盘", false, "尚未达到 7 天真实数据复盘。", "满 7 天后按试用、付费、反馈复盘。", "needs_manual")
   ];
 
@@ -207,6 +216,33 @@ async function inspectAlipayRuntimeEnv(env) {
   }
 }
 
+async function inspectPublicSiteVerification(file) {
+  try {
+    const report = JSON.parse(await readText(file));
+    const files = Array.isArray(report.files) ? report.files : [];
+    const current = await Promise.all(files.map(async (item) => ({
+      ...item,
+      currentHash: await fileHash(item.file)
+    })));
+    const passed = current.filter((item) => item.ok && item.localHash === item.currentHash && item.remoteHash === item.currentHash).length;
+    return {
+      ready: current.length > 0 && passed === current.length,
+      passed,
+      total: current.length,
+      evidence: current.length > 0
+        ? `线上校验报告未通过：${passed}/${current.length} 个文件与本地一致。`
+        : "当前没有线上校验报告。"
+    };
+  } catch {
+    return {
+      ready: false,
+      passed: 0,
+      total: 0,
+      evidence: "当前没有线上校验报告。"
+    };
+  }
+}
+
 function alipayEnvEvidence(result) {
   if (!result.exists) {
     return "当前没有真实支付宝环境变量文件或完整运行环境变量。";
@@ -262,6 +298,10 @@ function readConfigValue(source, key) {
 
 async function readText(file) {
   return readFile(new URL(file, root), "utf8");
+}
+
+async function fileHash(file) {
+  return createHash("sha256").update(await readText(file)).digest("hex");
 }
 
 async function exists(file) {

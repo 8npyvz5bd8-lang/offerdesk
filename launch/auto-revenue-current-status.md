@@ -1,10 +1,10 @@
 # OfferDesk 自动赚钱执行状态
 
-生成时间：2026-06-12 17:45:13
+生成时间：2026-06-12 17:50:30
 
 文档步骤数：30
-已完成：13
-被阻塞：11
+已完成：15
+被阻塞：9
 需人工：6
 需运行命令确认：0
 当前上架阶段：待部署支付宝自动收款服务
@@ -137,7 +137,7 @@
 ### 21. 填写真实发布验收
 
 状态：被阻塞
-证据：launch/release-acceptance.md 已通过验收。
+证据：launch/release-acceptance.md 仍显示真实付款或自动收款未完成。
 下一步：完成真实付款后填写 release-acceptance.md。
 
 ### 22. 更新正式发布包
@@ -148,15 +148,15 @@
 
 ### 23. 发布到长期公网地址
 
-状态：被阻塞
-证据：当前脚本不能证明 GitHub Pages 已更新到最新提交。
-下一步：补 GitHub 推送凭据或上传发布包到静态托管。
+状态：已完成
+证据：线上校验通过：4/4 个文件与本地一致。
+下一步：运行 node scripts/verify-public-site.mjs --write launch/public-site-verification.json。
 
 ### 24. 检查线上页面
 
-状态：被阻塞
-证据：当前脚本没有线上最新版本证据。
-下一步：用 curl 和浏览器截图检查线上 sales、buy、site.css。
+状态：已完成
+证据：线上 sales、buy、site.css、app-config.js 已和本地一致。
+下一步：用线上校验脚本和浏览器截图检查页面。
 
 ### 25. 准备首批获客名单
 
@@ -185,7 +185,7 @@
 ### 29. 记录收入和问题
 
 状态：需人工
-证据：sales-tracker.csv 中已有付款记录。
+证据：sales-tracker.csv 中没有真实付款记录。
 下一步：有真实付款后记录到 sales-tracker.csv。
 
 ### 30. 做 7 天复盘

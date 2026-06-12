@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/pricing.test.mjs && node tests/license.test.mjs && node tests/signed-license.test.mjs && node tests/alipay-payment-server.test.mjs && node tests/templates.test.mjs && node tests/config-writer.test.mjs && node tests/connect-alipay-service.test.mjs && node tests/create-alipay-env-draft.test.mjs && node tests/validate-alipay-env.test.mjs && node tests/validate-alipay-service.test.mjs && node tests/finalize-alipay-launch.test.mjs && node tests/render-deployment.test.mjs && node tests/delivery-email.test.mjs && node tests/manual-fulfillment.test.mjs && node tests/fulfill-from-email.test.mjs && node tests/acceptance.test.mjs && node tests/upload-zip.test.mjs && node tests/license-leak.test.mjs && node tests/prepare-release.test.mjs && node tests/release-status.test.mjs && node tests/release-report.test.mjs && node tests/static-assets.test.mjs && node tests/auto-revenue-status.test.mjs",
+    "test": "node tests/pricing.test.mjs && node tests/license.test.mjs && node tests/signed-license.test.mjs && node tests/alipay-payment-server.test.mjs && node tests/templates.test.mjs && node tests/config-writer.test.mjs && node tests/connect-alipay-service.test.mjs && node tests/create-alipay-env-draft.test.mjs && node tests/validate-alipay-env.test.mjs && node tests/validate-alipay-service.test.mjs && node tests/finalize-alipay-launch.test.mjs && node tests/render-deployment.test.mjs && node tests/delivery-email.test.mjs && node tests/manual-fulfillment.test.mjs && node tests/fulfill-from-email.test.mjs && node tests/acceptance.test.mjs && node tests/upload-zip.test.mjs && node tests/license-leak.test.mjs && node tests/prepare-release.test.mjs && node tests/release-status.test.mjs && node tests/release-report.test.mjs && node tests/static-assets.test.mjs && node tests/verify-public-site.test.mjs && node tests/auto-revenue-status.test.mjs",
     "check:static": "node scripts/check-static-assets.mjs",
     "create:delivery-email": "node scripts/create-delivery-email.mjs",
     "check:license-leak": "node scripts/check-license-leak.mjs",
@@ -18,6 +18,7 @@
     "finalize:alipay": "node scripts/finalize-alipay-launch.mjs",
     "status:release": "node scripts/release-status.mjs",
     "status:auto-revenue": "node scripts/auto-revenue-status.mjs",
+    "verify:public-site": "node scripts/verify-public-site.mjs",
     "build:release": "node scripts/build-release.mjs",
     "build:upload": "node scripts/build-upload-zip.mjs",
     "prepare:release": "node scripts/prepare-release.mjs",

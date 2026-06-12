@@ -29,6 +29,7 @@ const requiredFiles = [
   "scripts/finalize-alipay-launch.mjs",
   "scripts/prepare-release.mjs",
   "scripts/release-status.mjs",
+  "scripts/verify-public-site.mjs",
   "scripts/configure-lemonsqueezy.mjs",
   "scripts/alipay-payment-server.mjs",
   "scripts/generate-license-keypair.mjs",
