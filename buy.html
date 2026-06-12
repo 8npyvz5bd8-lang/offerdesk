@@ -6,165 +6,10 @@
     <title>29 元购买 OfferDesk 专业版</title>
     <meta name="description" content="购买 OfferDesk 专业版，去掉报价单水印，适合正式发给客户。" />
     <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./site.css" />
     <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        background: #f4f5f2;
-        color: #151916;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, "PingFang SC", sans-serif;
-        line-height: 1.7;
-      }
-
-      a {
-        color: inherit;
-      }
-
-      .wrap {
-        width: min(1080px, 100%);
-        margin: 0 auto;
-        padding: 24px 16px 40px;
-      }
-
-      .top,
-      .actions,
-      .facts {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
-      .top {
-        justify-content: space-between;
-        margin-bottom: 16px;
-      }
-
-      h1 {
-        margin: 0;
-        max-width: 760px;
-        font-size: 48px;
-        line-height: 1.05;
-      }
-
-      h2,
-      p {
-        margin: 0;
-      }
-
-      p,
-      li {
-        color: #667065;
-      }
-
-      .hero {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 330px;
-        gap: 16px;
-        align-items: stretch;
-      }
-
-      .card {
-        border: 1px solid #d9ded7;
-        border-radius: 10px;
-        background: #ffffff;
-        padding: 22px;
-        box-shadow: 0 14px 38px rgba(20, 26, 22, 0.08);
-      }
-
-      .price {
-        color: #0f8a55;
-        font-size: 64px;
-        font-weight: 1000;
-        line-height: 1;
-      }
-
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 44px;
-        border: 1px solid #151916;
-        border-radius: 999px;
-        background: #ffffff;
-        padding: 0 18px;
-        color: #151916;
-        font-weight: 900;
-        text-decoration: none;
-        cursor: pointer;
-      }
-
-      .green {
-        border-color: #0f8a55;
-        background: #0f8a55;
-        color: #ffffff;
-      }
-
-      .blue {
-        border-color: #2563eb;
-        background: #2563eb;
-        color: #ffffff;
-      }
-
-      .facts {
-        margin-top: 18px;
-      }
-
-      .fact {
-        border: 1px solid #d9ded7;
-        border-radius: 10px;
-        background: #f8faf7;
-        padding: 12px 14px;
-        font-weight: 900;
-      }
-
-      .steps,
-      .grid {
-        display: grid;
-        gap: 12px;
-        margin-top: 14px;
-      }
-
-      .grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
-      .step {
-        border: 1px solid #d9ded7;
-        border-radius: 10px;
-        background: #ffffff;
-        padding: 16px;
-      }
-
-      .step strong {
-        display: block;
-        color: #0f8a55;
-        font-size: 28px;
-      }
-
-      .qr {
-        display: grid;
-        justify-items: center;
-        gap: 10px;
-      }
-
-      .qr canvas {
-        width: min(260px, 100%);
-        height: auto;
-        border: 1px solid #d9ded7;
-        border-radius: 10px;
-        background: #ffffff;
-      }
-
-      .qr img {
-        width: min(280px, 100%);
-        height: auto;
-        border: 1px solid #d9ded7;
-        border-radius: 10px;
-        background: #ffffff;
+      .hero .card {
+        margin-top: 0;
       }
 
       .buy-form,
@@ -177,21 +22,6 @@
       .buy-form label {
         display: grid;
         gap: 6px;
-        color: #667065;
-        font-size: 13px;
-        font-weight: 900;
-      }
-
-      .buy-form input,
-      .license-box {
-        width: 100%;
-        border: 1px solid #d9ded7;
-        border-radius: 10px;
-        background: #f8faf7;
-        padding: 12px;
-        color: #151916;
-        font: inherit;
-        font-weight: 800;
       }
 
       .license-box {
@@ -210,17 +40,16 @@
         gap: 8px;
         flex-wrap: wrap;
         margin-top: 14px;
-        color: #667065;
         font-size: 13px;
         font-weight: 900;
       }
 
       .manual-order code {
-        border: 1px solid #d9ded7;
+        border: 1px solid var(--site-line);
         border-radius: 8px;
-        background: #f8faf7;
+        background: var(--site-paper);
         padding: 5px 8px;
-        color: #151916;
+        color: var(--site-ink);
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         font-size: 12px;
       }
@@ -230,7 +59,7 @@
         gap: 6px;
         margin: 18px 0 0;
         border: 1px solid #c6dfd2;
-        border-radius: 10px;
+        border-radius: var(--site-radius);
         background: #f3fbf6;
         padding: 14px;
         color: #264232;
@@ -239,29 +68,13 @@
       }
 
       .intent-box strong {
-        color: #0f8a55;
+        color: var(--site-green);
       }
 
       [hidden] {
         display: none !important;
       }
-
-      @media (max-width: 820px) {
-        .hero,
-        .grid {
-          grid-template-columns: 1fr;
-        }
-
-        h1 {
-          font-size: 36px;
-        }
-
-        .actions .btn {
-          width: 100%;
-        }
-      }
     </style>
-    <link rel="stylesheet" href="./site.css" />
   </head>
   <body class="surface-page">
     <main class="wrap">
@@ -294,7 +107,7 @@
               接收授权码邮箱
               <input id="buyerEmail" type="email" placeholder="输入买家邮箱" autocomplete="email" />
             </label>
-            <button class="btn green" id="createOrderButton" type="button">生成专属付款码</button>
+            <button class="btn primary" id="createOrderButton" type="button">生成专属付款码</button>
           </div>
           <div class="buy-form" id="manualBuyerForm">
             <label>
@@ -307,7 +120,7 @@
             </label>
           </div>
           <div class="actions" style="margin-top: 22px">
-            <a class="btn green" id="checkoutButton" href="https://qr.alipay.com/fkx18699evozd44sg2kip49" target="_blank" rel="noreferrer">打开支付宝付款</a>
+            <a class="btn primary" id="checkoutButton" href="https://qr.alipay.com/fkx18699evozd44sg2kip49" target="_blank" rel="noreferrer">打开支付宝付款</a>
             <a class="btn blue" id="manualClaimButton" href="./after-pay.html">付款后提交信息</a>
             <button class="btn" id="copyManualOrderButton" type="button">复制订单号</button>
             <a class="btn" href="./index.html">打开软件</a>
@@ -316,7 +129,7 @@
           <div class="order-box">
             <p class="small" id="checkoutStatus">当前使用支付宝收款码。付款后提交信息，确认到账后会回复唯一授权码。</p>
             <p class="small" id="orderStatus"></p>
-            <a class="btn green" id="autoPayLink" href="#" target="_blank" rel="noreferrer" hidden>打开支付宝付款</a>
+            <a class="btn primary" id="autoPayLink" href="#" target="_blank" rel="noreferrer" hidden>打开支付宝付款</a>
             <div class="license-box" id="licenseBox" hidden></div>
             <button class="btn" id="copyLicenseButton" type="button" hidden>复制授权码</button>
             <a class="btn blue" id="openWithLicenseButton" href="./index.html" hidden>带授权码打开软件</a>
@@ -472,7 +285,7 @@
 
       if (licenseProvider === "signed" && autoPaymentApiBase.startsWith("https://")) {
         autoBuyForm.hidden = false;
-        checkoutButton.classList.remove("green");
+        checkoutButton.classList.remove("primary");
         checkoutButton.textContent = "备用收款码";
         manualClaimButton.hidden = true;
         manualBuyerForm.hidden = true;

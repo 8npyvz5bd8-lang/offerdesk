@@ -20,6 +20,12 @@ assert.ok(buyHtml.includes('manualClaimButton.addEventListener("click", requireM
 assert.ok(buyHtml.includes("manualBuyerEmail.checkValidity()"));
 assert.ok(buyHtml.includes("buyer_email"));
 assert.ok(buyHtml.includes("payer_name"));
+assert.ok(buyHtml.includes('<link rel="stylesheet" href="./site.css" />'));
+assert.ok(buyHtml.includes('class="btn primary" id="checkoutButton"'));
+assert.ok(buyHtml.includes('checkoutButton.classList.remove("primary")'));
+assert.ok(!buyHtml.includes('class="btn green"'));
+assert.ok(!buyHtml.includes("border-radius: 999px"));
+assert.ok(!buyHtml.includes('font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial'));
 
 assert.ok(afterPayHtml.includes("incomingOrderId"));
 assert.ok(afterPayHtml.includes("incomingBuyerEmail"));
