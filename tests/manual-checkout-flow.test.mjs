@@ -7,12 +7,16 @@ const afterPayHtml = await readFile(new URL("../after-pay.html", import.meta.url
 
 assert.ok(buyHtml.includes("offerdesk.manual.order.id"));
 assert.ok(buyHtml.includes("copyManualOrderButton"));
+assert.ok(buyHtml.includes("copyPaymentRemarkButton"));
 assert.ok(buyHtml.includes("manualOrderId"));
+assert.ok(buyHtml.includes("manualPaymentRemark"));
 assert.ok(buyHtml.includes("manualBuyerForm"));
 assert.ok(buyHtml.includes("manualBuyerEmail"));
 assert.ok(buyHtml.includes("manualBuyerName"));
 assert.ok(buyHtml.includes("handoff-box"));
 assert.ok(buyHtml.includes("付款前先确认这 3 件事"));
+assert.ok(buyHtml.includes("付款备注建议填订单号"));
+assert.ok(buyHtml.includes("付款备注已复制"));
 assert.ok(buyHtml.includes("页面会自动带上订单号、邮箱和报价来源"));
 assert.ok(buyHtml.includes("不会假装秒发"));
 assert.ok(buyHtml.includes("offerdesk.manual.buyer.email"));
