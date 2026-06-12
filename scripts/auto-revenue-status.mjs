@@ -4,6 +4,7 @@ import { pathToFileURL } from "node:url";
 import { buildReleaseStatus } from "./release-status.mjs";
 import { validateAcceptanceText } from "./validate-acceptance.mjs";
 import { validateAlipayEnv } from "./validate-alipay-env.mjs";
+import { validateOutreach } from "./validate-outreach.mjs";
 
 const root = new URL("../", import.meta.url);
 
@@ -28,6 +29,7 @@ export async function buildAutoRevenueStatus(options = {}) {
     total: 0,
     evidence: "当前没有线上校验报告。"
   };
+  const outreach = options.outreach === undefined ? await inspectOutreach() : options.outreach;
   const acceptanceText = await readText("launch/release-acceptance.md");
   const buyText = await readText("buy.html");
   const indexText = await readText("index.html");
@@ -59,8 +61,6 @@ export async function buildAutoRevenueStatus(options = {}) {
   const licenseProvider = readConfigValue(configText, "licenseProvider");
   const paymentQrImage = readConfigValue(configText, "paymentQrImage");
   const acceptancePass = validateAcceptanceText(acceptanceText).every((item) => item.pass);
-  const trackerText = await readText("launch/sales-tracker.csv");
-  const hasPaidTrackerEvidence = hasPaidTrackerRow(trackerText);
 
   const steps = [
     step(1, "固定当前视觉标准", await exists("site.css"), "site.css 已存在。", "补 site.css，并把 sales 风格抽成公共样式。"),
@@ -86,12 +86,12 @@ export async function buildAutoRevenueStatus(options = {}) {
     step(21, "填写真实发布验收", acceptancePass, acceptancePass ? "launch/release-acceptance.md 已通过验收。" : "launch/release-acceptance.md 仍显示真实付款或自动收款未完成。", "完成真实付款后填写 release-acceptance.md。", "blocked"),
     step(22, "更新正式发布包", releaseHasSiteCss && uploadZipExists, "dist/offerdesk-release 和 dist/offerdesk-release.zip 已生成。", "运行 node scripts/build-upload-zip.mjs。"),
     step(23, "发布到长期公网地址", publicSite.ready, publicSite.ready ? `线上校验通过：${publicSite.passed}/${publicSite.total} 个文件与本地一致。` : publicSite.evidence, "运行 node scripts/verify-public-site.mjs --write launch/public-site-verification.json。", "blocked"),
-    step(24, "检查线上页面", publicSite.ready, publicSite.ready ? `线上 sales、buy、site.css、app-config.js 已和本地一致。` : publicSite.evidence, "用线上校验脚本和浏览器截图检查页面。", "blocked"),
-    step(25, "准备首批获客名单", false, "仓库内没有真实 10 人名单证据。", "整理 10 个真实接单人，不编造。", "needs_manual"),
-    step(26, "发布推广内容", false, "仓库内没有已发布推广内容证据。", "用 share.html 文案发布到真实渠道。", "needs_manual"),
+    step(24, "检查线上页面", publicSite.ready, publicSite.ready ? `${publicSite.total} 个线上关键文件已和本地一致。` : publicSite.evidence, "用线上校验脚本和浏览器截图检查页面。", "blocked"),
+    step(25, "准备首批获客名单", outreach.prospects >= 10, `${outreach.prospects}/10 个真实潜在买家记录。`, "整理 10 个真实接单人，不编造。", "needs_manual"),
+    step(26, "发布推广内容", outreach.publishedChannels >= 3, `${outreach.publishedChannels}/3 个推广渠道有真实发布证据。`, "用 share.html 文案发布到真实渠道，并记录到 promotion-log.csv。", "needs_manual"),
     step(27, "跟进每个潜在买家", await exists("pipeline.html"), "pipeline.html 已存在，可记录线索。", "把真实联系人状态录入跟进台。"),
     step(28, "处理第一笔自动订单", false, "尚无第一笔自动订单证据。", "订单成功后检查订单 JSON、授权码和邮件状态。", "blocked"),
-    step(29, "记录收入和问题", hasPaidTrackerEvidence, hasPaidTrackerEvidence ? "sales-tracker.csv 中已有付款记录。" : "sales-tracker.csv 中没有真实付款记录。", "有真实付款后记录到 sales-tracker.csv。", "needs_manual"),
+    step(29, "记录收入和问题", outreach.paid > 0 && outreach.revenue > 0, outreach.paid > 0 ? `sales-tracker.csv 中有 ${outreach.paid} 笔付款，收入 ¥${outreach.revenue.toFixed(2)}。` : "sales-tracker.csv 中没有真实付款记录。", "有真实付款后记录到 sales-tracker.csv。", "needs_manual"),
     step(30, "做 7 天复盘", false, "尚未达到 7 天真实数据复盘。", "满 7 天后按试用、付费、反馈复盘。", "needs_manual")
   ];
 
@@ -250,6 +250,19 @@ function alipayEnvEvidence(result) {
   return `已发现本地 env 草稿，但还有 ${result.failed ?? "若干"} 项支付宝预检未通过。`;
 }
 
+async function inspectOutreach() {
+  try {
+    return await validateOutreach();
+  } catch {
+    return {
+      prospects: 0,
+      publishedChannels: 0,
+      paid: 0,
+      revenue: 0
+    };
+  }
+}
+
 function hasAlipayMerchantEnv(env) {
   return Boolean(
     realValue(env.ALIPAY_APP_ID) &&
@@ -265,13 +278,6 @@ function hasEmailEnv(env) {
 
 function isRealAutoPaymentApiBase(value) {
   return realHttps(value) && !/github\.io\/(?:graphics-debug\/)?offerdesk\/(buy|pay|after-pay)\.html/.test(value);
-}
-
-function hasPaidTrackerRow(text) {
-  return String(text || "")
-    .split(/\r?\n/u)
-    .slice(1)
-    .some((line) => /已付款|TRADE_SUCCESS|,paid,|,paid$/iu.test(line));
 }
 
 function realHttps(value) {

@@ -5,6 +5,12 @@ const status = await buildAutoRevenueStatus({
   env: {},
   envFile: null,
   publicSiteFile: null,
+  outreach: {
+    prospects: 0,
+    publishedChannels: 0,
+    paid: 0,
+    revenue: 0
+  },
   testsPassed: true,
   staticCheckPassed: true
 });

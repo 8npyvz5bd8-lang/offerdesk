@@ -9,6 +9,7 @@
 3. 用“朋友圈”发给熟人圈。
 4. 私信 10 个真实接单的人。
 5. 每联系 1 个人，都记录到 `launch/sales-tracker.csv`。
+6. 每发布 1 条推广，都记录到 `launch/promotion-log.csv`。
 
 发图时优先用这 3 张：
 
@@ -145,6 +146,20 @@ pbpaste | /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/depende
 ```bash
 /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/fulfill-from-email.mjs --file "邮件正文.txt"
 ```
+
+## 证据检查
+
+跟进和推广不是靠记忆判断，跑这个命令：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/validate-outreach.mjs
+```
+
+它会检查：
+
+1. `launch/sales-tracker.csv` 里是否有 10 个真实潜在买家。
+2. `launch/promotion-log.csv` 里是否有 3 个真实发布渠道。
+3. 是否已经出现真实付款记录和收入。
 
 ## 7 天验证标准
 
