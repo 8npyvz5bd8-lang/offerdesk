@@ -152,6 +152,22 @@ pbpaste | /Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/depende
 
 ## 证据检查
 
+跟进台和推广记录台现在可以直接下载 CSV，再导入到本地证据文件。
+
+潜在买家导入：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/import-outreach-evidence.mjs --sales-file /Users/chenzhifeng/Downloads/offerdesk-sales.csv
+```
+
+推广链接导入：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/import-outreach-evidence.mjs --promotion-file /Users/chenzhifeng/Downloads/offerdesk-promotions.csv
+```
+
+导入脚本只导入已发布推广记录；已发布记录会拒绝空字段、占位字段和无效链接，不会帮你凑数。
+
 跟进和推广不是靠记忆判断，跑这个命令：
 
 ```bash

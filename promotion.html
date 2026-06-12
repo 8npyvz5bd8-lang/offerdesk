@@ -132,6 +132,8 @@
           <button class="btn" type="button" id="seedRows">补齐 3 个渠道</button>
           <button class="btn" type="button" id="exportCsv">生成 CSV</button>
           <button class="btn" type="button" id="copyCsv">复制 CSV</button>
+          <button class="btn" type="button" id="downloadCsv">下载 CSV</button>
+          <button class="btn" type="button" id="copyImportCommand">复制导入命令</button>
           <button class="btn danger" type="button" id="clearBlank">清空空白行</button>
         </div>
       </section>
@@ -202,8 +204,19 @@
 
       document.getElementById("copyCsv").addEventListener("click", async () => {
         csvOutput.value = toCsv(promotions);
-        await navigator.clipboard.writeText(csvOutput.value);
-        notice.textContent = "CSV 已复制。";
+        await copyText(csvOutput.value, "CSV 已复制。", "CSV 已生成，浏览器没有允许复制，请手动复制。");
+      });
+
+      document.getElementById("downloadCsv").addEventListener("click", () => {
+        csvOutput.value = toCsv(promotions);
+        downloadText("offerdesk-promotions.csv", csvOutput.value);
+        notice.textContent = "CSV 已下载。导入前确认链接已经真实发布。";
+      });
+
+      document.getElementById("copyImportCommand").addEventListener("click", async () => {
+        const command = buildPromotionImportCommand();
+        csvOutput.value = command;
+        await copyText(command, "导入命令已复制。先下载 CSV，再在项目目录终端运行。", "导入命令已显示，浏览器没有允许复制，请手动复制。");
       });
 
       document.getElementById("clearBlank").addEventListener("click", () => {
@@ -311,6 +324,45 @@
           String(now.getMonth() + 1).padStart(2, "0"),
           String(now.getDate()).padStart(2, "0")
         ].join("-");
+      }
+
+      function buildPromotionImportCommand() {
+        const node = "/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node";
+        return [
+          node,
+          "scripts/import-outreach-evidence.mjs",
+          "--promotion-file",
+          "/Users/chenzhifeng/Downloads/offerdesk-promotions.csv"
+        ].map(shellArg).join(" \\\n  ");
+      }
+
+      function downloadText(filename, text) {
+        const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      async function copyText(text, successText, failureText) {
+        try {
+          await navigator.clipboard.writeText(text);
+          notice.textContent = successText;
+        } catch {
+          notice.textContent = failureText;
+        }
+      }
+
+      function shellArg(value) {
+        const text = String(value ?? "");
+        if (/^[A-Za-z0-9_./:@=-]+$/.test(text)) {
+          return text;
+        }
+        return `'${text.replaceAll("'", "'\\''")}'`;
       }
     </script>
   </body>

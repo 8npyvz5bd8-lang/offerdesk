@@ -39,6 +39,7 @@ const requiredFiles = [
   "scripts/validate-alipay-env.mjs",
   "scripts/validate-alipay-service.mjs",
   "scripts/validate-outreach.mjs",
+  "scripts/import-outreach-evidence.mjs",
   "scripts/validate-auto-payment.mjs",
   "scripts/validate-acceptance.mjs",
   "scripts/check-static-assets.mjs",

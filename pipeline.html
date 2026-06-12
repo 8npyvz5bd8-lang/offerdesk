@@ -222,6 +222,8 @@
           <button class="btn green" type="button" id="addRow">新增一行</button>
           <button class="btn" type="button" id="exportCsv">生成 CSV</button>
           <button class="btn" type="button" id="copyCsv">复制 CSV</button>
+          <button class="btn" type="button" id="downloadCsv">下载 CSV</button>
+          <button class="btn" type="button" id="copyImportCommand">复制导入命令</button>
           <button class="btn danger" type="button" id="clearDone">清空空白行</button>
         </div>
         <p>状态到“已付款”后，点击这一行的“发码命令”，在本机终端运行，确认到账后把生成的邮件发给买家。</p>
@@ -309,8 +311,19 @@
 
       document.getElementById("copyCsv").addEventListener("click", async () => {
         csvOutput.value = toCsv(leads);
-        await navigator.clipboard.writeText(csvOutput.value);
-        notice.textContent = "CSV 已复制。";
+        await copyText(csvOutput.value, notice, "CSV 已复制。", "CSV 已生成，浏览器没有允许复制，请手动复制。");
+      });
+
+      document.getElementById("downloadCsv").addEventListener("click", () => {
+        csvOutput.value = toCsv(leads);
+        downloadText("offerdesk-sales.csv", csvOutput.value);
+        notice.textContent = "CSV 已下载。导入时先确认里面是真实联系人。";
+      });
+
+      document.getElementById("copyImportCommand").addEventListener("click", async () => {
+        const command = buildSalesImportCommand();
+        csvOutput.value = command;
+        await copyText(command, notice, "导入命令已复制。先下载 CSV，再在项目目录终端运行。", "导入命令已显示，浏览器没有允许复制，请手动复制。");
       });
 
       document.getElementById("clearDone").addEventListener("click", () => {
@@ -342,8 +355,7 @@
         if (!claim) {
           return;
         }
-        await navigator.clipboard.writeText(claimCommand.value);
-        claimNotice.textContent = "发码命令已复制。确认支付宝到账后，在本机终端运行。";
+        await copyText(claimCommand.value, claimNotice, "发码命令已复制。确认支付宝到账后，在本机终端运行。", "发码命令已显示，浏览器没有允许复制，请手动复制。");
       });
 
       function loadLeads() {
@@ -429,10 +441,14 @@
         button.addEventListener("click", async () => {
           const command = buildFulfillmentCommand(leads[index]);
           csvOutput.value = command;
-          await navigator.clipboard.writeText(command);
-          notice.textContent = leads[index].email
-            ? "发码命令已复制。确认支付宝到账后，在本机终端运行。"
-            : "发码命令已复制，但这一行还没填买家邮箱。运行前先替换邮箱。";
+          await copyText(
+            command,
+            notice,
+            leads[index].email
+              ? "发码命令已复制。确认支付宝到账后，在本机终端运行。"
+              : "发码命令已复制，但这一行还没填买家邮箱。运行前先替换邮箱。",
+            "发码命令已显示，浏览器没有允许复制，请手动复制。"
+          );
         });
         return button;
       }
@@ -532,6 +548,37 @@
           lead.note || "支付宝收款码付款"
         ];
         return args.map(shellArg).join(" \\\n  ");
+      }
+
+      function buildSalesImportCommand() {
+        const node = "/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node";
+        return [
+          node,
+          "scripts/import-outreach-evidence.mjs",
+          "--sales-file",
+          "/Users/chenzhifeng/Downloads/offerdesk-sales.csv"
+        ].map(shellArg).join(" \\\n  ");
+      }
+
+      function downloadText(filename, text) {
+        const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      async function copyText(text, targetNotice, successText, failureText) {
+        try {
+          await navigator.clipboard.writeText(text);
+          targetNotice.textContent = successText;
+        } catch {
+          targetNotice.textContent = failureText;
+        }
       }
 
       function parseCurrentClaim() {
