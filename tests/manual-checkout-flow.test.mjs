@@ -39,6 +39,10 @@ assert.ok(afterPayHtml.includes("offerdesk.manual.buyer.name"));
 assert.ok(afterPayHtml.includes("claim-grid"));
 assert.ok(afterPayHtml.includes("orderForSubject"));
 assert.ok(afterPayHtml.includes("OfferDesk 专业版授权码领取 ${orderForSubject}"));
+assert.ok(afterPayHtml.includes('<link rel="stylesheet" href="./site.css" />'));
+assert.ok(afterPayHtml.includes('class="btn primary" id="mailLink"'));
+assert.ok(!afterPayHtml.includes("border-radius: 999px"));
+assert.ok(!afterPayHtml.includes('font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial'));
 
 assert.ok(payHtml.includes("旧付款入口"));
 assert.ok(payHtml.includes("去成交页填写邮箱并付款"));
