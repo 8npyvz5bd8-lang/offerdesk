@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-12T09:58:00.331Z",
+  "checkedAt": "2026-06-12T10:06:37.363Z",
   "baseUrl": "https://8npyvz5bd8-lang.github.io/offerdesk/",
   "files": [
     {
@@ -27,9 +27,19 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/share.html",
       "status": 200,
       "ok": true,
-      "localHash": "e17f592a0a204ce0157617e304a391f976832aca5a6869c516a4414c39a4c35a",
-      "remoteHash": "e17f592a0a204ce0157617e304a391f976832aca5a6869c516a4414c39a4c35a",
-      "bytes": 7843,
+      "localHash": "2eff2b18d32b4f7dddf52280675e5221f11872717ea85a91ff613126ccee8e47",
+      "remoteHash": "2eff2b18d32b4f7dddf52280675e5221f11872717ea85a91ff613126ccee8e47",
+      "bytes": 7901,
+      "fix": ""
+    },
+    {
+      "file": "promotion.html",
+      "url": "https://8npyvz5bd8-lang.github.io/offerdesk/promotion.html",
+      "status": 200,
+      "ok": true,
+      "localHash": "f2598134161212ff91d2660573584df1ccee3fd36d7c252d079b60da1448eb5c",
+      "remoteHash": "f2598134161212ff91d2660573584df1ccee3fd36d7c252d079b60da1448eb5c",
+      "bytes": 9945,
       "fix": ""
     },
     {
@@ -37,9 +47,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/pipeline.html",
       "status": 200,
       "ok": true,
-      "localHash": "3cc413a8140f27aba9ba8ca7698db595625d3475234f86513f48bc0aca402efe",
-      "remoteHash": "3cc413a8140f27aba9ba8ca7698db595625d3475234f86513f48bc0aca402efe",
-      "bytes": 14785,
+      "localHash": "1645d6763dd41a8b85c63e3be598a1948e84b13915b548d621f2b8e2cd8c6719",
+      "remoteHash": "1645d6763dd41a8b85c63e3be598a1948e84b13915b548d621f2b8e2cd8c6719",
+      "bytes": 14843,
       "fix": ""
     },
     {
@@ -47,9 +57,9 @@
       "url": "https://8npyvz5bd8-lang.github.io/offerdesk/share-copy.txt",
       "status": 200,
       "ok": true,
-      "localHash": "c245ba64d0a49454a2253dca04cec8d4c0f97194a7eef94d9adb3d624becfddf",
-      "remoteHash": "c245ba64d0a49454a2253dca04cec8d4c0f97194a7eef94d9adb3d624becfddf",
-      "bytes": 1320,
+      "localHash": "7d54df51f2a23a83ed84372a3091284cc913999600622af3e6b134b62342aebc",
+      "remoteHash": "7d54df51f2a23a83ed84372a3091284cc913999600622af3e6b134b62342aebc",
+      "bytes": 1387,
       "fix": ""
     },
     {
