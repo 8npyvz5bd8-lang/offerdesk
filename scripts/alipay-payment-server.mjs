@@ -165,6 +165,7 @@ export function createPaymentServer(env = process.env, controls = {}) {
         if (!successStatuses.has(order.status)) {
           const queried = await callAlipayQuery({ env, fetchImpl, orderId });
           if (successStatuses.has(queried.status)) {
+            assertQueriedOrderId(order, queried.orderId);
             assertPaidAmount(order, queried.amount, "支付宝查单");
             await markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo: queried.tradeNo });
           }
@@ -186,7 +187,7 @@ export function createPaymentServer(env = process.env, controls = {}) {
         const orderId = String(params.out_trade_no || "");
         const store = await readStore(storeFile);
         const order = store.orders[orderId];
-        if (!order || !amountMatches(order.amount, params.total_amount)) {
+        if (!order || !notifyAppMatches(env, params.app_id) || !amountMatches(order.amount, params.total_amount)) {
           res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
           res.end("failure");
           return;
@@ -243,6 +244,7 @@ async function callAlipayQuery({ env, fetchImpl, orderId }) {
     throw new Error(alipayErrorMessage(payload.error_response, "支付宝查单失败。"));
   }
   return {
+    orderId: data?.out_trade_no || "",
     status: data?.trade_status || "",
     tradeNo: data?.trade_no || "",
     amount: data?.total_amount || ""
@@ -450,6 +452,16 @@ function assertPaidAmount(order, paidAmount, source) {
   if (!amountMatches(order.amount, paidAmount)) {
     throw new Error(`${source}金额不一致：订单 ${order.amount}，支付 ${String(paidAmount || "空")}。`);
   }
+}
+
+function assertQueriedOrderId(order, queriedOrderId) {
+  if (String(queriedOrderId || "") !== String(order.orderId || "")) {
+    throw new Error(`支付宝查单订单号不一致：本地 ${order.orderId}，返回 ${String(queriedOrderId || "空")}。`);
+  }
+}
+
+function notifyAppMatches(env, notifyAppId) {
+  return String(notifyAppId || "").trim() === String(env.ALIPAY_APP_ID || "").trim();
 }
 
 function amountMatches(expected, actual) {
