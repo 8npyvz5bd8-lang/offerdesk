@@ -7,6 +7,7 @@ export function parsePaymentClaimText(text) {
   const amount = normalizeAmount(readField(source, ["付款金额", "金额"]));
   const paidAt = readField(source, ["付款时间", "支付时间"]);
   const name = readField(source, ["支付宝昵称或备注", "支付宝昵称", "付款备注"]);
+  const attributionSource = readField(source, ["来源", "渠道", "推广来源"]);
   const extraNote = readField(source, ["其他说明", "说明"]);
 
   if (!email) {
@@ -16,14 +17,18 @@ export function parsePaymentClaimText(text) {
     throw new Error("提交内容里没有订单号。");
   }
 
-  return {
+  const claim = {
     email,
     orderId,
     amount: amount || undefined,
     paidAt: paidAt || undefined,
     name: name || undefined,
-    note: buildNote({ name, extraNote })
+    note: buildNote({ name, attributionSource, extraNote })
   };
+  if (attributionSource) {
+    claim.source = attributionSource;
+  }
+  return claim;
 }
 
 export function buildManualFulfillmentCommand(claim, options = {}) {
@@ -75,9 +80,10 @@ function normalizeAmount(value) {
   return match ? match[0] : text;
 }
 
-function buildNote({ name, extraNote }) {
+function buildNote({ name, attributionSource, extraNote }) {
   return [
     name ? `支付宝备注：${name}` : "",
+    attributionSource ? `来源：${attributionSource}` : "",
     extraNote ? `其他说明：${extraNote}` : ""
   ].filter(Boolean).join("；");
 }

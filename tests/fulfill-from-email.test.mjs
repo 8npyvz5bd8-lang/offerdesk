@@ -17,6 +17,7 @@ const claimText = `
 订单号：OD-MANUAL-20260611203000-ABC12345
 我的邮箱：Buyer@Example.COM
 支付宝昵称或备注：老陈设计
+来源：xiaohongshu
 
 其他说明：请发到这个邮箱
 
@@ -29,7 +30,8 @@ assert.deepEqual(parsePaymentClaimText(claimText), {
   amount: "29",
   paidAt: "2026-06-11 20:30",
   name: "老陈设计",
-  note: "支付宝备注：老陈设计；其他说明：请发到这个邮箱"
+  source: "xiaohongshu",
+  note: "支付宝备注：老陈设计；来源：xiaohongshu；其他说明：请发到这个邮箱"
 });
 
 assert.equal(parsePaymentClaimText(`
@@ -114,6 +116,7 @@ assert.ok(emailText.includes(result.licenseCode));
 assert.ok(trackerText.includes("qq-mail"));
 assert.ok(trackerText.includes("老陈设计"));
 assert.ok(trackerText.includes("支付宝备注"));
+assert.ok(trackerText.includes("来源：xiaohongshu"));
 
 await rm(tempRoot, { recursive: true, force: true });
 

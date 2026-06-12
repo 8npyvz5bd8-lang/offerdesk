@@ -12,6 +12,7 @@ const claimText = `
 订单号：OD-MANUAL-20260612182000-ABC12345
 我的邮箱：Buyer@Example.COM
 支付宝昵称或备注：老陈设计
+来源：xianyu
 
 其他说明：请发到这个邮箱
 
@@ -25,7 +26,8 @@ assert.deepEqual(claim, {
   amount: "29",
   paidAt: "2026-06-12 18:20",
   name: "老陈设计",
-  note: "支付宝备注：老陈设计；其他说明：请发到这个邮箱"
+  source: "xianyu",
+  note: "支付宝备注：老陈设计；来源：xianyu；其他说明：请发到这个邮箱"
 });
 
 assert.equal(parsePaymentClaimText(`

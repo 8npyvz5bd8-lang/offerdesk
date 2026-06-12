@@ -790,5 +790,27 @@
         </div>
       </footer>
     </div>
+    <script>
+      const attributionSourceKey = "offerdesk.attribution.source";
+      const sourceParams = new URLSearchParams(window.location.search);
+      const incomingSource = (
+        sourceParams.get("source") ||
+        sourceParams.get("ref") ||
+        sourceParams.get("utm_source") ||
+        sourceParams.get("channel") ||
+        ""
+      ).trim().slice(0, 80);
+      if (incomingSource) {
+        localStorage.setItem(attributionSourceKey, incomingSource);
+      }
+      const attributionSource = incomingSource || localStorage.getItem(attributionSourceKey) || "";
+      if (attributionSource) {
+        document.querySelectorAll('a[href="./index.html"], a[href="./buy.html"]').forEach((link) => {
+          const target = new URL(link.getAttribute("href"), window.location.href);
+          target.searchParams.set("source", attributionSource);
+          link.href = target.href;
+        });
+      }
+    </script>
   </body>
 </html>

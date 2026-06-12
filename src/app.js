@@ -23,6 +23,7 @@ import { getQuoteTemplate } from "./templates.js";
 const storageKey = "offerdesk.quote.v1";
 const licenseKey = "offerdesk.license.v1";
 const externalLicenseKey = "offerdesk.externalLicense.v1";
+const attributionSourceKey = "offerdesk.attribution.source";
 const config = window.OFFERDESK_CONFIG || {};
 
 const fields = {
@@ -88,6 +89,7 @@ const elements = {
 let state = loadQuote();
 let externalLicenseVerified = false;
 const defaultUnlockPitch = "专业版去掉免费水印，适合正式发给客户。付款成功后会收到唯一授权码。";
+captureAttributionSource();
 
 function loadQuote() {
   try {
@@ -351,7 +353,28 @@ function withCheckoutContext(url, options = {}) {
   target.searchParams.set("project", project.slice(0, 60));
   target.searchParams.set("quote_total", String(Math.round(result.total)));
   target.searchParams.set("currency", state.currency || "¥");
+  const source = getAttributionSource();
+  if (source) {
+    target.searchParams.set("source", source);
+  }
   return target.href;
+}
+
+function captureAttributionSource() {
+  const source = readAttributionSourceFromUrl();
+  if (source) {
+    localStorage.setItem(attributionSourceKey, source);
+  }
+}
+
+function getAttributionSource() {
+  return readAttributionSourceFromUrl() || localStorage.getItem(attributionSourceKey) || "";
+}
+
+function readAttributionSourceFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const source = params.get("source") || params.get("ref") || params.get("utm_source") || params.get("channel") || "";
+  return source.trim().slice(0, 80);
 }
 
 function isOfferDeskCheckoutUrl(url) {

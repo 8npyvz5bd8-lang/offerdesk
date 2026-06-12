@@ -128,6 +128,7 @@
       const incomingOrderId = params.get("order_id");
       const incomingBuyerEmail = params.get("buyer_email") || params.get("email");
       const incomingPayerName = params.get("payer_name") || params.get("name");
+      const incomingSource = readAttributionSourceFromUrl();
       if (incomingOrderId) {
         setStoredOrderId(incomingOrderId);
       }
@@ -136,6 +137,9 @@
       }
       if (incomingPayerName) {
         setStoredManualBuyerName(incomingPayerName);
+      }
+      if (incomingSource) {
+        setStoredAttributionSource(incomingSource);
       }
       $("orderId").value = incomingOrderId || getStoredOrderId();
       $("buyerEmail").value = incomingBuyerEmail || getStoredManualBuyerEmail();
@@ -150,6 +154,7 @@
           `订单号：${$("orderId").value.trim()}`,
           `我的邮箱：${$("buyerEmail").value.trim()}`,
           `支付宝昵称或备注：${$("payerName").value.trim()}`,
+          `来源：${getStoredAttributionSource() || "未记录"}`,
           "",
           `其他说明：${$("note").value.trim()}`,
           "",
@@ -201,6 +206,19 @@
 
       function setStoredManualBuyerName(value) {
         localStorage.setItem("offerdesk.manual.buyer.name", String(value || "").trim());
+      }
+
+      function readAttributionSourceFromUrl() {
+        const source = params.get("source") || params.get("ref") || params.get("utm_source") || params.get("channel") || "";
+        return source.trim().slice(0, 80);
+      }
+
+      function getStoredAttributionSource() {
+        return localStorage.getItem("offerdesk.attribution.source") || "";
+      }
+
+      function setStoredAttributionSource(value) {
+        localStorage.setItem("offerdesk.attribution.source", String(value || "").trim().slice(0, 80));
       }
 
       function createManualOrderId() {

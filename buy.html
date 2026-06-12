@@ -262,8 +262,10 @@
       const autoBuyerEmailKey = "offerdesk.auto.buyer.email";
       const autoBuyerNameKey = "offerdesk.auto.buyer.name";
       const autoLicenseKey = "offerdesk.auto.license.code";
+      const attributionSourceKey = "offerdesk.attribution.source";
       let pollTimer = 0;
       renderCheckoutIntent();
+      captureAttributionSource();
 
       if (paymentQrImage) {
         autoQrImage.src = paymentQrImage;
@@ -341,7 +343,7 @@
           const order = await requestJson(`${autoPaymentApiBase}/api/create-order`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, name: buyerName.value.trim() })
+            body: JSON.stringify({ email, name: buyerName.value.trim(), source: getAttributionSource() })
           });
           saveAutoOrder(order.orderId, email, buyerName.value.trim());
           if (order.qrImage) {
@@ -475,7 +477,28 @@
         if (name) {
           params.set("payer_name", name);
         }
+        const source = getAttributionSource();
+        if (source) {
+          params.set("source", source);
+        }
         manualClaimButton.href = `./after-pay.html?${params.toString()}`;
+      }
+
+      function captureAttributionSource() {
+        const source = readAttributionSourceFromUrl();
+        if (source) {
+          localStorage.setItem(attributionSourceKey, source);
+        }
+      }
+
+      function getAttributionSource() {
+        return readAttributionSourceFromUrl() || localStorage.getItem(attributionSourceKey) || "";
+      }
+
+      function readAttributionSourceFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const source = params.get("source") || params.get("ref") || params.get("utm_source") || params.get("channel") || "";
+        return source.trim().slice(0, 80);
       }
 
       function getStoredManualBuyerEmail() {

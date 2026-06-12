@@ -117,6 +117,7 @@ export function createPaymentServer(env = process.env, controls = {}) {
         const body = await readJsonBody(req);
         const email = String(body.email || "").trim().toLowerCase();
         const name = String(body.name || "").trim();
+        const source = normalizeSource(body.source);
         assertEmail(email);
 
         const orderId = createOrderId();
@@ -133,6 +134,7 @@ export function createPaymentServer(env = process.env, controls = {}) {
           orderId,
           email,
           name,
+          source,
           amount,
           status: "WAIT_BUYER_PAY",
           qrCode: alipay.qrCode,
@@ -344,6 +346,7 @@ function publicOrder(order) {
     amount: order.amount,
     status: order.status,
     paidAt: order.paidAt || "",
+    source: order.source || "",
     licenseCode: successStatuses.has(order.status) ? order.licenseCode : "",
     emailDeliveryStatus: order.emailDeliveryStatus || "",
     emailDeliveryError: order.emailDeliveryError || ""
@@ -511,6 +514,13 @@ function assertEmail(value) {
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) {
     throw new Error("买家邮箱格式不正确。");
   }
+}
+
+function normalizeSource(value) {
+  return String(value || "")
+    .trim()
+    .replace(/[^\p{L}\p{N}_.:/@+-]/gu, "-")
+    .slice(0, 80);
 }
 
 function assertPaidAmount(order, paidAmount, source) {

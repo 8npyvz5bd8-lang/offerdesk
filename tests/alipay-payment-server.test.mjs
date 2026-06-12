@@ -259,7 +259,7 @@ const { port: paymentPort } = serverWithPayment.address();
 const createResponse = await fetch(`http://127.0.0.1:${paymentPort}/api/create-order`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ email: "Buyer@Example.COM", name: "买家" })
+  body: JSON.stringify({ email: "Buyer@Example.COM", name: "买家", source: "xianyu first post" })
 });
 const created = await createResponse.json();
 assert.equal(createResponse.status, 200);
@@ -273,6 +273,7 @@ await new Promise((resolve) => serverWithPayment.close(resolve));
 assert.equal(statusResponse.status, 200);
 assert.equal(paid.status, "TRADE_SUCCESS");
 assert.ok(paid.licenseCode);
+assert.equal(paid.source, "xianyu-first-post");
 assert.equal(paid.emailDeliveryStatus, "sent");
 assert.deepEqual(alipayCalls, ["alipay.trade.precreate", "alipay.trade.query"]);
 assert.equal(emails.length, 1);
@@ -282,6 +283,7 @@ assert.equal(emails[0].subject, "你的 OfferDesk 专业版授权码");
 assert.ok(emails[0].text.includes("https://offerdesk.app"));
 assert.ok(emails[0].text.includes(paid.licenseCode));
 const store = JSON.parse(await readFile(storeFile, "utf8"));
+assert.equal(store.orders[created.orderId].source, "xianyu-first-post");
 assert.equal(store.orders[created.orderId].emailDeliveryStatus, "sent");
 await rm(tempRoot, { recursive: true, force: true });
 
