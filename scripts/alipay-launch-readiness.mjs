@@ -6,23 +6,42 @@ import { validateAlipayEnv } from "./validate-alipay-env.mjs";
 const root = new URL("../", import.meta.url);
 const defaultEnvFile = "secrets/alipay-auto-payment.env";
 const defaultConfigFile = "app-config.js";
+const defaultRenderFile = "render.yaml";
 const defaultEmail = "534403209@qq.com";
+const renderEnvOrder = [
+  "ALIPAY_APP_ID",
+  "ALIPAY_PRIVATE_KEY",
+  "ALIPAY_PUBLIC_KEY",
+  "OFFERDESK_PUBLIC_BASE_URL",
+  "OFFERDESK_LICENSE_PRIVATE_JWK",
+  "OFFERDESK_AMOUNT",
+  "OFFERDESK_DATA_FILE",
+  "OFFERDESK_ALLOWED_ORIGIN",
+  "RESEND_API_KEY",
+  "OFFERDESK_EMAIL_FROM",
+  "OFFERDESK_APP_URL",
+  "OFFERDESK_SUPPORT_EMAIL"
+];
 
 export async function buildAlipayLaunchReadiness(options = {}) {
   const envFile = options.envFile || defaultEnvFile;
   const configFile = options.config || defaultConfigFile;
+  const renderFile = options.renderFile || defaultRenderFile;
   const envReport = options.envReport || await readEnvReport(envFile, options.env);
   const configText = options.configText || await readFile(new URL(configFile, root), "utf8");
+  const renderText = options.renderText || await readFile(new URL(renderFile, root), "utf8");
   const config = parseOfferDeskConfig(configText);
   const apiBase = normalizeApiBase(options.apiBase || config.autoPaymentApiBase);
   const envReady = envReport.failed === 0;
   const frontConnected = realHttps(config.autoPaymentApiBase);
   const missing = envReport.checks.filter((item) => !item.pass);
   const passed = envReport.checks.filter((item) => item.pass);
+  const renderChecklist = buildRenderEnvChecklist({ envReport, renderText });
 
   return {
     envFile,
     configFile,
+    renderFile,
     stage: stageName({ envReady, frontConnected }),
     conclusion: conclusionText({ envReady, frontConnected }),
     envReady,
@@ -32,6 +51,7 @@ export async function buildAlipayLaunchReadiness(options = {}) {
     envReport,
     missing,
     passed,
+    renderChecklist,
     nextActions: nextActions({ envReady, frontConnected, missing }),
     commands: commandList({ envFile, apiBase })
   };
@@ -69,6 +89,21 @@ export function renderAlipayLaunchReadinessMarkdown(readiness, now = new Date())
   lines.push("");
   for (const item of readiness.passed) {
     lines.push(`- ${item.name}`);
+  }
+
+  lines.push("");
+  lines.push("## Render 环境变量填写表");
+  lines.push("");
+  lines.push(`Render 文件：${readiness.renderFile}`);
+  lines.push("");
+  lines.push("| 名称 | Render 蓝图 | 当前预检 | 怎么处理 |");
+  lines.push("| --- | --- | --- | --- |");
+  for (const row of readiness.renderChecklist.rows) {
+    lines.push(`| ${row.name} | ${row.renderStatus} | ${row.envStatus} | ${row.action} |`);
+  }
+  if (readiness.renderChecklist.missingKeys.length > 0) {
+    lines.push("");
+    lines.push(`Render 蓝图缺少：${readiness.renderChecklist.missingKeys.join("、")}`);
   }
 
   lines.push("");
@@ -120,6 +155,7 @@ export function parseArgs(args) {
   return {
     envFile: values["env-file"],
     config: values.config,
+    renderFile: values["render-file"],
     apiBase: values["api-base"],
     write: values.write,
     noFail: values.noFail === true
@@ -142,6 +178,89 @@ async function readEnvReport(envFile, env) {
       ]
     };
   }
+}
+
+export function buildRenderEnvChecklist({ envReport, renderText }) {
+  const renderKeys = parseRenderEnvKeys(renderText);
+  const checksByName = new Map(envReport.checks.map((item) => [item.name, item]));
+  const rows = renderEnvOrder.map((name) => {
+    const renderState = renderKeys.get(name);
+    const envCheck = checksByName.get(name);
+    const missingFromRender = !renderState;
+    const optional = ["RESEND_API_KEY", "OFFERDESK_EMAIL_FROM"].includes(name);
+    const fixedByBlueprint = renderState === "fixed";
+    const manualSecret = renderState === "secret";
+    const envPass = envCheck ? envCheck.pass : fixedByBlueprint;
+
+    return {
+      name,
+      renderStatus: renderStatusText(renderState),
+      envStatus: envStatusText({ envCheck, optional, fixedByBlueprint }),
+      action: renderActionText({ name, missingFromRender, fixedByBlueprint, manualSecret, optional, envPass, envCheck })
+    };
+  });
+
+  return {
+    rows,
+    missingKeys: rows.filter((row) => row.renderStatus === "缺失").map((row) => row.name)
+  };
+}
+
+function parseRenderEnvKeys(text) {
+  const keys = new Map();
+  const lines = String(text || "").split(/\r?\n/u);
+  for (let index = 0; index < lines.length; index += 1) {
+    const match = lines[index].match(/^\s*-\s+key:\s*([A-Z0-9_]+)/u);
+    if (!match) {
+      continue;
+    }
+    const name = match[1];
+    const ownLines = [];
+    for (let next = index + 1; next < lines.length; next += 1) {
+      if (/^\s*-\s+key:\s*[A-Z0-9_]+/u.test(lines[next])) {
+        break;
+      }
+      ownLines.push(lines[next]);
+    }
+    keys.set(name, /sync:\s*false/u.test(ownLines.join("\n")) ? "secret" : "fixed");
+  }
+  return keys;
+}
+
+function renderStatusText(state) {
+  if (state === "secret") {
+    return "需在 Render 手填";
+  }
+  if (state === "fixed") {
+    return "蓝图已固定";
+  }
+  return "缺失";
+}
+
+function envStatusText({ envCheck, optional, fixedByBlueprint }) {
+  if (!envCheck) {
+    if (fixedByBlueprint) {
+      return "蓝图固定";
+    }
+    return optional ? "可选" : "未检查";
+  }
+  return envCheck.pass ? "已通过" : "缺失或格式错误";
+}
+
+function renderActionText({ name, missingFromRender, fixedByBlueprint, manualSecret, optional, envPass, envCheck }) {
+  if (missingFromRender) {
+    return "先补进 render.yaml。";
+  }
+  if (fixedByBlueprint) {
+    return envPass ? "不用手填。" : (envCheck?.fix || "检查蓝图固定值。");
+  }
+  if (manualSecret && envPass) {
+    return optional ? "需要自动邮件时照当前真实值填写。" : "部署时照当前真实值填写。";
+  }
+  if (optional) {
+    return "可先留空；需要自动邮件时再填。";
+  }
+  return envCheck?.fix || `在 Render 填写 ${name}。`;
 }
 
 function stageName({ envReady, frontConnected }) {
