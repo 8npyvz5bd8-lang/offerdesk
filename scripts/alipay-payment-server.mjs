@@ -8,6 +8,7 @@ import { createSignedLicensePayload, signLicensePayload } from "../src/license.j
 
 const defaultGateway = "https://openapi.alipay.com/gateway.do";
 const successStatuses = new Set(["TRADE_SUCCESS", "TRADE_FINISHED"]);
+const storeQueues = new Map();
 
 export function buildSignContent(params) {
   return Object.entries(params)
@@ -118,7 +119,6 @@ export function createPaymentServer(env = process.env, controls = {}) {
         const name = String(body.name || "").trim();
         assertEmail(email);
 
-        const store = await readStore(storeFile);
         const orderId = createOrderId();
         const alipay = await callAlipayPrecreate({
           env,
@@ -129,7 +129,7 @@ export function createPaymentServer(env = process.env, controls = {}) {
         });
         const qrImage = await renderQrImage(alipay.qrCode);
 
-        store.orders[orderId] = {
+        const order = {
           orderId,
           email,
           name,
@@ -140,7 +140,10 @@ export function createPaymentServer(env = process.env, controls = {}) {
           licenseCode: "",
           createdAt: new Date().toISOString()
         };
-        await writeStore(storeFile, store);
+        await updateStore(storeFile, (store) => {
+          store.orders[orderId] = order;
+          return { value: order };
+        });
 
         sendJson(res, 200, {
           orderId,
@@ -155,25 +158,32 @@ export function createPaymentServer(env = process.env, controls = {}) {
       if (req.method === "GET" && url.pathname === "/api/order-status") {
         assertServerConfig(env);
         const orderId = String(url.searchParams.get("order_id") || "").trim();
-        const store = await readStore(storeFile);
-        const order = store.orders[orderId];
-        if (!order) {
-          sendJson(res, 404, { error: "订单不存在。" }, allowedOrigin);
-          return;
-        }
-
-        if (!successStatuses.has(order.status)) {
-          const queried = await callAlipayQuery({ env, fetchImpl, orderId });
-          if (successStatuses.has(queried.status)) {
-            assertQueriedOrderId(order, queried.orderId);
-            assertPaidAmount(order, queried.amount, "支付宝查单");
-            await markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo: queried.tradeNo });
+        const result = await updateStore(storeFile, async (store) => {
+          const order = store.orders[orderId];
+          if (!order) {
+            return { changed: false, value: { status: 404, payload: { error: "订单不存在。" } } };
           }
-        } else if (isEmailDeliveryConfigured(env) && order.emailDeliveryStatus !== "sent") {
-          await markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo: order.alipayTradeNo });
-        }
 
-        sendJson(res, 200, publicOrder(order), allowedOrigin);
+          if (!successStatuses.has(order.status)) {
+            const queried = await callAlipayQuery({ env, fetchImpl, orderId });
+            if (successStatuses.has(queried.status)) {
+              assertQueriedOrderId(order, queried.orderId);
+              assertPaidAmount(order, queried.amount, "支付宝查单");
+              await markPaidAndIssueLicense({ store, order, env, fetchImpl, alipayTradeNo: queried.tradeNo });
+              return { value: { status: 200, payload: publicOrder(order) } };
+            }
+            return { changed: false, value: { status: 200, payload: publicOrder(order) } };
+          }
+
+          if (isEmailDeliveryConfigured(env) && order.emailDeliveryStatus !== "sent") {
+            await markPaidAndIssueLicense({ store, order, env, fetchImpl, alipayTradeNo: order.alipayTradeNo });
+            return { value: { status: 200, payload: publicOrder(order) } };
+          }
+
+          return { changed: false, value: { status: 200, payload: publicOrder(order) } };
+        });
+
+        sendJson(res, result.status, result.payload, allowedOrigin);
         return;
       }
 
@@ -187,16 +197,23 @@ export function createPaymentServer(env = process.env, controls = {}) {
         }
 
         const orderId = String(params.out_trade_no || "");
-        const store = await readStore(storeFile);
-        const order = store.orders[orderId];
-        if (!order || !notifyAppMatches(env, params.app_id) || !amountMatches(order.amount, params.total_amount)) {
+        const notifyResult = await updateStore(storeFile, async (store) => {
+          const order = store.orders[orderId];
+          if (!order || !notifyAppMatches(env, params.app_id) || !amountMatches(order.amount, params.total_amount)) {
+            return { changed: false, value: "failure" };
+          }
+
+          if (successStatuses.has(String(params.trade_status || ""))) {
+            await markPaidAndIssueLicense({ store, order, env, fetchImpl, alipayTradeNo: params.trade_no || "" });
+            return { value: "success" };
+          }
+
+          return { changed: false, value: "success" };
+        });
+        if (notifyResult !== "success") {
           res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
           res.end("failure");
           return;
-        }
-
-        if (successStatuses.has(String(params.trade_status || ""))) {
-          await markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo: params.trade_no || "" });
         }
 
         res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
@@ -292,7 +309,7 @@ async function callAlipay({ env, fetchImpl, method, bizContent, notifyUrl = "" }
   return payload;
 }
 
-async function markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl, alipayTradeNo }) {
+async function markPaidAndIssueLicense({ store, order, env, fetchImpl, alipayTradeNo }) {
   if (!order.licenseCode) {
     const privateJwk = await readOfferDeskLicensePrivateJwk(env);
     const payload = createSignedLicensePayload({
@@ -319,7 +336,6 @@ async function markPaidAndIssueLicense({ storeFile, store, order, env, fetchImpl
       order.emailDeliveryAt = new Date().toISOString();
     }
   }
-  await writeStore(storeFile, store);
 }
 
 function publicOrder(order) {
@@ -406,6 +422,31 @@ async function writeStore(file, store) {
   } catch (error) {
     await rm(tempFile, { force: true });
     throw new Error(`订单文件写入失败：${error.message}`);
+  }
+}
+
+async function updateStore(file, updater) {
+  return enqueueStoreOperation(file, async () => {
+    const store = await readStore(file);
+    const result = await updater(store);
+    if (result?.changed !== false) {
+      await writeStore(file, store);
+    }
+    return result?.value;
+  });
+}
+
+async function enqueueStoreOperation(file, operation) {
+  const previous = storeQueues.get(file) || Promise.resolve();
+  const current = previous.then(operation, operation);
+  const tail = current.catch(() => {});
+  storeQueues.set(file, tail);
+  try {
+    return await current;
+  } finally {
+    if (storeQueues.get(file) === tail) {
+      storeQueues.delete(file);
+    }
   }
 }
 

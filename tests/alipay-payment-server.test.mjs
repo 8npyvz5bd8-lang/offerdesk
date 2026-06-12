@@ -155,6 +155,60 @@ await rm(corruptRoot, { recursive: true, force: true });
 assert.equal(corruptResponse.status, 500);
 assert.match(corruptPayload.error, /订单文件损坏/u);
 
+const concurrentRoot = await mkdtemp(join(tmpdir(), "offerdesk-alipay-concurrent-store-"));
+const concurrentStoreFile = join(concurrentRoot, "orders.json");
+const precreateWaiters = [];
+const concurrentServer = createPaymentServer({
+  ALIPAY_APP_ID: "2021000000000000",
+  ALIPAY_PRIVATE_KEY: privateKey,
+  ALIPAY_PUBLIC_KEY: publicKey,
+  ALIPAY_GATEWAY: "https://alipay.test/gateway.do",
+  OFFERDESK_PUBLIC_BASE_URL: "https://pay.offerdesk.com",
+  OFFERDESK_LICENSE_PRIVATE_JWK: JSON.stringify(privateJwk),
+  OFFERDESK_DATA_FILE: concurrentStoreFile,
+  OFFERDESK_AMOUNT: "29.00"
+}, {
+  fetch: async (url, options) => {
+    assert.equal(url, "https://alipay.test/gateway.do");
+    const paramsForCall = Object.fromEntries(new URLSearchParams(options.body));
+    assert.equal(paramsForCall.method, "alipay.trade.precreate");
+    await new Promise((resolve) => {
+      precreateWaiters.push(resolve);
+      if (precreateWaiters.length === 2) {
+        for (const waiter of precreateWaiters) {
+          waiter();
+        }
+      }
+    });
+    return textResponse(signedAlipayResponse("alipay_trade_precreate_response", {
+      code: "10000",
+      qr_code: "https://qr.alipay.com/concurrent-order"
+    }), 200);
+  }
+});
+await new Promise((resolve) => concurrentServer.listen(0, "127.0.0.1", resolve));
+const { port: concurrentPort } = concurrentServer.address();
+const concurrentResponses = await Promise.all([
+  fetch(`http://127.0.0.1:${concurrentPort}/api/create-order`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "first@example.com", name: "买家一" })
+  }),
+  fetch(`http://127.0.0.1:${concurrentPort}/api/create-order`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "second@example.com", name: "买家二" })
+  })
+]);
+const concurrentCreated = await Promise.all(concurrentResponses.map((response) => response.json()));
+await new Promise((resolve) => concurrentServer.close(resolve));
+const concurrentStore = JSON.parse(await readFile(concurrentStoreFile, "utf8"));
+await rm(concurrentRoot, { recursive: true, force: true });
+assert.equal(new Set(concurrentCreated.map((order) => order.orderId)).size, 2);
+assert.equal(Object.keys(concurrentStore.orders).length, 2);
+assert.equal(concurrentStore.orders[concurrentCreated[0].orderId].email, "first@example.com");
+assert.equal(concurrentStore.orders[concurrentCreated[1].orderId].email, "second@example.com");
+
 const tempRoot = await mkdtemp(join(tmpdir(), "offerdesk-alipay-service-"));
 const storeFile = join(tempRoot, "orders.json");
 const emails = [];
