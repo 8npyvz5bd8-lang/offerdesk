@@ -114,7 +114,26 @@ assert.ok(emailText.includes(result.licenseCode));
 assert.ok(licenseText.includes(result.licenseCode));
 assert.ok(trackerText.includes("xianyu"));
 assert.ok(trackerText.includes("buyer@example.com"));
+assert.ok(trackerText.includes("OD-MANUAL-20260611102030-ABC123"));
 assert.ok(trackerText.includes("已发送授权码"));
+
+await assert.rejects(() => fulfillManualOrder({
+  email: "Buyer@Example.COM",
+  orderId: "OD-MANUAL-20260611102030-ABC123",
+  paidAt: "2026-06-11 18:20",
+  amount: "29",
+  channel: "xianyu",
+  name: "买家",
+  role: "designer",
+  contact: "buyer@example.com",
+  note: "重复处理",
+  appUrl: "https://offerdesk.app",
+  supportEmail: "support@offerdesk.app",
+  privateKeyFile: keyFile,
+  outDir: join(tempRoot, "orders-again"),
+  tracker,
+  now: localNow
+}), /订单已处理/);
 
 const escaped = buildTrackerRow({
   date: "2026-06-11",

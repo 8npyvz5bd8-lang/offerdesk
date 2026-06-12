@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createDeliveryEmailText } from "./create-delivery-email.mjs";
@@ -38,6 +38,8 @@ export async function fulfillManualOrder(options) {
   const licenseOut = resolveOutput(options.licenseOut || `${outDir}/${safeOrderId}-license.txt`);
   const emailOut = resolveOutput(options.emailOut || `${outDir}/${safeOrderId}-email.txt`);
 
+  await assertManualOrderNotFulfilled({ orderId, tracker, licenseOut, emailOut });
+
   const issued = await issueSignedLicense({
     email: cleanEmail,
     orderId,
@@ -63,7 +65,7 @@ export async function fulfillManualOrder(options) {
     paidAt,
     amount,
     buyerEmail: cleanEmail,
-    note: options.note || ""
+    note: [`订单号：${orderId}`, options.note || ""].filter(Boolean).join("；")
   });
   await appendTrackerRow(tracker, row);
 
@@ -155,6 +157,42 @@ async function appendTrackerRow(tracker, row) {
     await appendFile(tracker, "\n", "utf8");
   }
   await appendFile(tracker, `${row}\n`, "utf8");
+}
+
+async function assertManualOrderNotFulfilled({ orderId, tracker, licenseOut, emailOut }) {
+  if (await exists(licenseOut)) {
+    throw new Error(`订单已处理：授权码文件已存在 ${licenseOut}`);
+  }
+  if (await exists(emailOut)) {
+    throw new Error(`订单已处理：回复邮件文件已存在 ${emailOut}`);
+  }
+  const trackerText = await readOptionalText(tracker);
+  if (trackerText.includes(orderId)) {
+    throw new Error(`订单已处理：销售记录里已存在 ${orderId}`);
+  }
+}
+
+async function exists(file) {
+  try {
+    await stat(file);
+    return true;
+  } catch (error) {
+    if (error.code !== "ENOENT") {
+      throw error;
+    }
+    return false;
+  }
+}
+
+async function readOptionalText(file) {
+  try {
+    return await readFile(file, "utf8");
+  } catch (error) {
+    if (error.code !== "ENOENT") {
+      throw error;
+    }
+    return "";
+  }
 }
 
 function normalizeEmail(value) {
