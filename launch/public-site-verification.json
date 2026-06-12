@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-12T10:52:59.768Z",
+  "checkedAt": "2026-06-12T10:59:12.326Z",
   "baseUrl": "https://8npyvz5bd8-lang.github.io/offerdesk/",
   "files": [
     {
@@ -30,6 +30,26 @@
       "localHash": "00a75f85de6a766ad1763faedea98a57ad49f5b18a79cfed826e9ed03fc59c14",
       "remoteHash": "00a75f85de6a766ad1763faedea98a57ad49f5b18a79cfed826e9ed03fc59c14",
       "bytes": 22222,
+      "fix": ""
+    },
+    {
+      "file": "pay.html",
+      "url": "https://8npyvz5bd8-lang.github.io/offerdesk/pay.html",
+      "status": 200,
+      "ok": true,
+      "localHash": "5baf1c3c709e10ee184736125f23a09aa6a461632ad7e1c7722fb55dcb39b55b",
+      "remoteHash": "5baf1c3c709e10ee184736125f23a09aa6a461632ad7e1c7722fb55dcb39b55b",
+      "bytes": 7515,
+      "fix": ""
+    },
+    {
+      "file": "after-pay.html",
+      "url": "https://8npyvz5bd8-lang.github.io/offerdesk/after-pay.html",
+      "status": 200,
+      "ok": true,
+      "localHash": "6127e0a6f84e06bc9c709ccff575354ef6fa3617c931ceb3e65f981b74d0b206",
+      "remoteHash": "6127e0a6f84e06bc9c709ccff575354ef6fa3617c931ceb3e65f981b74d0b206",
+      "bytes": 9628,
       "fix": ""
     },
     {
