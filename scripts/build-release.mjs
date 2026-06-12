@@ -15,6 +15,7 @@ run(process.execPath, ["tests/create-alipay-env-draft.test.mjs"]);
 run(process.execPath, ["tests/validate-alipay-env.test.mjs"]);
 run(process.execPath, ["tests/validate-alipay-service.test.mjs"]);
 run(process.execPath, ["tests/finalize-alipay-launch.test.mjs"]);
+run(process.execPath, ["tests/alipay-launch-readiness.test.mjs"]);
 run(process.execPath, ["tests/render-deployment.test.mjs"]);
 run(process.execPath, ["tests/configure-lemonsqueezy.test.mjs"]);
 run(process.execPath, ["tests/delivery-email.test.mjs"]);

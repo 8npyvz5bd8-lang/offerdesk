@@ -39,6 +39,17 @@ launch/alipay-server-env.example
 
 这个命令只检查缺项和格式，不会打印密钥。
 
+也可以生成当前上线清单：
+
+```bash
+/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/alipay-launch-readiness.mjs \
+  --env-file "你的环境变量文件.env" \
+  --write launch/alipay-launch-readiness.md \
+  --no-fail
+```
+
+清单会写出当前缺少什么、下一步做什么、以及后续要运行的命令；不会输出密钥内容。
+
 如需付款成功后自动发邮件，还要填：
 
 ```text

@@ -14,6 +14,7 @@ const defaultFiles = [
   "share.html",
   "promotion.html",
   "pipeline.html",
+  "launch/alipay-launch-readiness.md",
   "share-copy.txt",
   "site.css",
   "styles.css",

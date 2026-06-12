@@ -1,6 +1,6 @@
 # OfferDesk 自动赚钱执行状态
 
-生成时间：2026-06-12 18:59:21
+生成时间：2026-06-12 19:04:34
 
 文档步骤数：30
 已完成：15
@@ -10,7 +10,7 @@
 当前上架阶段：待部署支付宝自动收款服务
 可以公开自动售卖：否
 
-下一步：9. 准备支付宝商家参数：补 ALIPAY_APP_ID、ALIPAY_PRIVATE_KEY、ALIPAY_PUBLIC_KEY、OFFERDESK_PUBLIC_BASE_URL。
+下一步：9. 准备支付宝商家参数：查看 launch/alipay-launch-readiness.md，补 ALIPAY_APP_ID、ALIPAY_PRIVATE_KEY、ALIPAY_PUBLIC_KEY、OFFERDESK_PUBLIC_BASE_URL。
 
 ## 逐步状态
 
@@ -66,7 +66,7 @@
 
 状态：被阻塞
 证据：已发现本地 env 草稿，但还有 4 项支付宝预检未通过。
-下一步：补 ALIPAY_APP_ID、ALIPAY_PRIVATE_KEY、ALIPAY_PUBLIC_KEY、OFFERDESK_PUBLIC_BASE_URL。
+下一步：查看 launch/alipay-launch-readiness.md，补 ALIPAY_APP_ID、ALIPAY_PRIVATE_KEY、ALIPAY_PUBLIC_KEY、OFFERDESK_PUBLIC_BASE_URL。
 
 ### 10. 准备授权签名私钥
 
@@ -90,7 +90,7 @@
 
 状态：被阻塞
 证据：已发现本地 env 草稿，但还有 4 项支付宝预检未通过。
-下一步：运行 node scripts/create-alipay-env-draft.mjs 生成草稿，再填真实值，文件不要提交。
+下一步：填完 env 后运行 node scripts/alipay-launch-readiness.mjs --write launch/alipay-launch-readiness.md --no-fail。
 
 ### 14. 部署自动收款服务
 
