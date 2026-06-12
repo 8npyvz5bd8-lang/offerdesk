@@ -258,6 +258,10 @@
       const licenseBox = document.getElementById("licenseBox");
       const copyLicenseButton = document.getElementById("copyLicenseButton");
       const openWithLicenseButton = document.getElementById("openWithLicenseButton");
+      const autoOrderKey = "offerdesk.auto.order.id";
+      const autoBuyerEmailKey = "offerdesk.auto.buyer.email";
+      const autoBuyerNameKey = "offerdesk.auto.buyer.name";
+      const autoLicenseKey = "offerdesk.auto.license.code";
       let pollTimer = 0;
       renderCheckoutIntent();
 
@@ -291,6 +295,7 @@
         manualBuyerForm.hidden = true;
         checkoutStatus.textContent = "已开启支付宝官方自动收款。付款成功后会自动生成唯一授权码。";
         checkoutCaption.textContent = "输入邮箱后生成本次订单专属付款码。";
+        restoreAutoCheckout();
       }
 
       manualBuyerEmail.addEventListener("input", () => {
@@ -331,12 +336,14 @@
         autoPayLink.hidden = true;
         copyLicenseButton.hidden = true;
         openWithLicenseButton.hidden = true;
+        clearStoredAutoLicense();
         try {
           const order = await requestJson(`${autoPaymentApiBase}/api/create-order`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, name: buyerName.value.trim() })
           });
+          saveAutoOrder(order.orderId, email, buyerName.value.trim());
           if (order.qrImage) {
             autoQrImage.src = order.qrImage;
             autoQrImage.hidden = false;
@@ -377,12 +384,8 @@
             const order = await requestJson(`${autoPaymentApiBase}/api/order-status?order_id=${encodeURIComponent(orderId)}`);
             if (order.licenseCode) {
               clearInterval(pollTimer);
-              orderStatus.textContent = deliveryStatusText(order);
-              licenseBox.textContent = order.licenseCode;
-              licenseBox.hidden = false;
-              copyLicenseButton.hidden = false;
-              openWithLicenseButton.href = `./index.html?license_key=${encodeURIComponent(order.licenseCode)}`;
-              openWithLicenseButton.hidden = false;
+              saveAutoLicense(order.licenseCode);
+              showAutoLicense(order.licenseCode, deliveryStatusText(order));
             } else {
               orderStatus.textContent = `订单号：${orderId}。等待支付宝到账通知...`;
             }
@@ -401,6 +404,45 @@
           return "已到账，唯一授权码已生成，并已发送到邮箱。";
         }
         return "已到账，唯一授权码已生成。";
+      }
+
+      function restoreAutoCheckout() {
+        buyerEmail.value = localStorage.getItem(autoBuyerEmailKey) || "";
+        buyerName.value = localStorage.getItem(autoBuyerNameKey) || "";
+        const savedLicense = localStorage.getItem(autoLicenseKey);
+        if (savedLicense) {
+          showAutoLicense(savedLicense, "已恢复已到账订单，授权码如下。");
+          return;
+        }
+        const savedOrderId = localStorage.getItem(autoOrderKey);
+        if (savedOrderId) {
+          orderStatus.textContent = `已恢复订单号：${savedOrderId}。正在继续查询到账状态...`;
+          startPolling(savedOrderId);
+        }
+      }
+
+      function saveAutoOrder(orderId, email, name) {
+        localStorage.setItem(autoOrderKey, String(orderId || "").trim());
+        localStorage.setItem(autoBuyerEmailKey, String(email || "").trim());
+        localStorage.setItem(autoBuyerNameKey, String(name || "").trim());
+      }
+
+      function saveAutoLicense(licenseCode) {
+        localStorage.setItem(autoLicenseKey, String(licenseCode || "").trim());
+        localStorage.removeItem(autoOrderKey);
+      }
+
+      function clearStoredAutoLicense() {
+        localStorage.removeItem(autoLicenseKey);
+      }
+
+      function showAutoLicense(licenseCode, message) {
+        orderStatus.textContent = message;
+        licenseBox.textContent = licenseCode;
+        licenseBox.hidden = false;
+        copyLicenseButton.hidden = false;
+        openWithLicenseButton.href = `./index.html?license_key=${encodeURIComponent(licenseCode)}`;
+        openWithLicenseButton.hidden = false;
       }
 
       async function requestJson(url, options) {
