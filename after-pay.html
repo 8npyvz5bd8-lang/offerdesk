@@ -153,9 +153,10 @@
       } else {
         clearStoredQuoteContext();
       }
-      $("orderId").value = incomingOrderId || getStoredOrderId();
+      const resolvedOrderId = incomingOrderId || getStoredOrderId();
+      $("orderId").value = resolvedOrderId;
       $("buyerEmail").value = incomingBuyerEmail || getStoredManualBuyerEmail();
-      $("payerName").value = incomingPayerName || getStoredManualBuyerName();
+      $("payerName").value = incomingPayerName || getStoredManualBuyerName() || resolvedOrderId;
       $("paidAt").value = formatLocalDateTime(new Date());
 
       function buildBody() {

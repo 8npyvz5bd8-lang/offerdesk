@@ -71,6 +71,8 @@ assert.ok(afterPayHtml.includes("incomingQuoteTotal"));
 assert.ok(afterPayHtml.includes("setStoredOrderId(incomingOrderId)"));
 assert.ok(afterPayHtml.includes("setStoredManualBuyerEmail(incomingBuyerEmail)"));
 assert.ok(afterPayHtml.includes("setStoredManualBuyerName(incomingPayerName)"));
+assert.ok(afterPayHtml.includes("const resolvedOrderId = incomingOrderId || getStoredOrderId()"));
+assert.ok(afterPayHtml.includes('$("payerName").value = incomingPayerName || getStoredManualBuyerName() || resolvedOrderId'));
 assert.ok(afterPayHtml.includes("readAttributionSourceFromUrl"));
 assert.ok(afterPayHtml.includes("setStoredAttributionSource(incomingSource)"));
 assert.ok(afterPayHtml.includes("来源：${getStoredAttributionSource() || \"未记录\"}"));
