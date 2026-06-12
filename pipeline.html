@@ -224,6 +224,7 @@
           <button class="btn" type="button" id="copyCsv">复制 CSV</button>
           <button class="btn" type="button" id="downloadCsv">下载 CSV</button>
           <button class="btn" type="button" id="copyImportCommand">复制导入命令</button>
+          <button class="btn" type="button" id="copyReadinessCommand">复制获客检查命令</button>
           <button class="btn danger" type="button" id="clearDone">清空空白行</button>
         </div>
         <p>状态到“已付款”后，点击这一行的“发码命令”，在本机终端运行，确认到账后把生成的邮件发给买家。</p>
@@ -324,6 +325,12 @@
         const command = buildSalesImportCommand();
         csvOutput.value = command;
         await copyText(command, notice, "导入命令已复制。先下载 CSV，再在项目目录终端运行。", "导入命令已显示，浏览器没有允许复制，请手动复制。");
+      });
+
+      document.getElementById("copyReadinessCommand").addEventListener("click", async () => {
+        const command = buildOutreachReadinessCommand();
+        csvOutput.value = command;
+        await copyText(command, notice, "获客检查命令已复制。导入真实线索后运行。", "获客检查命令已显示，浏览器没有允许复制，请手动复制。");
       });
 
       document.getElementById("clearDone").addEventListener("click", () => {
@@ -557,6 +564,17 @@
           "scripts/import-outreach-evidence.mjs",
           "--sales-file",
           "/Users/chenzhifeng/Downloads/offerdesk-sales.csv"
+        ].map(shellArg).join(" \\\n  ");
+      }
+
+      function buildOutreachReadinessCommand() {
+        const node = "/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node";
+        return [
+          node,
+          "scripts/outreach-readiness.mjs",
+          "--write",
+          "launch/outreach-readiness.md",
+          "--no-fail"
         ].map(shellArg).join(" \\\n  ");
       }
 

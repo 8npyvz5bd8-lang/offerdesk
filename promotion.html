@@ -134,6 +134,7 @@
           <button class="btn" type="button" id="copyCsv">复制 CSV</button>
           <button class="btn" type="button" id="downloadCsv">下载 CSV</button>
           <button class="btn" type="button" id="copyImportCommand">复制导入命令</button>
+          <button class="btn" type="button" id="copyReadinessCommand">复制获客检查命令</button>
           <button class="btn danger" type="button" id="clearBlank">清空空白行</button>
         </div>
       </section>
@@ -217,6 +218,12 @@
         const command = buildPromotionImportCommand();
         csvOutput.value = command;
         await copyText(command, "导入命令已复制。先下载 CSV，再在项目目录终端运行。", "导入命令已显示，浏览器没有允许复制，请手动复制。");
+      });
+
+      document.getElementById("copyReadinessCommand").addEventListener("click", async () => {
+        const command = buildOutreachReadinessCommand();
+        csvOutput.value = command;
+        await copyText(command, "获客检查命令已复制。导入真实发布记录后运行。", "获客检查命令已显示，浏览器没有允许复制，请手动复制。");
       });
 
       document.getElementById("clearBlank").addEventListener("click", () => {
@@ -333,6 +340,17 @@
           "scripts/import-outreach-evidence.mjs",
           "--promotion-file",
           "/Users/chenzhifeng/Downloads/offerdesk-promotions.csv"
+        ].map(shellArg).join(" \\\n  ");
+      }
+
+      function buildOutreachReadinessCommand() {
+        const node = "/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node";
+        return [
+          node,
+          "scripts/outreach-readiness.mjs",
+          "--write",
+          "launch/outreach-readiness.md",
+          "--no-fail"
         ].map(shellArg).join(" \\\n  ");
       }
 
