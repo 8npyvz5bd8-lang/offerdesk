@@ -18,20 +18,14 @@ dist/offerdesk-release.zip
 
 ## 发回地址后要做
 
-```bash
-/Users/chenzhifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/create-delivery-email.mjs \
-  --app-url "线上地址" \
-  --license-code "付款后授权码" \
-  --support-email "534403209@qq.com" \
-  --out dist/post-purchase-email.txt
-```
+当前签名授权路线不需要先生成固定授权码邮件。买家付款后，让他在 `after-pay.html` 提交信息，再按下面“收到支付宝付款后”的命令生成单笔授权码和回复邮件。
 
 然后继续做真实付款验收。
 
 ## 不能跳过
 
-- 不要把 `dist/post-purchase-email.txt` 上传到网页目录。
-- 付款后邮件里必须有线上地址和授权码。
+- 不要把 `dist/manual-orders/` 里的邮件上传到网页目录。
+- 发给买家的邮件里必须有线上地址和唯一授权码。
 - 完成一次真实扫码付款后，填写 `launch/release-acceptance.md`。
 
 ## 收到支付宝付款后

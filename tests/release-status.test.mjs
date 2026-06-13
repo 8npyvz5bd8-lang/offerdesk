@@ -51,6 +51,32 @@ assert.equal(qrOnlyStatus.canSell, false);
 assert.equal(qrOnlyStatus.stage, "待部署支付宝自动收款服务");
 assert.ok(qrOnlyStatus.nextStep.includes("支付宝自动收款发码"));
 
+const signedManualStatus = buildReleaseStatus({
+  configText: `window.OFFERDESK_CONFIG = {
+  checkoutUrl: "https://8npyvz5bd8-lang.github.io/offerdesk/buy.html",
+  autoCheckoutUrl: "",
+  paymentQrImage: "./launch/payment-alipay.jpeg",
+  autoPaymentApiBase: "",
+  licenseProvider: "signed",
+  lemonSqueezyProductId: "",
+  licensePublicKey: {"kty":"EC","crv":"P-256","x":"abcdefghijklmnopqrstuvwxyz123456","y":"abcdefghijklmnopqrstuvwxyz654321"},
+  licenseHash: "",
+  supportEmail: "support@offerdesk.app"
+};`,
+  acceptanceText: templateAcceptance,
+  checkoutPageText: '<a href="https://qr.alipay.com/fkx18699evozd44sg2kip49">pay</a>',
+  artifacts: {
+    releaseDir: true,
+    uploadZip: true,
+    deliveryEmail: false,
+    manualFulfillment: true
+  }
+});
+
+assert.equal(signedManualStatus.canSell, false);
+assert.equal(signedManualStatus.stage, "待部署支付宝自动收款服务");
+assert.equal(signedManualStatus.checks.find((item) => item.name === "自动邮件或补发邮件").pass, true);
+
 const completeAcceptance = `# 真实发布验收记录
 
 ## 基本信息

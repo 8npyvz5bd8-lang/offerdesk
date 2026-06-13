@@ -36,11 +36,12 @@
 成功后会生成：
 
 - `app-config.js`
-- `dist/post-purchase-email.txt`
 - `dist/offerdesk-release`
 - `dist/offerdesk-release.zip`
 
-`dist/post-purchase-email.txt` 包含明文授权码，只能复制到收款平台的付款后邮件里，不要上传到网页发布包。
+如果走单个固定授权码路线，还会生成 `dist/post-purchase-email.txt`。这个文件包含明文授权码，只能复制到收款平台的付款后邮件里，不要上传到网页发布包。
+
+当前签名授权路线优先用 `scripts/fulfill-manual-order.mjs` 给每笔订单生成唯一授权码和补发邮件，不需要长期保留 `dist/post-purchase-email.txt`。
 
 一键命令会自动检查发布目录和压缩包里有没有明文授权码，发现就失败。
 
@@ -119,7 +120,7 @@ dist/offerdesk-release.zip
   --support-email "客服邮箱"
 ```
 
-把输出内容复制到收款平台的付款后邮件里。不要把明文授权码放进网页发布包。
+这是固定授权码路线才需要的邮件。当前签名授权路线收到付款后，优先用 `scripts/fulfill-manual-order.mjs` 生成单笔订单邮件。不要把任何明文授权码放进网页发布包。
 
 ## 第六步：配置收款平台
 

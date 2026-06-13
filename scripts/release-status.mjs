@@ -16,6 +16,9 @@ export function buildReleaseStatus({ configText, acceptanceText, artifacts, chec
   const supportEmail = readConfigValue(configText, "supportEmail");
   const acceptanceChecks = validateAcceptanceText(acceptanceText);
   const acceptancePass = acceptanceChecks.length > 0 && acceptanceChecks.every((item) => item.pass);
+  const manualFulfillmentReady = isSignedProvider(licenseProvider) &&
+    isValidLicensePublicKey(licensePublicKey) &&
+    Boolean(artifacts.manualFulfillment);
   const autoPaymentReady = isAutomaticPaymentReady({
     autoCheckoutUrl,
     autoPaymentApiBase,
@@ -63,8 +66,8 @@ export function buildReleaseStatus({ configText, acceptanceText, artifacts, chec
     },
     {
       name: "自动邮件或补发邮件",
-      pass: autoPaymentReady || Boolean(artifacts.deliveryEmail),
-      fix: "接入平台自动授权邮件，或运行 scripts/create-delivery-email.mjs 生成补发邮件。"
+      pass: autoPaymentReady || manualFulfillmentReady || Boolean(artifacts.deliveryEmail),
+      fix: "接入平台自动授权邮件，或使用 scripts/fulfill-manual-order.mjs 生成单笔补发邮件。"
     },
     {
       name: "真实付款验收",
@@ -242,7 +245,9 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
       artifacts: {
         releaseDir: await exists("dist/offerdesk-release"),
         uploadZip: await exists("dist/offerdesk-release.zip"),
-        deliveryEmail: await exists("dist/post-purchase-email.txt")
+        deliveryEmail: await exists("dist/post-purchase-email.txt"),
+        manualFulfillment: await exists("scripts/fulfill-manual-order.mjs") &&
+          await exists("secrets/offerdesk-license-private.jwk.json")
       }
     });
 

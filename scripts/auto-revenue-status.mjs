@@ -34,6 +34,7 @@ export async function buildAutoRevenueStatus(options = {}) {
   const acceptanceText = await readText("launch/release-acceptance.md");
   const buyText = await readText("buy.html");
   const indexText = await readText("index.html");
+  const hasPrivateJwk = await hasValidPrivateJwk();
   const releaseStatus = buildReleaseStatus({
     configText,
     acceptanceText,
@@ -41,7 +42,8 @@ export async function buildAutoRevenueStatus(options = {}) {
     artifacts: {
       releaseDir: await exists("dist/offerdesk-release"),
       uploadZip: await exists("dist/offerdesk-release.zip"),
-      deliveryEmail: await exists("dist/post-purchase-email.txt")
+      deliveryEmail: await exists("dist/post-purchase-email.txt"),
+      manualFulfillment: await exists("scripts/fulfill-manual-order.mjs") && hasPrivateJwk
     }
   });
 
@@ -55,7 +57,6 @@ export async function buildAutoRevenueStatus(options = {}) {
   const pagesWithSurface = await countPagesWithSurface();
   const releaseHasSiteCss = await exists("dist/offerdesk-release/site.css");
   const uploadZipExists = await exists("dist/offerdesk-release.zip");
-  const hasPrivateJwk = await hasValidPrivateJwk();
   const renderText = await readText("render.yaml");
   const hasPersistentStore = renderText.includes("/data/orders.json") && renderText.includes("mountPath: /data");
   const autoPaymentApiBase = readConfigValue(configText, "autoPaymentApiBase");
